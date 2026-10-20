@@ -101,9 +101,9 @@ interface MeetingDetailViewProps {
   initialTab?: string;
 }
 
-type TabType = 'overview' | 'participants' | 'minutes' | 'actionItems';
+type TabType = 'overview' | 'minutes' | 'actionItems';
 type MinutesSubTab = 'document' | 'materials' | 'history';
-const VALID_TABS: TabType[] = ['overview', 'participants', 'minutes', 'actionItems'];
+const VALID_TABS: TabType[] = ['overview', 'minutes', 'actionItems'];
 
 const MEETING_WORKFLOW: {
   key: MeetingStatus;
@@ -1346,17 +1346,6 @@ export function MeetingDetailView({
           </div>
 
 
-
-          {/* Peserta Total */}
-          <div className="flex items-start gap-2.5">
-            <Users className="w-4 h-4 text-[#31889C] shrink-0 mt-0.5" />
-            <div>
-              <p className="text-[11px] text-slate-400 font-semibold uppercase">Total Tamu Undangan</p>
-              <p className="font-bold text-slate-800">
-                {totalCount} Pejabat / Perwakilan
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1492,18 +1481,6 @@ export function MeetingDetailView({
 
         <button
           type="button"
-          onClick={() => handleTabChange('participants')}
-          className={`flex items-center gap-2 px-5 py-3 font-bold text-[13px] border-b-2 transition-all cursor-pointer whitespace-nowrap ${activeTab === 'participants'
-            ? 'border-[#31889C] text-[#31889C] bg-[#F0F9FA] rounded-t-lg'
-            : 'border-transparent text-slate-600 hover:text-[#31889C] hover:bg-[#F0F9FA]/50'
-            }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>Tamu Undangan ({totalCount})</span>
-        </button>
-
-        <button
-          type="button"
           onClick={() => handleTabChange('minutes')}
           className={`flex items-center gap-2 px-5 py-3 font-bold text-[13px] border-b-2 transition-all cursor-pointer whitespace-nowrap ${activeTab === 'minutes'
             ? 'border-[#31889C] text-[#31889C] bg-[#F0F9FA] rounded-t-lg'
@@ -1535,37 +1512,9 @@ export function MeetingDetailView({
       {/* Tab 1: Informasi Rapat / Overview */}
       {activeTab === 'overview' && (
         <div className="space-y-5">
-          {/* Executive KPI Bar (4 Ringkasan Metrik Cepat Rapat) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {/* KPI 1: Presensi Kehadiran */}
-            <div
-              onClick={() => handleTabChange('participants')}
-              role="button"
-              tabIndex={0}
-              className="group bg-white hover:bg-emerald-50/40 p-4 rounded-xl border border-slate-200 hover:border-emerald-300 transition-all cursor-pointer shadow-xs flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-emerald-700">
-                  Presensi Sidang
-                </span>
-                <div className="w-7 h-7 rounded-lg bg-emerald-100/70 text-emerald-700 flex items-center justify-center">
-                  <Users className="w-3.5 h-3.5" />
-                </div>
-              </div>
-              <div className="mt-2.5">
-                <div className="text-xl font-extrabold text-slate-900 group-hover:text-emerald-800">
-                  {presentCount} <span className="text-xs font-semibold text-slate-400">/ {totalCount} Hadir</span>
-                </div>
-                <div className="flex items-center justify-between text-[11.5px] text-slate-500 mt-1">
-                  <span>{totalCount > 0 ? `${Math.round((presentCount / totalCount) * 100)}% kehadiran` : '0 peserta'}</span>
-                  <span className="font-semibold text-emerald-700 group-hover:underline flex items-center gap-0.5">
-                    Kelola <ChevronRight className="w-3 h-3 inline" />
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* KPI 2: Naskah Notula & Risalah */}
+          {/* Executive KPI Bar */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {/* KPI 1: Naskah Notula & Risalah */}
             <div
               onClick={() => {
                 handleTabChange('minutes');
@@ -2002,220 +1951,7 @@ export function MeetingDetailView({
         </div>
       )}
 
-      {/* Tab 2: Peserta & Presensi Kehadiran */}
-      {activeTab === 'participants' && (
-        <div className="space-y-4">
-          {/* Card Header & Controls */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h3 className="text-[18px] font-bold text-slate-900 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#31889C]" />
-                  <span>Daftar Presensi Tamu Undangan</span>
-                </h3>
-                <p className="text-[12px] text-slate-500 mt-0.5">
-                  {canManageParticipants
-                    ? 'Kelola presensi peserta rapat secara langsung. Perubahan status kehadiran langsung disimpan dan otomatis tercantum pada PDF Risalah Rapat.'
-                    : 'Daftar absensi kehadiran peserta resmi untuk agenda sidang ini.'}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                {canManageParticipants && (
-                  <>
-                    <button
-                      type="button"
-                      disabled={isBulkUpdating || totalCount === 0}
-                      onClick={handleMarkAllPresent}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#D2EFCA] bg-[#ECF8E9] text-[#4D8F3D] hover:bg-[#daf2d1] text-[12px] font-semibold transition-all cursor-pointer disabled:opacity-50"
-                      title="Tandai semua peserta sebagai Hadir"
-                    >
-                      {isBulkUpdating ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#7CC563]" />
-                      )}
-                      <span>Tandai Semua Hadir</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowAddModal(true)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#31889C] hover:bg-[#266F80] text-white text-[12px] font-semibold transition-all shadow-xs cursor-pointer"
-                    >
-                      <UserPlus className="w-3.5 h-3.5" />
-                      <span>Tambah Peserta</span>
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Summary Statistics Counter Pills */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-2">
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
-                  Total Peserta
-                </span>
-                <span className="text-[20px] font-extrabold text-slate-800 mt-0.5 block">
-                  {totalCount}
-                </span>
-              </div>
-
-              <div className="p-3 bg-[#ECF8E9] border border-[#D2EFCA] rounded-xl text-center">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#4D8F3D] block">
-                  Hadir
-                </span>
-                <span className="text-[20px] font-extrabold text-[#2E6B20] mt-0.5 block">
-                  {presentCount}
-                </span>
-              </div>
-
-              <div className="p-3 bg-[#FFF8CC] border border-[#FFEE99] rounded-xl text-center">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#8A7200] block">
-                  Izin
-                </span>
-                <span className="text-[20px] font-extrabold text-[#6B5800] mt-0.5 block">
-                  {excusedCount}
-                </span>
-              </div>
-
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-center">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700 block">
-                  Tidak Hadir
-                </span>
-                <span className="text-[20px] font-extrabold text-rose-800 mt-0.5 block">
-                  {absentCount}
-                </span>
-              </div>
-
-              <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl text-center col-span-2 sm:col-span-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-sky-700 block">
-                  Diundang
-                </span>
-                <span className="text-[20px] font-extrabold text-sky-800 mt-0.5 block">
-                  {invitedCount}
-                </span>
-              </div>
-            </div>
-
-
-
-            {/* Participant List */}
-            {participants.length > 0 ? (
-              <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-[13px] shadow-xs">
-                {participants.map((p: any, idx: number) => {
-                  const isUpdating = updatingParticipantId === p.id;
-                  const currentOpt = ATTENDANCE_OPTIONS.find((o) => o.value === p.attendanceStatus) || ATTENDANCE_OPTIONS[3];
-
-                  return (
-                    <div
-                      key={p.id}
-                      className="p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white hover:bg-[#F0F9FA] transition-colors"
-                    >
-                      {/* Left: User Details */}
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-[11px] font-bold text-slate-400 w-5 text-right shrink-0">
-                          {idx + 1}.
-                        </span>
-                        <div className="w-9 h-9 rounded-full bg-[#F0F9FA] text-[#31889C] font-bold flex items-center justify-center text-[11px] border border-[#BCE3EB] shrink-0">
-                          {p.user?.name
-                            ? p.user.name
-                              .split(' ')
-                              .map((n: string) => n[0])
-                              .slice(0, 2)
-                              .join('')
-                            : 'P'}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-bold text-slate-900 truncate">
-                            {p.user?.name || 'Peserta Rapat'}
-                          </p>
-                          <div className="flex items-center gap-2 text-[11px] text-slate-500 flex-wrap">
-                            <span className="truncate">{p.user?.email}</span>
-                            <span>•</span>
-                            <span className="font-medium text-[#215865] bg-[#F0F9FA] px-1.5 py-0.2 rounded border border-[#BCE3EB]">
-                              {p.user?.biro?.code || p.user?.biro?.shortName || 'Biro KEK'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right: Interactive Attendance Selector or Read-Only Badge */}
-                      <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
-                        {canManageParticipants ? (
-                          <div className="flex items-center gap-1.5">
-                            {/* Segmented Control Buttons */}
-                            <div className="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200 gap-0.5">
-                              {ATTENDANCE_OPTIONS.map((opt) => {
-                                const isActive = p.attendanceStatus === opt.value;
-                                const Icon = opt.icon;
-                                return (
-                                  <button
-                                    key={opt.value}
-                                    type="button"
-                                    disabled={isUpdating}
-                                    onClick={() =>
-                                      handleUpdateAttendance(p.id, opt.value, p.user?.name || 'Peserta')
-                                    }
-                                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${isActive
-                                      ? opt.activeClass
-                                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-                                      } ${isUpdating ? 'opacity-50 cursor-wait' : ''}`}
-                                    title={opt.desc}
-                                  >
-                                    <Icon className="w-3 h-3" />
-                                    <span>{opt.label}</span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-
-                            {/* Delete Participant Button */}
-                            <button
-                              type="button"
-                              disabled={isUpdating}
-                              onClick={() => handleRemoveParticipant(p.id, p.user?.name || 'Peserta')}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-rose-200"
-                              title="Hapus peserta dari rapat ini"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ) : (
-                          /* Viewer / Staff read-only badge */
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${currentOpt.badgeClass}`}
-                          >
-                            <currentOpt.icon className="w-3 h-3" />
-                            <span>{currentOpt.label}</span>
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                <Users className="w-8 h-8 text-[#31889C] mx-auto mb-2 opacity-60" />
-                <p className="text-[13px] font-semibold text-slate-700">
-                  Belum ada peserta yang terdaftar pada rapat ini.
-                </p>
-                <p className="text-[12px] text-slate-500 mt-1">
-                  {canManageParticipants ? (
-                    <>Klik tombol <strong>+ Tambah Peserta</strong> di atas untuk mendaftarkan peserta sidang.</>
-                  ) : (
-                    'Daftar absensi peserta belum dimasukkan oleh Notulis atau Administrator.'
-                  )}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Tab 3: Notulen & Hasil Rapat */}
+      {/* Tab 2: Notulen & Hasil Rapat */}
       {activeTab === 'minutes' && (
         <div className="space-y-4">
           {/* Sub Navigation Bar: Naskah, Berkas & Paparan, Riwayat Perubahan */}

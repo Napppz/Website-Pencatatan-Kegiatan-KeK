@@ -63,7 +63,7 @@ export function MeetingDetailDialog({
   const canChangeStatus = isPrivileged;
   const canApprove = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'PIMPINAN';
 
-  const [activeTab, setActiveTab] = useState<'info' | 'participants' | 'minutes' | 'actionItems'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'minutes' | 'actionItems'>('info');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -422,19 +422,6 @@ export function MeetingDetailDialog({
 
           <button
             type="button"
-            onClick={() => setActiveTab('participants')}
-            className={`flex items-center gap-1.5 py-2.5 px-3 font-bold text-[12px] border-b-2 transition-all cursor-pointer ${
-              activeTab === 'participants'
-                ? 'border-[#31889C] text-[#31889C] bg-white rounded-t-md'
-                : 'border-transparent text-slate-600 hover:text-[#31889C]'
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span>Peserta ({meeting.attendees?.length || 0})</span>
-          </button>
-
-          <button
-            type="button"
             onClick={() => setActiveTab('minutes')}
             className={`flex items-center gap-1.5 py-2.5 px-3 font-bold text-[12px] border-b-2 transition-all cursor-pointer ${
               activeTab === 'minutes'
@@ -686,35 +673,7 @@ export function MeetingDetailDialog({
             </>
           )}
 
-          {/* TAB 2: PESERTA */}
-          {activeTab === 'participants' && (
-            <div className="space-y-4">
-              <h4 className="text-[14px] font-bold text-slate-900 flex items-center gap-2">
-                <Users className="w-4 h-4 text-[#31889C]" />
-                Daftar Peserta Rapat
-              </h4>
-
-              {meeting.attendees && meeting.attendees.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {meeting.attendees.map((attendee, idx) => (
-                    <div
-                      key={idx}
-                      className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-800 text-[12px] font-medium flex items-center gap-2"
-                    >
-                      <div className="w-6 h-6 rounded-full bg-[#E8F5F7] text-[#215865] text-[10px] font-bold flex items-center justify-center shrink-0">
-                        {idx + 1}
-                      </div>
-                      <span className="truncate">{attendee}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-[13px] text-slate-400 italic">Belum ada daftar peserta yang tercatat.</p>
-              )}
-            </div>
-          )}
-
-          {/* TAB 3: NOTULEN & HASIL RAPAT */}
+          {/* TAB 2: NOTULEN & HASIL RAPAT */}
           {activeTab === 'minutes' && (
             <div className="pt-1">
               <MeetingMinutesSection meetingId={meeting.id} meeting={meeting} />
