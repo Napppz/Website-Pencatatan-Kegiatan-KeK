@@ -971,17 +971,6 @@ export function MeetingDetailView({
             </div>
           )}
 
-          {/* Google Calendar Button */}
-          <button
-            type="button"
-            onClick={() => setShowCalendarModal(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[12px] font-semibold transition-all shadow-xs cursor-pointer group"
-            title="Tambah ke Google Calendar & Undang Seluruh Peserta"
-          >
-            <Calendar className="w-3.5 h-3.5 text-amber-300 group-hover:scale-110 transition-transform" />
-            <span>Google Kalender</span>
-          </button>
-
           {/* Delete button (SUPER_ADMIN, ADMIN) */}
           {canDeleteMeeting && (
             <button
@@ -2032,16 +2021,6 @@ export function MeetingDetailView({
               </div>
 
               <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => setShowCalendarModal(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 text-[12px] font-bold transition-all cursor-pointer shadow-2xs"
-                  title="Buka atau bagikan undangan Google Kalender ke seluruh peserta"
-                >
-                  <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Undangan Kalender</span>
-                </button>
-
                 {canManageParticipants && (
                   <>
                     <button

@@ -246,27 +246,6 @@ export function Sidebar({
                 {!collapsed && <span>Status Pekerjaan</span>}
               </Link>
 
-              {/* Kalender (SUPER_ADMIN, ADMIN, PIMPINAN, STAFF) */}
-              {(isSuperAdmin || isAdmin || isPimpinan || userRole === 'STAFF') && (
-                <Link
-                  href="/kalender"
-                  onClick={handleLinkClick}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg transition-all font-medium text-[14px]",
-                    pathname === '/kalender'
-                      ? "bg-[#F0F9FA] text-[#31889C] font-bold border-l-4 border-[#31889C] shadow-xs"
-                      : "text-slate-600 hover:bg-[#F0F9FA] hover:text-[#31889C]"
-                  )}
-                  title="Kalender"
-                >
-                  <Calendar className={cn(
-                    "w-5 h-5 shrink-0",
-                    pathname === '/kalender' ? "text-[#31889C]" : "text-slate-400"
-                  )} />
-                  {!collapsed && <span>Kalender</span>}
-                </Link>
-              )}
-
               {/* Tim Kerja Biro IKK (Semua Peran: SUPER_ADMIN, ADMIN, PIMPINAN, STAFF) */}
               {(isSuperAdmin || isAdmin || isPimpinan || Boolean(session?.user?.biroCode)) && (
                 <div>

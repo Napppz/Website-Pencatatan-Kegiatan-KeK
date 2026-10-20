@@ -384,16 +384,6 @@ export function MeetingDetailDialog({
               </span>
             )}
 
-            <button
-              type="button"
-              onClick={() => setShowCalendarModal(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer shadow-2xs"
-              title="Tambah ke Google Calendar & Bagikan ke Peserta"
-            >
-              <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Google Kalender</span>
-            </button>
-
             <Link
               href={`/semua-rapat/${meeting.id}`}
               onClick={onClose}

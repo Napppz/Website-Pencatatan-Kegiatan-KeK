@@ -150,17 +150,6 @@ export function CommandPalette({ isOpen, onClose, onCreateMeeting }: CommandPale
         },
       },
       {
-        id: 'act-calendar',
-        title: 'Kalender Agenda Sidang KEK',
-        subtitle: 'Jadwal pertemuan fisik & daring bulan ini',
-        category: 'action',
-        icon: <CalendarDays className="w-4 h-4 text-[#7CC563]" />,
-        action: () => {
-          onClose();
-          router.push('/kalender');
-        },
-      },
-      {
         id: 'act-reports',
         title: 'Laporan & Statistik Eksekutif',
         subtitle: 'Statistik produktivitas dan kepatuhan tindak lanjut',
