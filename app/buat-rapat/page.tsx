@@ -332,6 +332,7 @@ export default function BuatRapatPage() {
         location: 'Biro 3 / Luar Kantor',
         meetingKind: finalJenisKegiatan,
         picName: picName.trim() || undefined,
+        participantUserIds: selectedPicIds.length > 0 ? selectedPicIds : undefined,
         chairpersonId: selectedPicIds[0] || undefined,
         progressStatus: 'Belum Dimulai',
         meetingNumber: registrationNumber.trim() || undefined,

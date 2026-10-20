@@ -163,6 +163,19 @@ export async function getMeetingByIdFromDb(idOrNumber: string) {
               picBiro: true,
               picTeam: true,
               picUser: true,
+              logs: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                      role: true,
+                    },
+                  },
+                },
+                orderBy: { createdAt: 'desc' },
+              },
             },
             orderBy: [{ dueDate: 'asc' }, { createdAt: 'desc' }],
           },

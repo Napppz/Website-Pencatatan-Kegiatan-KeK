@@ -64,6 +64,7 @@ import { AgendaSeriesModal } from '@/components/meeting/agenda-series-modal';
 import { MinutesHistorySection } from '@/components/meeting/meeting-history/minutes-history-section';
 import { GoogleCalendarModal } from '@/components/meeting/google-calendar-modal';
 import { UpdateMeetingOutputDialog } from '@/components/meeting/update-meeting-output-dialog';
+import { PicDeliverablesTracker } from '@/components/meeting/pic-deliverables-tracker';
 import {
   MeetingCategorySelector,
   CategorySelectionData,
@@ -1616,6 +1617,18 @@ export function MeetingDetailView({
               </div>
             </div>
           </div>
+
+          {/* Tracking Pekerjaan & Output PIC Kegiatan (Monitoring Pimpinan & Staf) */}
+          <PicDeliverablesTracker
+            meetingId={meetingData.id}
+            meetingTitle={meetingData.title}
+            meetingDate={meetingData.date}
+            actionItems={meetingData.actionItems || []}
+            participants={meetingData.participants || []}
+            availableUsers={availableUsers || []}
+            canEdit={canEditMeeting}
+            onRefresh={() => router.refresh()}
+          />
 
           {/* Panel Output & Hasil Kegiatan Biro 3 (Catatan Mentor) */}
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4 border-l-4 border-l-emerald-600">

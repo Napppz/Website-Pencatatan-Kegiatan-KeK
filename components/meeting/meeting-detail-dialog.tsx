@@ -530,6 +530,16 @@ export function MeetingDetailDialog({
                   </div>
                 )}
 
+                {meeting.picName && (
+                  <div className="flex items-center gap-3 col-span-1 md:col-span-2 p-2.5 rounded-lg bg-teal-50/80 border border-teal-200">
+                    <Users className="w-5 h-5 text-[#1E6B7B] shrink-0" />
+                    <div>
+                      <p className="text-[11px] text-teal-800 font-semibold uppercase">PIC Terlibat</p>
+                      <p className="font-bold text-teal-950">{meeting.picName}</p>
+                    </div>
+                  </div>
+                )}
+
                 {meeting.invitationDocUrl && (
                   <div className="flex items-center justify-between col-span-1 md:col-span-2 p-3 rounded-xl bg-teal-50/90 border border-teal-200 shadow-2xs">
                     <div className="flex items-center gap-2.5 min-w-0">
