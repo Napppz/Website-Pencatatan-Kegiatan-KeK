@@ -54,7 +54,7 @@ export default async function PenggunaPage() {
     userWhere.role = { not: 'SUPER_ADMIN' };
   }
 
-  // Fetch users & 3 canonical teams
+  // Fetch users (with userTeams) & all teams in Biro 3
   const [users, dbTeams] = await withDbRetry(async () =>
     Promise.all([
       prisma.user.findMany({
@@ -83,34 +83,52 @@ export default async function PenggunaPage() {
               name: true,
             },
           },
+          userTeams: {
+            select: {
+              team: {
+                select: {
+                  id: true,
+                  code: true,
+                  name: true,
+                  isActive: true,
+                },
+              },
+            },
+          },
         },
         orderBy: [{ isActive: 'desc' }, { role: 'asc' }, { name: 'asc' }],
       }),
       prisma.biroTeam.findMany({
-        where: {
-          code: { in: ['INV', 'KS', 'KOM'] },
-          isActive: true,
+        include: {
+          _count: {
+            select: {
+              users: true,
+              userTeams: true,
+              primaryMeetings: true,
+            },
+          },
         },
-        select: { id: true, code: true, name: true, biroId: true },
+        orderBy: [{ isActive: 'desc' }, { code: 'asc' }],
       }),
     ])
   );
 
-  const teamOrder: Record<string, number> = { INV: 1, KS: 2, KOM: 3 };
-  const sortedTeams = dbTeams
-    .sort((a, b) => (teamOrder[a.code] || 99) - (teamOrder[b.code] || 99))
-    .map((t) => ({
-      id: t.id,
-      code: t.code,
-      name: t.name.startsWith('Tim ') ? t.name : `Tim ${t.name}`,
-      shortName: t.name.replace(/^Tim\s+/, ''),
-      biroId: t.biroId,
-    }));
+  const formattedTeams = dbTeams.map((t) => ({
+    id: t.id,
+    code: t.code,
+    name: t.name.startsWith('Tim ') ? t.name : `Tim ${t.name}`,
+    shortName: t.name.replace(/^Tim\s+/, ''),
+    description: t.description,
+    isActive: t.isActive,
+    biroId: t.biroId,
+    memberCount: Math.max(t._count.users, t._count.userTeams),
+    meetingCount: t._count.primaryMeetings,
+  }));
 
   return (
     <UserManagementView
-      initialUsers={users}
-      availableTeams={sortedTeams}
+      initialUsers={users as any}
+      availableTeams={formattedTeams}
       currentUserId={currentUser.id}
       currentUserRole={currentUser.role}
       currentUserTeamId={currentUser.teamId || undefined}

@@ -105,6 +105,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               isActive: true,
               teamId: true,
               team: { select: { id: true, code: true, name: true } },
+              userTeams: {
+                select: {
+                  team: { select: { id: true, code: true, name: true, isActive: true } },
+                },
+              },
               biro: { select: { id: true, code: true, shortName: true } },
             },
           });
@@ -114,6 +119,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.teamId = dbUser.teamId;
             token.teamCode = dbUser.team?.code;
             token.teamName = dbUser.team?.name;
+
+            const teamsMap = new Map<string, { id: string; code: string; name: string }>();
+            if (dbUser.team) {
+              teamsMap.set(dbUser.team.id, {
+                id: dbUser.team.id,
+                code: dbUser.team.code,
+                name: dbUser.team.name,
+              });
+            }
+            if (dbUser.userTeams) {
+              dbUser.userTeams.forEach((ut: any) => {
+                if (ut.team && ut.team.isActive) {
+                  teamsMap.set(ut.team.id, {
+                    id: ut.team.id,
+                    code: ut.team.code,
+                    name: ut.team.name,
+                  });
+                }
+              });
+            }
+            token.teams = Array.from(teamsMap.values());
+
             if (dbUser.biro) {
               token.biroId = dbUser.biro.id;
               token.biroCode = dbUser.biro.code;
@@ -138,6 +165,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.teamId = (token.teamId as string) || null;
         session.user.teamCode = (token.teamCode as string) || null;
         session.user.teamName = (token.teamName as string) || null;
+        session.user.teams = (token.teams as any) || [];
       }
       return session;
     },

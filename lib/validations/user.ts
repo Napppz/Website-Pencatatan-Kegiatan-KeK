@@ -14,6 +14,7 @@ export const createUserSchema = z.object({
   role: userRoleEnum.default('STAFF'),
   biroId: z.string().optional().default('BIRO-IKK'),
   teamId: z.string().optional().nullable(),
+  teamIds: z.array(z.string()).optional(),
   isActive: z.boolean().default(true),
 });
 
@@ -29,6 +30,7 @@ export const updateUserSchema = z.object({
   role: userRoleEnum,
   biroId: z.string().optional().default('BIRO-IKK'),
   teamId: z.string().optional().nullable(),
+  teamIds: z.array(z.string()).optional(),
   isActive: z.boolean().default(true),
 });
 

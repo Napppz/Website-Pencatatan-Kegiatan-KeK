@@ -12,6 +12,7 @@ declare module 'next-auth' {
       teamId?: string | null;
       teamCode?: string | null;
       teamName?: string | null;
+      teams?: { id: string; code: string; name: string }[];
     } & DefaultSession['user'];
   }
 
@@ -24,6 +25,7 @@ declare module 'next-auth' {
     teamId?: string | null;
     teamCode?: string | null;
     teamName?: string | null;
+    teams?: { id: string; code: string; name: string }[];
   }
 }
 
@@ -37,5 +39,6 @@ declare module 'next-auth/jwt' {
     teamId?: string | null;
     teamCode?: string | null;
     teamName?: string | null;
+    teams?: { id: string; code: string; name: string }[];
   }
 }

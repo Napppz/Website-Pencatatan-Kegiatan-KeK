@@ -67,6 +67,18 @@ export async function getUsersAction() {
             name: true,
           },
         },
+        userTeams: {
+          select: {
+            team: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+                isActive: true,
+              },
+            },
+          },
+        },
       },
       orderBy: [{ isActive: 'desc' }, { role: 'asc' }, { name: 'asc' }],
     });
@@ -137,6 +149,9 @@ export async function createUserAction(input: CreateUserInput) {
     // Hash password with bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const effectiveTeamIds = parsed.data.teamIds || (teamId ? [teamId] : []);
+    const primaryTeamId = effectiveTeamIds.length > 0 ? effectiveTeamIds[0] : (teamId || null);
+
     const nextUserId = await getNextUserId();
     const newUser = await prisma.user.create({
       data: {
@@ -146,7 +161,7 @@ export async function createUserAction(input: CreateUserInput) {
         password: hashedPassword,
         role,
         biroId,
-        teamId: teamId || null,
+        teamId: primaryTeamId,
         isActive,
       },
       select: {
@@ -163,9 +178,49 @@ export async function createUserAction(input: CreateUserInput) {
       },
     });
 
+    // Populate UserTeam relations if teamIds provided
+    if (effectiveTeamIds.length > 0) {
+      await prisma.userTeam.createMany({
+        data: effectiveTeamIds.map((tid) => ({
+          userId: nextUserId,
+          teamId: tid,
+          role: 'ANGGOTA',
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    const createdUserWithTeams = await prisma.user.findUnique({
+      where: { id: nextUserId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        biroId: true,
+        teamId: true,
+        isActive: true,
+        createdAt: true,
+        biro: true,
+        team: true,
+        userTeams: {
+          select: {
+            team: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+                isActive: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
     safeRevalidate(['/pengguna']);
 
-    return { success: true, data: newUser };
+    return { success: true, data: createdUserWithTeams || newUser };
   } catch (error: any) {
     console.error('Error creating user:', error);
     return { success: false, error: error?.message || 'Gagal membuat pengguna baru.' };
@@ -261,6 +316,26 @@ export async function updateUserAction(input: UpdateUserInput) {
       updateData.password = await bcrypt.hash(password, 10);
     }
 
+    if (parsed.data.teamIds !== undefined) {
+      const effectiveTeamIds = parsed.data.teamIds;
+      updateData.teamId = effectiveTeamIds.length > 0 ? effectiveTeamIds[0] : null;
+
+      await prisma.userTeam.deleteMany({
+        where: { userId: id },
+      });
+
+      if (effectiveTeamIds.length > 0) {
+        await prisma.userTeam.createMany({
+          data: effectiveTeamIds.map((tid) => ({
+            userId: id,
+            teamId: tid,
+            role: 'ANGGOTA',
+          })),
+          skipDuplicates: true,
+        });
+      }
+    }
+
     const updated = await prisma.user.update({
       where: { id },
       data: updateData,
@@ -276,6 +351,18 @@ export async function updateUserAction(input: UpdateUserInput) {
         updatedAt: true,
         biro: true,
         team: true,
+        userTeams: {
+          select: {
+            team: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+                isActive: true,
+              },
+            },
+          },
+        },
       },
     });
 

@@ -28,6 +28,7 @@ import {
   getMeetingOptionsAction,
   previewNextMeetingNumberAction,
 } from '@/app/actions/meeting-actions';
+import { getTeamsAction } from '@/app/actions/team-actions';
 import { toast } from '@/components/providers/toast-provider';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -108,19 +109,28 @@ export default function BuatRapatPage() {
   const isPrivileged = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
   const isStaff = userRole === 'STAFF';
 
-  // Deteksi tim kerja resmi staf jika login sebagai STAFF
-  const staffMatchedTeam = useMemo(() => {
-    if (session?.user?.role !== 'STAFF') return null;
-    const staffCode = session.user.teamCode?.toUpperCase();
-    const staffId = session.user.teamId;
-    return (
-      TIM_OPTIONS.find(
-        (t) =>
-          (staffId && t.id === staffId) ||
-          (staffCode && t.code.toUpperCase() === staffCode)
-      ) || null
+  // State daftar tim aktif dari database
+  const [teamsList, setTeamsList] = useState<any[]>(TIM_OPTIONS);
+
+  // Deteksi seluruh tim kerja staf jika login sebagai STAFF (bisa >1 tim)
+  const staffTeams = useMemo(() => {
+    if (session?.user?.role !== 'STAFF') return [];
+    const sessionTeams = (session?.user as any)?.teams;
+    if (Array.isArray(sessionTeams) && sessionTeams.length > 0) {
+      return sessionTeams.map((st: any) => {
+        const found = teamsList.find((t) => t.id === st.id || t.code === st.code);
+        return found || st;
+      });
+    }
+    const staffCode = session?.user?.teamCode?.toUpperCase();
+    const staffId = session?.user?.teamId;
+    const match = teamsList.find(
+      (t) =>
+        (staffId && t.id === staffId) ||
+        (staffCode && t.code.toUpperCase() === staffCode)
     );
-  }, [session]);
+    return match ? [match] : [];
+  }, [session, teamsList]);
 
   // Today string for date input
   const todayStr = (() => {
@@ -162,17 +172,31 @@ export default function BuatRapatPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Fetch initial teams (active only)
+  useEffect(() => {
+    getTeamsAction(false)
+      .then((res) => {
+        if (res.success && res.data && res.data.length > 0) {
+          setTeamsList(res.data);
+        }
+      })
+      .catch((err) => console.warn('Could not load teams:', err));
+  }, []);
+
   // Otomatis sinkronisasi tim kerja dengan tim staf begitu sesi tersedia
   useEffect(() => {
-    if (staffMatchedTeam && selectedTeamId !== staffMatchedTeam.id) {
-      setSelectedTeamId(staffMatchedTeam.id);
-      setIsManualNumber(false);
+    if (isStaff && staffTeams.length > 0) {
+      const isCurrentInStaffTeams = staffTeams.some((t: any) => t.id === selectedTeamId);
+      if (!isCurrentInStaffTeams) {
+        setSelectedTeamId(staffTeams[0].id);
+        setIsManualNumber(false);
+      }
     }
-  }, [staffMatchedTeam, selectedTeamId]);
+  }, [isStaff, staffTeams, selectedTeamId]);
 
   const currentTeam = useMemo(
-    () => TIM_OPTIONS.find((t) => t.id === selectedTeamId) || TIM_OPTIONS[0],
-    [selectedTeamId]
+    () => teamsList.find((t: any) => t.id === selectedTeamId) || teamsList[0] || TIM_OPTIONS[0],
+    [selectedTeamId, teamsList]
   );
 
   // Fetch initial data
@@ -218,19 +242,18 @@ export default function BuatRapatPage() {
     if (prevId) setPreviousMeetingId(prevId);
     if (paramTitle) setTitle(paramTitle);
     if (paramTim && session?.user?.role !== 'STAFF') {
-      const match = TIM_OPTIONS.find(
+      const match = teamsList.find(
         (t) => t.code.toUpperCase() === paramTim.toUpperCase() || t.id === paramTim
       );
       if (match) setSelectedTeamId(match.id);
     }
-  }, [searchParams, session]);
+  }, [searchParams, session, teamsList]);
 
   // Reset registration number to auto
   const handleResetToAutoNumber = () => {
     setIsManualNumber(false);
     setIsLoadingNumber(true);
-    const targetTeamId = isStaff && staffMatchedTeam ? staffMatchedTeam.id : selectedTeamId;
-    previewNextMeetingNumberAction('IKK', targetTeamId)
+    previewNextMeetingNumberAction('IKK', selectedTeamId)
       .then((res) => {
         if (res.success && res.data) {
           setRegistrationNumber(res.data);
@@ -438,26 +461,33 @@ export default function BuatRapatPage() {
               <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
                 {/* Team Selection List */}
                 <div className="md:col-span-7 space-y-2">
-                  <label className="block text-xs font-bold text-slate-700">
-                    Pilih Tim Kerja:
-                  </label>
-                  {isStaff && staffMatchedTeam ? (
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-700">
+                      Pilih Tim Kerja:
+                    </label>
+                    {isStaff && staffTeams.length > 1 && (
+                      <span className="text-[11px] text-[#1E6B7B] font-semibold bg-[#E8F5F7] px-2 py-0.5 rounded-md">
+                        {staffTeams.length} Tim Terdaftar
+                      </span>
+                    )}
+                  </div>
+                  {isStaff && staffTeams.length === 1 ? (
                     <div className="bg-[#E8F5F7] px-4 py-2.5 rounded-lg border border-[#BCE3EB] shadow-2xs flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
                         <span className="w-3 h-3 rounded-full flex items-center justify-center border border-[#1E6B7B] bg-[#1E6B7B]">
                           <span className="w-1 h-1 rounded-full bg-white" />
                         </span>
                         <span className="text-sm font-bold text-[#1E6B7B]">
-                          {staffMatchedTeam.name}
+                          {staffTeams[0].name}
                         </span>
                       </div>
                       <span className="text-xs font-mono px-2 py-0.5 rounded font-bold bg-[#1E6B7B] text-white">
-                        {staffMatchedTeam.code}
+                        {staffTeams[0].code}
                       </span>
                     </div>
                   ) : (
-                    <div className="bg-white p-1.5 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
-                      {TIM_OPTIONS.map((tim) => {
+                    <div className="bg-white p-1.5 rounded-xl border border-slate-200/90 shadow-2xs space-y-1 max-h-56 overflow-y-auto">
+                      {(isStaff ? staffTeams : teamsList).map((tim: any) => {
                         const isSelected = selectedTeamId === tim.id;
                         return (
                           <button
@@ -499,8 +529,10 @@ export default function BuatRapatPage() {
                     </div>
                   )}
                   <p className="text-[11px] text-slate-500">
-                    {isStaff && staffMatchedTeam
-                      ? `Nomor registrasi otomatis disesuaikan dengan tim kerja Anda (${staffMatchedTeam.name}).`
+                    {isStaff
+                      ? staffTeams.length > 1
+                        ? 'Anda terdaftar pada beberapa tim kerja. Klik tim kerja untuk menyesuaikan penomoran registrasi otomatis.'
+                        : `Nomor registrasi otomatis disesuaikan dengan tim kerja Anda (${staffTeams[0]?.name || 'Tim Kerja'}).`
                       : 'Pilih salah satu tim Biro 3 untuk penomoran registrasi & pengarsipan kegiatan.'}
                   </p>
                 </div>

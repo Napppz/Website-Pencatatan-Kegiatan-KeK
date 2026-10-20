@@ -20,6 +20,7 @@ import {
   Trash2,
   Loader2,
   Briefcase,
+  Layers,
 } from 'lucide-react';
 import { UserRole } from '@prisma/client';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ import {
   deleteUserAction,
 } from '@/app/actions/user-actions';
 import { toast, confirmModal } from '@/components/providers/toast-provider';
+import { TeamManagementPanel, TeamData } from '@/components/teams/team-management-panel';
 
 export interface TeamItem {
   id: string;
@@ -37,6 +39,10 @@ export interface TeamItem {
   name: string;
   shortName: string;
   biroId: string;
+  isActive?: boolean;
+  description?: string | null;
+  memberCount?: number;
+  meetingCount?: number;
 }
 
 const CANONICAL_TEAMS: TeamItem[] = [
@@ -65,6 +71,14 @@ interface UserItem {
     code: string;
     name: string;
   } | null;
+  userTeams?: {
+    team: {
+      id: string;
+      code: string;
+      name: string;
+      isActive: boolean;
+    };
+  }[];
 }
 
 interface UserManagementViewProps {
@@ -91,6 +105,7 @@ export function UserManagementView({
   currentUserBiroCode,
 }: UserManagementViewProps) {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'users' | 'teams'>('users');
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
   const [search, setSearch] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>('ALL');
@@ -127,6 +142,7 @@ export function UserManagementView({
   const [formPassword, setFormPassword] = useState('');
   const [formRole, setFormRole] = useState<UserRole>('STAFF');
   const [formTeamId, setFormTeamId] = useState<string>(defaultTeamId);
+  const [formTeamIds, setFormTeamIds] = useState<string[]>([defaultTeamId]);
   const [formIsActive, setFormIsActive] = useState(true);
 
   // Open Create Dialog
@@ -136,7 +152,9 @@ export function UserManagementView({
     setFormEmail('');
     setFormPassword('');
     setFormRole('STAFF');
-    setFormTeamId(myTeam?.id || currentUserTeamId || teamsList[0]?.id || 'TIM-001');
+    const initialTid = myTeam?.id || currentUserTeamId || teamsList[0]?.id || 'TIM-001';
+    setFormTeamId(initialTid);
+    setFormTeamIds([initialTid]);
     setFormIsActive(true);
     setFormError(null);
     setIsDialogOpen(true);
@@ -156,7 +174,11 @@ export function UserManagementView({
     const matchedTeam = teamsList.find(
       (t) => t.id === user.teamId || t.code === user.team?.code
     );
-    setFormTeamId(matchedTeam?.id || user.teamId || defaultTeamId);
+    const userTeamIds = user.userTeams && user.userTeams.length > 0
+      ? user.userTeams.map((ut) => ut.team.id)
+      : [matchedTeam?.id || user.teamId || defaultTeamId];
+    setFormTeamIds(userTeamIds);
+    setFormTeamId(userTeamIds[0] || defaultTeamId);
     setFormIsActive(user.isActive);
     setFormError(null);
     setIsDialogOpen(true);
@@ -168,8 +190,11 @@ export function UserManagementView({
     setIsSubmitting(true);
     setFormError(null);
 
-    const targetTeamId = isScopedAdmin ? (myTeam?.id || currentUserTeamId || formTeamId) : formTeamId;
-    const selectedTeamObj = teamsList.find((t) => t.id === targetTeamId);
+    const targetTeamIds = isScopedAdmin
+      ? (myTeam?.id ? [myTeam.id] : formTeamIds)
+      : (formRole === 'STAFF' ? formTeamIds : [formTeamId]);
+    const primaryTeamId = targetTeamIds[0] || formTeamId;
+    const selectedTeamObj = teamsList.find((t) => t.id === primaryTeamId);
     const resolvedBiroId = selectedTeamObj?.biroId || 'BIRO-IKK';
 
     try {
@@ -181,7 +206,8 @@ export function UserManagementView({
           password: formPassword || null,
           role: formRole,
           biroId: resolvedBiroId,
-          teamId: formTeamId,
+          teamId: primaryTeamId,
+          teamIds: targetTeamIds,
           isActive: formIsActive,
         });
 
@@ -202,7 +228,8 @@ export function UserManagementView({
           password: formPassword,
           role: formRole,
           biroId: resolvedBiroId,
-          teamId: formTeamId,
+          teamId: primaryTeamId,
+          teamIds: targetTeamIds,
           isActive: formIsActive,
         });
 
@@ -299,7 +326,12 @@ export function UserManagementView({
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       if (selectedRole !== 'ALL' && u.role !== selectedRole) return false;
-      if (selectedTeam !== 'ALL' && u.team?.code !== selectedTeam) return false;
+      if (selectedTeam !== 'ALL') {
+        const matchesTeam =
+          u.team?.code === selectedTeam ||
+          u.userTeams?.some((ut) => ut.team?.code === selectedTeam);
+        if (!matchesTeam) return false;
+      }
 
       if (!search.trim()) return true;
       const q = search.toLowerCase();
@@ -307,7 +339,12 @@ export function UserManagementView({
         u.name.toLowerCase().includes(q) ||
         u.email.toLowerCase().includes(q) ||
         u.team?.code?.toLowerCase().includes(q) ||
-        u.team?.name?.toLowerCase().includes(q)
+        u.team?.name?.toLowerCase().includes(q) ||
+        u.userTeams?.some(
+          (ut) =>
+            ut.team?.code?.toLowerCase().includes(q) ||
+            ut.team?.name?.toLowerCase().includes(q)
+        )
       );
     });
   }, [users, selectedRole, selectedTeam, search]);
@@ -344,35 +381,96 @@ export function UserManagementView({
 
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <span className="font-semibold text-[12px] text-[#31889C] uppercase tracking-wider block">
-            {isScopedAdmin
-              ? `Administrasi Tim Kerja (${myTeam?.name || currentUserTeamName || 'Tim Anda'})`
-              : 'Administrasi & Akses Sistem'}
-          </span>
-          <h1 className="text-[24px] font-bold text-slate-900 mt-0.5">
-            {isScopedAdmin
-              ? `Manajemen Anggota ${myTeam?.name || currentUserTeamName || 'Tim Kerja'}`
-              : 'Manajemen Pengguna & Hak Akses'}
-          </h1>
-          <p className="text-[13px] text-slate-500 mt-1">
-            {isScopedAdmin
-              ? `Kelola daftar anggota tim kerja, tambahkan personel staf baru, dan kelola akun pada ${myTeam?.name || currentUserTeamName || 'tim Anda'}.`
-              : 'Kelola akun kedinasan, peran pengguna (RBAC), penempatan tim kerja, dan status keaktifan user.'}
-          </p>
-        </div>
+      {/* Super Admin Top Navigation Tabs */}
+      {currentUserRole === 'SUPER_ADMIN' && (
+        <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+          <button
+            type="button"
+            onClick={() => setActiveTab('users')}
+            className={cn(
+              "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-bold transition-all cursor-pointer",
+              activeTab === 'users'
+                ? "bg-[#31889C] text-white shadow-xs"
+                : "bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200"
+            )}
+          >
+            <Users className="w-4 h-4" />
+            <span>Manajemen Pengguna &amp; Staf</span>
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded-full text-[11px] font-bold",
+                activeTab === 'users'
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-100 text-slate-600"
+              )}
+            >
+              {users.length}
+            </span>
+          </button>
 
-        <button
-          type="button"
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#31889C] hover:bg-[#266F80] text-white font-semibold text-[13px] shadow-xs transition-all cursor-pointer shrink-0"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>{isScopedAdmin ? 'Tambah Anggota Tim' : 'Tambah Pengguna Baru'}</span>
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('teams')}
+            className={cn(
+              "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-bold transition-all cursor-pointer",
+              activeTab === 'teams'
+                ? "bg-[#31889C] text-white shadow-xs"
+                : "bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200"
+            )}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Kelola Tim Kerja Biro 3</span>
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded-full text-[11px] font-bold",
+                activeTab === 'teams'
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-100 text-slate-600"
+              )}
+            >
+              {teamsList.length}
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* Tab Content: Kelola Tim Kerja */}
+      {activeTab === 'teams' && currentUserRole === 'SUPER_ADMIN' ? (
+        <TeamManagementPanel
+          initialTeams={availableTeams as TeamData[]}
+          currentUserRole={currentUserRole}
+        />
+      ) : (
+        <>
+          {/* Header */}
+          <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span className="font-semibold text-[12px] text-[#31889C] uppercase tracking-wider block">
+                {isScopedAdmin
+                  ? `Administrasi Tim Kerja (${myTeam?.name || currentUserTeamName || 'Tim Anda'})`
+                  : 'Administrasi & Akses Sistem'}
+              </span>
+              <h1 className="text-[24px] font-bold text-slate-900 mt-0.5">
+                {isScopedAdmin
+                  ? `Manajemen Anggota ${myTeam?.name || currentUserTeamName || 'Tim Kerja'}`
+                  : 'Manajemen Pengguna & Hak Akses'}
+              </h1>
+              <p className="text-[13px] text-slate-500 mt-1">
+                {isScopedAdmin
+                  ? `Kelola daftar anggota tim kerja, tambahkan personel staf baru, dan kelola akun pada ${myTeam?.name || currentUserTeamName || 'tim Anda'}.`
+                  : 'Kelola akun kedinasan, peran pengguna (RBAC), penempatan tim kerja, dan status keaktifan user.'}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleOpenCreate}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#31889C] hover:bg-[#266F80] text-white font-semibold text-[13px] shadow-xs transition-all cursor-pointer shrink-0"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>{isScopedAdmin ? 'Tambah Anggota Tim' : 'Tambah Pengguna Baru'}</span>
+            </button>
+          </div>
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -490,7 +588,32 @@ export function UserManagementView({
 
                     {/* Tim Kerja */}
                     <td className="py-3.5 px-4">
-                      {user.team ? (
+                      {user.userTeams && user.userTeams.length > 0 ? (
+                        <div className="flex flex-wrap items-center gap-1.5 max-w-xs">
+                          {user.userTeams.map((ut) => (
+                            <span
+                              key={ut.team.id}
+                              className={cn(
+                                "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold border transition-all",
+                                ut.team.code === 'INV'
+                                  ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                  : ut.team.code === 'KS'
+                                  ? "bg-indigo-50 text-indigo-800 border-indigo-200"
+                                  : ut.team.code === 'KOM'
+                                  ? "bg-amber-50 text-amber-800 border-amber-200"
+                                  : "bg-[#E8F5F7] text-[#1E6B7B] border-[#BCE3EB]"
+                              )}
+                              title={ut.team.name}
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
+                              <span>{ut.team.code}</span>
+                              <span className="text-[10px] opacity-75 font-normal hidden sm:inline">
+                                ({ut.team.name.replace(/^Tim\s+/, '')})
+                              </span>
+                            </span>
+                          ))}
+                        </div>
+                      ) : user.team ? (
                         <div className="flex flex-col">
                           <span
                             className={cn(
@@ -720,10 +843,16 @@ export function UserManagementView({
                 </div>
 
                 {/* Tim Kerja */}
-                <div>
-                  <label className="block font-bold text-slate-800 mb-1">
-                    Tim Kerja <span className="text-red-500">*</span>
-                  </label>
+                <div className="sm:col-span-2">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block font-bold text-slate-800">
+                      Penugasan Tim Kerja <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-[11px] text-[#31889C] font-semibold">
+                      {formRole === 'STAFF' ? 'Staf dapat ditugaskan ke lebih dari 1 tim' : 'Pilih tim penugasan utama'}
+                    </span>
+                  </div>
+
                   {isScopedAdmin ? (
                     <div className="px-3 py-2 rounded-lg border border-[#BCE3EB] bg-[#F0F9FA] text-[#31889C] font-semibold text-[13px] flex items-center justify-between">
                       <span>{myTeam?.name || currentUserTeamName || 'Tim Kerja Anda'}</span>
@@ -731,13 +860,60 @@ export function UserManagementView({
                         Terkunci Sesuai Tim
                       </span>
                     </div>
+                  ) : formRole === 'STAFF' ? (
+                    <div className="space-y-2 p-3 rounded-xl border border-slate-200 bg-slate-50/70">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {teamsList.filter((t) => t.isActive !== false).map((t) => {
+                          const isChecked = formTeamIds.includes(t.id);
+                          return (
+                            <label
+                              key={t.id}
+                              className={cn(
+                                "flex items-center gap-2.5 p-2.5 rounded-lg border text-xs cursor-pointer transition-all select-none",
+                                isChecked
+                                  ? "bg-[#E8F5F7] border-[#31889C] text-[#1E6B7B] shadow-2xs font-bold"
+                                  : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                              )}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFormTeamIds((prev) => [...prev, t.id]);
+                                    if (!formTeamId) setFormTeamId(t.id);
+                                  } else {
+                                    if (formTeamIds.length > 1) {
+                                      setFormTeamIds((prev) => prev.filter((id) => id !== t.id));
+                                    } else {
+                                      toast.warning('Staf harus terdaftar minimal pada 1 tim kerja.');
+                                    }
+                                  }
+                                }}
+                                className="w-4 h-4 rounded text-[#31889C] focus:ring-[#31889C] cursor-pointer"
+                              />
+                              <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-800 font-bold">
+                                {t.code}
+                              </span>
+                              <span className="truncate">{t.name}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <p className="text-[11px] text-slate-500 pt-0.5">
+                        Centang satu atau beberapa tim kerja sekaligus. Penomoran dan akses notulensi akan tersedia untuk semua tim yang dipilih.
+                      </p>
+                    </div>
                   ) : (
                     <select
                       value={formTeamId}
-                      onChange={(e) => setFormTeamId(e.target.value)}
+                      onChange={(e) => {
+                        setFormTeamId(e.target.value);
+                        setFormTeamIds([e.target.value]);
+                      }}
                       className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#31889C]/30 focus:border-[#31889C] bg-white font-medium text-slate-800 text-[13px] cursor-pointer"
                     >
-                      {teamsList.map((t) => (
+                      {teamsList.filter((t) => t.isActive !== false).map((t) => (
                         <option key={t.id} value={t.id}>
                           {t.code} — {t.name}
                         </option>
@@ -791,6 +967,8 @@ export function UserManagementView({
             </form>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

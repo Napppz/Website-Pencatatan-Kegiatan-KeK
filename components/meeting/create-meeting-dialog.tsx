@@ -23,6 +23,7 @@ import {
   createMeetingAction,
   previewNextMeetingNumberAction,
 } from '@/app/actions/meeting-actions';
+import { getTeamsAction } from '@/app/actions/team-actions';
 import { cn } from '@/lib/utils';
 import { MultiPicSelector, PicOptionUser } from './pic-selector';
 import { JENIS_KEGIATAN_OPTIONS, TIM_OPTIONS } from '@/app/buat-rapat/page';
@@ -40,19 +41,28 @@ export function CreateMeetingDialog({ isOpen, onClose, onSuccess }: CreateMeetin
   const canCreate = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
   const isStaff = userRole === 'STAFF';
 
-  // Deteksi tim staf
-  const staffMatchedTeam = useMemo(() => {
-    if (session?.user?.role !== 'STAFF') return null;
-    const staffCode = session.user.teamCode?.toUpperCase();
-    const staffId = session.user.teamId;
-    return (
-      TIM_OPTIONS.find(
-        (t) =>
-          (staffId && t.id === staffId) ||
-          (staffCode && t.code.toUpperCase() === staffCode)
-      ) || null
+  // Dynamic active teams from database
+  const [teamsList, setTeamsList] = useState<any[]>(TIM_OPTIONS);
+
+  // Deteksi seluruh tim kerja staf jika login sebagai STAFF (bisa >1 tim)
+  const staffTeams = useMemo(() => {
+    if (session?.user?.role !== 'STAFF') return [];
+    const sessionTeams = (session?.user as any)?.teams;
+    if (Array.isArray(sessionTeams) && sessionTeams.length > 0) {
+      return sessionTeams.map((st: any) => {
+        const found = teamsList.find((t) => t.id === st.id || t.code === st.code);
+        return found || st;
+      });
+    }
+    const staffCode = session?.user?.teamCode?.toUpperCase();
+    const staffId = session?.user?.teamId;
+    const match = teamsList.find(
+      (t) =>
+        (staffId && t.id === staffId) ||
+        (staffCode && t.code.toUpperCase() === staffCode)
     );
-  }, [session]);
+    return match ? [match] : [];
+  }, [session, teamsList]);
 
   const todayStr = (() => {
     const d = new Date();
@@ -87,32 +97,37 @@ export function CreateMeetingDialog({ isOpen, onClose, onSuccess }: CreateMeetin
   const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // Sync staff team
-  useEffect(() => {
-    if (staffMatchedTeam && selectedTeamId !== staffMatchedTeam.id) {
-      setSelectedTeamId(staffMatchedTeam.id);
-      setIsManualNumber(false);
-    }
-  }, [staffMatchedTeam, selectedTeamId]);
-
-  // Load users when modal opens
+  // Load teams & users when modal opens
   useEffect(() => {
     if (isOpen) {
+      getTeamsAction(false).then((res) => {
+        if (res.success && res.data && res.data.length > 0) setTeamsList(res.data);
+      });
       getActiveUsersAction().then((res) => {
         if (res.success && res.data) setAvailableUsers(res.data);
       });
     }
   }, [isOpen]);
 
+  // Sync staff team
+  useEffect(() => {
+    if (isStaff && staffTeams.length > 0) {
+      const isCurrentInStaffTeams = staffTeams.some((t: any) => t.id === selectedTeamId);
+      if (!isCurrentInStaffTeams) {
+        setSelectedTeamId(staffTeams[0].id);
+        setIsManualNumber(false);
+      }
+    }
+  }, [isStaff, staffTeams, selectedTeamId]);
+
   // Update preview number
   useEffect(() => {
     if (isOpen && !isManualNumber) {
-      const targetTeam = isStaff && staffMatchedTeam ? staffMatchedTeam.id : selectedTeamId;
-      previewNextMeetingNumberAction('IKK', targetTeam).then((res) => {
+      previewNextMeetingNumberAction('IKK', selectedTeamId).then((res) => {
         if (res.success && res.data) setRegistrationNumber(res.data);
       });
     }
-  }, [isOpen, selectedTeamId, isManualNumber, isStaff, staffMatchedTeam]);
+  }, [isOpen, selectedTeamId, isManualNumber]);
 
   // Close on Escape key
   useEffect(() => {
@@ -125,7 +140,7 @@ export function CreateMeetingDialog({ isOpen, onClose, onSuccess }: CreateMeetin
 
   if (!isOpen || !canCreate) return null;
 
-  const currentTeam = TIM_OPTIONS.find((t) => t.id === selectedTeamId) || TIM_OPTIONS[0];
+  const currentTeam = teamsList.find((t: any) => t.id === selectedTeamId) || teamsList[0] || TIM_OPTIONS[0];
 
   const handleTogglePic = (user: PicOptionUser) => {
     setSelectedPicIds((prev) => {
@@ -246,8 +261,7 @@ export function CreateMeetingDialog({ isOpen, onClose, onSuccess }: CreateMeetin
                 type="button"
                 onClick={() => {
                   setIsManualNumber(false);
-                  const targetTeam = isStaff && staffMatchedTeam ? staffMatchedTeam.id : selectedTeamId;
-                  previewNextMeetingNumberAction('IKK', targetTeam).then((res) => {
+                  previewNextMeetingNumberAction('IKK', selectedTeamId).then((res) => {
                     if (res.success && res.data) setRegistrationNumber(res.data);
                   });
                 }}
@@ -263,11 +277,28 @@ export function CreateMeetingDialog({ isOpen, onClose, onSuccess }: CreateMeetin
                 <label className="block text-[11px] font-semibold text-slate-600 mb-1">
                   Pilih Tim Biro 3:
                 </label>
-                {isStaff && staffMatchedTeam ? (
-                  <div className="px-3 h-[38px] rounded-lg bg-[#E8F5F7] border border-[#BCE3EB] text-[#1E6B7B] text-xs font-bold flex items-center justify-between">
-                    <span>{staffMatchedTeam.name}</span>
-                    <span className="font-mono">{staffMatchedTeam.code}</span>
-                  </div>
+                {isStaff ? (
+                  staffTeams.length === 1 ? (
+                    <div className="px-3 h-[38px] rounded-lg bg-[#E8F5F7] border border-[#BCE3EB] text-[#1E6B7B] text-xs font-bold flex items-center justify-between">
+                      <span>{staffTeams[0].name}</span>
+                      <span className="font-mono">{staffTeams[0].code}</span>
+                    </div>
+                  ) : (
+                    <select
+                      value={selectedTeamId}
+                      onChange={(e) => {
+                        setSelectedTeamId(e.target.value);
+                        setIsManualNumber(false);
+                      }}
+                      className="w-full px-3 h-[38px] rounded-lg border border-[#31889C] bg-[#E8F5F7] text-[#1E6B7B] text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#31889C]/20"
+                    >
+                      {staffTeams.map((t: any) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name} ({t.code})
+                        </option>
+                      ))}
+                    </select>
+                  )
                 ) : (
                   <select
                     value={selectedTeamId}
@@ -277,7 +308,7 @@ export function CreateMeetingDialog({ isOpen, onClose, onSuccess }: CreateMeetin
                     }}
                     className="w-full px-3 h-[38px] rounded-lg border border-slate-300 bg-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#1E6B7B]/20"
                   >
-                    {TIM_OPTIONS.map((t) => (
+                    {teamsList.map((t: any) => (
                       <option key={t.id} value={t.id}>
                         {t.name} ({t.code})
                       </option>
