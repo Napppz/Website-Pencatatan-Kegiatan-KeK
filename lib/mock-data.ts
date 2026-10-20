@@ -43,9 +43,9 @@ export const BIRO_LIST: Biro[] = [
 export const MOCK_METRICS: DashboardMetric[] = [
   {
     id: 'total-rapat',
-    label: 'Total Rapat (YTD)',
+    label: 'Total Kegiatan (YTD)',
     value: 148,
-    unit: 'Rapat',
+    unit: 'Kegiatan',
     changeValue: '+12%',
     changeLabel: 'vs bulan lalu',
     variant: 'default',
@@ -53,9 +53,9 @@ export const MOCK_METRICS: DashboardMetric[] = [
   },
   {
     id: 'rapat-bulan-ini',
-    label: 'Rapat Bulan Ini',
+    label: 'Kegiatan Bulan Ini',
     value: 28,
-    unit: 'Agenda',
+    unit: 'Kegiatan',
     badgeText: '6 Prioritas',
     badgeSubtext: 'Strategis Nasional',
     variant: 'default',

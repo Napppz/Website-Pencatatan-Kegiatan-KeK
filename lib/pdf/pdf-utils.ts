@@ -111,7 +111,7 @@ export function formatIndonesianDate(d: Date | string | undefined | null): strin
 }
 
 /**
- * Format rentang waktu rapat (Contoh: "08.00 WIB - selesai" atau "13.00 – 15.00 WIB")
+ * Format rentang waktu kegiatan (Contoh: "08.00 WIB - selesai" atau "13.00 – 15.00 WIB")
  */
 export function normalizeTime(start?: string | null, end?: string | null): string {
   const s = (start || '').replace(/WIB/gi, '').replace(':', '.').trim();
@@ -232,13 +232,13 @@ export function resolveNotaDinasData(meeting?: any, minutes?: any) {
 
   const defaultSender =
     meeting?.chairperson?.name
-      ? `Ketua Sidang (${meeting.chairperson.name})`
+      ? `Pimpinan Kegiatan (${meeting.chairperson.name})`
       : 'Kepala Bagian Program dan Tata Kelola';
   const sender = (notaObj.sender || defaultSender).trim();
 
   const subject = (
     notaObj.subject ||
-    (meeting?.title ? `Laporan Kegiatan ${meeting.title}` : 'Laporan Kegiatan Rapat')
+    (meeting?.title ? `Laporan Hasil Kegiatan ${meeting.title}` : 'Laporan Hasil Kegiatan')
   ).trim();
 
   const rawDate = meeting?.date ? new Date(meeting.date) : null;
@@ -256,7 +256,7 @@ export function resolveNotaDinasData(meeting?: any, minutes?: any) {
 
   const attachments = (notaObj.attachments || '1 (satu) berkas').trim();
 
-  const defaultIntro = `Menindaklanjuti pelaksanaan rapat ${meeting?.title || ''} yang diselenggarakan pada ${formatIndonesianDate(meeting?.date)}${meeting?.location ? ` bertempat di ${meeting.location}` : ''}, bersama ini kami sampaikan laporan pokok-pokok pembahasan sebagai berikut:`;
+  const defaultIntro = `Menindaklanjuti pelaksanaan kegiatan ${meeting?.title || ''} yang diselenggarakan pada ${formatIndonesianDate(meeting?.date)}${meeting?.location ? ` bertempat di ${meeting.location}` : ''}, bersama ini kami sampaikan laporan pokok-pokok pembahasan sebagai berikut:`;
   const introText = (notaObj.introText || defaultIntro).trim();
 
   const signerRole = (notaObj.signerRole || sender || 'Kepala Bagian Program dan Tata Kelola').trim();

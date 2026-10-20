@@ -245,9 +245,9 @@ export function BiroDashboardClient({
     return [
       {
         id: 'total-rapat',
-        label: `AGENDA RAPAT ${biro.code}`,
+        label: `AGENDA KEGIATAN ${biro.code}`,
         value: yearMeetings.length,
-        unit: 'Rapat',
+        unit: 'Kegiatan',
         changeValue: `${ytdMeetings.length}/${yearMeetings.length || 1}`,
         changeLabel: `s/d ${selectedMonth || 'Tahun'} ${selectedYear}`,
         variant: 'default',
@@ -255,7 +255,7 @@ export function BiroDashboardClient({
       },
       {
         id: 'rapat-bulan-ini',
-        label: `RAPAT BULAN ${fullMonthName ? fullMonthName.toUpperCase() : 'BERJALAN'}`,
+        label: `KEGIATAN BULAN ${fullMonthName ? fullMonthName.toUpperCase() : 'BERJALAN'}`,
         value: totalMonth,
         unit: 'Agenda',
         badgeText: totalMonth > 0 ? `${approvedMonth} Sah` : '0 Agenda',
@@ -476,7 +476,7 @@ export function BiroDashboardClient({
 
             {/* Subtitle / Description */}
             <p className="text-[13.5px] text-slate-600 max-w-3xl leading-relaxed">
-              {biro.description || 'Pusat pemantauan agenda rapat koordinasi resmi, risalah keputusan sidang, serta realisasi tindak lanjut komitmen penugasan unit kerja Sekretariat Dewan Nasional Kawasan Ekonomi Khusus.'}
+              {biro.description || 'Pusat pemantauan agenda kegiatan koordinasi resmi, risalah hasil kegiatan, serta realisasi tindak lanjut komitmen penugasan unit kerja Sekretariat Dewan Nasional Kawasan Ekonomi Khusus.'}
             </p>
 
             {/* Quick stats strip */}
@@ -496,7 +496,7 @@ export function BiroDashboardClient({
               </span>
               <span>•</span>
               <span className="font-medium">
-                Total Rapat Diselenggarakan:{' '}
+                Total Kegiatan Diselenggarakan:{' '}
                 <strong className="text-[#31889C]">{initialMeetings.length} Agenda</strong>
               </span>
             </div>
@@ -510,7 +510,7 @@ export function BiroDashboardClient({
                 className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#31889C] text-white hover:bg-[#266F80] transition-all shadow-xs font-semibold text-[12.5px] cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
-                <span>+ Jadwalkan Rapat</span>
+                <span>+ Catat Kegiatan</span>
               </Link>
             )}
 
@@ -573,16 +573,16 @@ export function BiroDashboardClient({
         />
       </div>
 
-      {/* 6. Daftar Rapat & Risalah Khusus Biro */}
+      {/* 6. Daftar Kegiatan & Hasil Khusus Biro */}
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-[18px] font-bold text-slate-900 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-[#31889C]" />
-              Agenda &amp; Risalah Rapat {biro.name}
+              Agenda &amp; Hasil Kegiatan {biro.name}
             </h2>
             <p className="text-[12.5px] text-slate-500">
-              Daftar seluruh agenda persidangan yang diselenggarakan di bawah koordinasi {biro.shortName}
+              Daftar seluruh agenda kegiatan yang diselenggarakan di bawah koordinasi {biro.shortName}
             </p>
           </div>
 

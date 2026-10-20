@@ -48,7 +48,7 @@ export function MeetingStatusGuideDialog({ isOpen, onClose }: MeetingStatusGuide
             </div>
             <div>
               <h3 className="font-bold text-[16px] text-slate-900">
-                Panduan Alur Status Risalah Rapat
+                Panduan Alur Status Risalah Kegiatan
               </h3>
               <p className="text-[12px] text-slate-500">
                 Siklus 4 tahap perumusan notula resmi di lingkungan Sekretariat Dewan Nasional KEK
@@ -85,7 +85,7 @@ export function MeetingStatusGuideDialog({ isOpen, onClose }: MeetingStatusGuide
                       <span>Disetujui (Validasi Pimpinan)</span>
                     </div>
                     <p className="text-slate-600 leading-relaxed text-[11.5px]">
-                      <strong>Materi risalah sudah tuntas disepakati</strong> dan disetujui secara substansi oleh Pimpinan Sidang / Sekretaris KEK, namun naskah fisik/elektronik masih dalam proses penomoran dinas atau persiapan tanda tangan resmi.
+                      <strong>Materi risalah sudah tuntas disepakati</strong> dan disetujui secara substansi oleh Pimpinan / Sekretaris KEK, namun naskah fisik/elektronik masih dalam proses penomoran dinas atau persiapan tanda tangan resmi.
                     </p>
                   </div>
 
@@ -107,7 +107,7 @@ export function MeetingStatusGuideDialog({ isOpen, onClose }: MeetingStatusGuide
           <div>
             <h4 className="font-bold text-[13px] text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#31889C]" />
-              <span>Linimasa 4 Tahapan Siklus Hidup Risalah</span>
+              <span>Linimasa 4 Tahapan Siklus Hidup Risalah Kegiatan</span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -171,7 +171,7 @@ export function MeetingStatusGuideDialog({ isOpen, onClose }: MeetingStatusGuide
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-[#31889C]" />
               <span className="text-slate-600">
-                <strong>Hak Mengubah Status:</strong> Hanya <strong>Super Admin</strong>, <strong>Administrator</strong>, dan <strong>Notulis Sidang</strong> yang dapat memajukan tahapan risalah rapat.
+                <strong>Hak Mengubah Status:</strong> Hanya <strong>Super Admin</strong>, <strong>Administrator</strong>, dan <strong>Notulis Kegiatan</strong> yang dapat memajukan tahapan risalah kegiatan.
               </span>
             </div>
             <button

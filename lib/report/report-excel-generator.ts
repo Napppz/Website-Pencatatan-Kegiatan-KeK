@@ -16,8 +16,8 @@ export async function generateReportExcel(
   data: ReportSummaryResult
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'Log Book Notula Rapat KEK RI';
-  workbook.lastModifiedBy = 'Log Book Notula Rapat KEK RI';
+  workbook.creator = 'Log Book Catatan Kegiatan KEK RI';
+  workbook.lastModifiedBy = 'Log Book Catatan Kegiatan KEK RI';
   workbook.created = new Date();
   workbook.modified = new Date();
 
@@ -64,7 +64,7 @@ export async function generateReportExcel(
   // Title block
   s1.mergeCells('B2:E2');
   const titleCell = s1.getCell('B2');
-  titleCell.value = 'LAPORAN BERKALA AKTIVITAS RAPAT & TINDAK LANJUT';
+  titleCell.value = 'LAPORAN BERKALA AKTIVITAS KEGIATAN & TINDAK LANJUT';
   titleCell.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0F172A' } };
 
   s1.mergeCells('B3:E3');
@@ -109,15 +109,15 @@ export async function generateReportExcel(
   });
 
   const kpiData = [
-    ['Total Rapat Diselenggarakan', data.kpi.totalMeetings, 'Kegiatan Rapat'],
+    ['Total Kegiatan Diselenggarakan', data.kpi.totalMeetings, 'Kegiatan'],
     ['Total Butir Tindak Lanjut', data.kpi.totalActionItems, 'Butir Rekomendasi/Tugas'],
     ['Tindak Lanjut Selesai (Completed)', data.kpi.completedActionItems, 'Butir Terselesaikan'],
     ['Tindak Lanjut Berjalan (In Progress)', data.kpi.inProgressActionItems, 'Butir Dalam Pengerjaan'],
     ['Tindak Lanjut Menunggu (Pending)', data.kpi.pendingActionItems, 'Butir Belum Dimulai'],
     ['Tindak Lanjut Terlambat (Overdue)', data.kpi.overdueActionItems, 'Butir Melewati Tenggat'],
     ['Tingkat Penyelesaian (Completion Rate)', data.kpi.completionRate / 100, 'Persentase Efektivitas'],
-    ['Rapat dengan Notulen Resmi', data.kpi.meetingsWithMinutes, 'Dokumen Tersedia'],
-    ['Rapat Belum Ada Notulen', data.kpi.meetingsWithoutMinutes, 'Menunggu Pengisian Notulis'],
+    ['Kegiatan dengan Catatan Resmi', data.kpi.meetingsWithMinutes, 'Dokumen Tersedia'],
+    ['Kegiatan Belum Ada Catatan', data.kpi.meetingsWithoutMinutes, 'Menunggu Pengisian Catatan'],
   ];
 
   kpiData.forEach((row, idx) => {
@@ -166,7 +166,7 @@ export async function generateReportExcel(
 
   const s2Headers = [
     'Biro',
-    'Total Rapat',
+    'Total Kegiatan',
     'Total Tindak Lanjut',
     'Menunggu',
     'Berjalan',
@@ -266,12 +266,12 @@ export async function generateReportExcel(
 
   s3.mergeCells('A1:E1');
   const s3Title = s3.getCell('A1');
-  s3Title.value = `TREN DISTRIBUSI AKTIVITAS RAPAT & TINDAK LANJUT — ${data.period.label.toUpperCase()}`;
+  s3Title.value = `TREN DISTRIBUSI AKTIVITAS KEGIATAN & TINDAK LANJUT — ${data.period.label.toUpperCase()}`;
   s3Title.font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FF0F172A' } };
 
   const s3Headers = [
     'Periode',
-    'Total Rapat',
+    'Total Kegiatan',
     'Tindak Lanjut',
     'Selesai',
     'Terlambat',
@@ -331,22 +331,22 @@ export async function generateReportExcel(
   // ═══════════════════════════════════════════════════════════════════════════
   // SHEET 4: RAPAT
   // ═══════════════════════════════════════════════════════════════════════════
-  const s4 = workbook.addWorksheet('Rapat', {
+  const s4 = workbook.addWorksheet('Kegiatan', {
     views: [{ state: 'frozen', ySplit: 3, showGridLines: true }],
   });
 
   s4.mergeCells('A1:F1');
   const s4Title = s4.getCell('A1');
-  s4Title.value = `DAFTAR RAPAT DAN KETERSEDIAAN NOTULEN — ${data.period.label.toUpperCase()}`;
+  s4Title.value = `DAFTAR KEGIATAN DAN KETERSEDIAAN CATATAN — ${data.period.label.toUpperCase()}`;
   s4Title.font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FF0F172A' } };
 
   const s4Headers = [
     'No',
-    'Nomor Rapat',
-    'Judul Rapat',
+    'Nomor Kegiatan',
+    'Judul Kegiatan',
     'Tanggal',
     'Biro',
-    'Notulen',
+    'Catatan',
   ];
 
   const s4HeaderRow = s4.getRow(3);

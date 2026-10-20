@@ -220,11 +220,11 @@ export function SearchableMeetingSelect({
             {isLocked ? (
               <span className="text-[11px] font-semibold text-[#215865] bg-[#E8F5F7] px-2.5 py-1 rounded-md border border-[#BCE3EB] flex items-center gap-1 shadow-2xs">
                 <Lock className="w-3.5 h-3.5 text-[#31889C]" />
-                <span>Rapat Terkait</span>
+                <span>Kegiatan Terkait</span>
               </span>
             ) : (
               <span className="text-[11px] font-bold text-[#31889C] bg-[#E8F5F7] px-2.5 py-1 rounded-md border border-[#BCE3EB] group-hover:bg-[#31889C] group-hover:text-white transition-colors flex items-center gap-1">
-                {isOpen ? 'Tutup' : 'Ganti Rapat'}
+                {isOpen ? 'Tutup' : 'Ganti Kegiatan'}
                 {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </span>
             )}
@@ -242,7 +242,7 @@ export function SearchableMeetingSelect({
           <div className="flex items-center gap-2 text-[13px]">
             <Search className="w-4 h-4 text-[#31889C]" />
             <span className="font-medium">
-              {isLoading ? 'Memuat daftar rapat...' : 'Klik untuk mencari dan memilih rapat...'}
+              {isLoading ? 'Memuat daftar kegiatan...' : 'Klik untuk mencari dan memilih kegiatan...'}
             </span>
           </div>
           <ChevronDown className="w-4 h-4 text-slate-400" />
@@ -261,7 +261,7 @@ export function SearchableMeetingSelect({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari kode (IKK-023), agenda rapat, atau tanggal..."
+                placeholder="Cari kode (IKK-023), agenda kegiatan, atau tanggal..."
                 className="w-full pl-9 pr-8 py-2 rounded-lg border border-slate-200 bg-white text-[13px] font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#31889C]/30 focus:border-[#31889C]"
               />
               {searchQuery && (
@@ -342,7 +342,7 @@ export function SearchableMeetingSelect({
           {/* 3. Result Count & Quick Reset */}
           <div className="px-3 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
             <span>
-              Menampilkan <strong className="text-slate-800">{filteredMeetings.length}</strong> dari {meetings.length} rapat
+              Menampilkan <strong className="text-slate-800">{filteredMeetings.length}</strong> dari {meetings.length} kegiatan
             </span>
             {(searchQuery || selectedBiroFilter !== 'ALL') && (
               <button
@@ -420,18 +420,18 @@ export function SearchableMeetingSelect({
             ) : (
               <div className="p-8 text-center text-slate-500">
                 <AlertCircle className="w-7 h-7 mx-auto mb-2 text-slate-400" />
-                <p className="font-semibold text-[13px] text-slate-700">Tidak ada rapat ditemukan</p>
+                <p className="font-semibold text-[13px] text-slate-700">Tidak ada kegiatan ditemukan</p>
                 <p className="text-[11px] text-slate-400 mt-1 max-w-xs mx-auto">
                   {searchQuery
-                    ? `Tidak ditemukan rapat dengan kata kunci "${searchQuery}". Coba kata kunci lain atau reset filter.`
-                    : 'Tidak ada rapat untuk filter biro ini.'}
+                    ? `Tidak ditemukan kegiatan dengan kata kunci "${searchQuery}". Coba kata kunci lain atau reset filter.`
+                    : 'Tidak ada kegiatan untuk filter biro ini.'}
                 </p>
                 <button
                   type="button"
                   onClick={handleResetSearch}
                   className="mt-3 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition-colors cursor-pointer"
                 >
-                  Tampilkan Semua Rapat
+                  Tampilkan Semua Kegiatan
                 </button>
               </div>
             )}

@@ -220,12 +220,12 @@ export function TeamWorkloadGrid({ teams, onTeamClick }: TeamWorkloadGridProps) 
                   </div>
                 </div>
 
-                {/* KPI 1: Jumlah Rapat */}
+                {/* KPI 1: Jumlah Kegiatan */}
                 <div className="bg-slate-50/80 rounded-xl p-3 border border-slate-100 mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-slate-500" />
                     <span className="text-[12px] font-medium text-slate-600">
-                      Jumlah Rapat
+                      Jumlah Kegiatan
                     </span>
                   </div>
                   <div className="flex items-baseline gap-1">
@@ -233,7 +233,7 @@ export function TeamWorkloadGrid({ teams, onTeamClick }: TeamWorkloadGridProps) 
                       {team.meetingCount}
                     </span>
                     <span className="text-[11px] font-semibold text-slate-500">
-                      agenda rapat
+                      kegiatan
                     </span>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ export function TeamWorkloadGrid({ teams, onTeamClick }: TeamWorkloadGridProps) 
                 </div>
 
                 <div className="flex items-center justify-between text-[12px] text-slate-500 group-hover:text-[#215865] font-semibold transition-colors">
-                  <span>Lihat Detail Pekerjaan &amp; Rapat</span>
+                  <span>Lihat Detail Pekerjaan &amp; Kegiatan</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#31889C] group-hover:translate-x-1 transition-all" />
                 </div>
               </div>

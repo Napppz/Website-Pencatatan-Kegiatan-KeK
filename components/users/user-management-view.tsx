@@ -801,7 +801,7 @@ export function UserManagementView({
                 <input
                   type="email"
                   required
-                  placeholder="nama@simrapat.local atau nama@kek.go.id"
+                  placeholder="nama@kek.go.id atau email kedinasan"
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#31889C]/30 focus:border-[#31889C] text-slate-900 text-[13px]"

@@ -15,7 +15,7 @@ export const actionItemPriorityEnum = z.enum([
 ]);
 
 export const actionItemSchema = z.object({
-  meetingId: z.string().min(1, 'Rapat wajib dipilih'),
+  meetingId: z.string().min(1, 'Kegiatan wajib dipilih'),
   title: z
     .string()
     .trim()

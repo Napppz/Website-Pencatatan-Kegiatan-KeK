@@ -223,7 +223,7 @@ export function PreviousMeetingSelector({
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
                 <Link2 className="w-3 h-3 text-[#1E6B7B]" />
-                Rapat Lanjutan Tertaut
+                Kegiatan Lanjutan Tertaut
               </span>
               <span className="font-mono text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
                 {currentSelectedMeeting.meetingNumber}
@@ -288,14 +288,14 @@ export function PreviousMeetingSelector({
                 className="font-semibold text-[#1E6B7B] hover:text-[#175360] flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-[#1E6B7B]/10 transition-colors cursor-pointer"
               >
                 <Filter className="w-3 h-3" />
-                <span>Ganti Rapat</span>
+                <span>Ganti Kegiatan</span>
               </button>
               <button
                 type="button"
                 disabled={disabled}
                 onClick={() => onChange('')}
                 className="font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
-                title="Batalkan tautan dan jadikan rapat mandiri"
+                title="Batalkan tautan dan jadikan kegiatan mandiri"
               >
                 <X className="w-3 h-3" />
                 <span>Lepas Tautan</span>
@@ -316,10 +316,10 @@ export function PreviousMeetingSelector({
             </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold text-slate-700 group-hover:text-slate-900 truncate">
-                -- Bukan Rapat Lanjutan (Rapat Mandiri) --
+                -- Bukan Kegiatan Lanjutan (Kegiatan Mandiri) --
               </p>
               <p className="text-[11px] text-slate-400 truncate">
-                Klik untuk mencari &amp; memfilter rapat terdahulu berdasarkan tim kerja
+                Klik untuk mencari &amp; memfilter kegiatan terdahulu berdasarkan tim kerja
               </p>
             </div>
           </div>
@@ -348,13 +348,13 @@ export function PreviousMeetingSelector({
                 </div>
                 <div>
                   <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                    <span>Filter &amp; Tautkan Rapat Lanjutan</span>
+                    <span>Filter &amp; Tautkan Kegiatan Lanjutan</span>
                     <span className="text-[11px] font-semibold text-[#1E6B7B] bg-[#1E6B7B]/10 px-2 py-0.5 rounded-full">
-                      {availableMeetings.length} Rapat
+                      {availableMeetings.length} Kegiatan
                     </span>
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Cari berdasarkan judul, nomor rapat, atau filter tim kerja untuk menghubungkan tindak lanjut
+                    Cari berdasarkan judul, nomor kegiatan, atau filter tim kerja untuk menghubungkan tindak lanjut
                   </p>
                 </div>
               </div>
@@ -377,7 +377,7 @@ export function PreviousMeetingSelector({
                   autoFocus
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari berdasarkan judul agenda, nomor rapat, atau tim kerja..."
+                  placeholder="Cari berdasarkan judul agenda, nomor kegiatan, atau tim kerja..."
                   className="w-full pl-10 pr-9 h-[40px] rounded-xl bg-white border border-slate-300 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1E6B7B]/20 focus:border-[#1E6B7B] shadow-2xs"
                 />
                 {searchQuery && (
@@ -490,10 +490,10 @@ export function PreviousMeetingSelector({
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-800">
-                      Bukan Rapat Lanjutan (Rapat Mandiri)
+                      Bukan Kegiatan Lanjutan (Kegiatan Mandiri)
                     </p>
                     <p className="text-[11px] text-slate-500">
-                      Rapat berdiri sendiri tanpa keterikatan pada butir tindak lanjut sesi terdahulu
+                      Kegiatan berdiri sendiri tanpa keterikatan pada butir tindak lanjut sesi terdahulu
                     </p>
                   </div>
                 </div>
@@ -506,7 +506,7 @@ export function PreviousMeetingSelector({
 
               <div className="flex items-center justify-between pt-2 pb-1 px-1">
                 <span className="text-[11px] font-semibold text-slate-500">
-                  Menampilkan {filteredMeetings.length} dari {availableMeetings.length} rapat
+                  Menampilkan {filteredMeetings.length} dari {availableMeetings.length} kegiatan
                 </span>
                 {hasActiveFilters && (
                   <button
@@ -527,7 +527,7 @@ export function PreviousMeetingSelector({
                     <Search className="w-6 h-6" />
                   </div>
                   <p className="text-sm font-semibold text-slate-700">
-                    Tidak ada rapat yang sesuai dengan filter
+                    Tidak ada kegiatan yang sesuai dengan filter
                   </p>
                   <p className="text-xs text-slate-400 max-w-sm mx-auto">
                     Coba sesuaikan kata kunci pencarian atau ubah filter tim kerja &amp; status di atas.
@@ -539,7 +539,7 @@ export function PreviousMeetingSelector({
                       className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                     >
                       <RotateCcw className="w-3 h-3" />
-                      <span>Tampilkan Semua Rapat</span>
+                      <span>Tampilkan Semua Kegiatan</span>
                     </button>
                   )}
                 </div>
@@ -616,7 +616,7 @@ export function PreviousMeetingSelector({
                           </div>
                         </div>
 
-                        {/* Judul Rapat */}
+                        {/* Judul Kegiatan */}
                         <p className="text-xs font-semibold text-slate-800 group-hover:text-slate-900 leading-snug">
                           {m.title}
                         </p>
@@ -631,8 +631,8 @@ export function PreviousMeetingSelector({
             <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
               <span className="text-slate-400 text-[11.5px]">
                 {value
-                  ? 'Rapat terpilih akan ditautkan sebagai sesi pendahulu.'
-                  : 'Rapat ini akan dibuat sebagai rapat mandiri.'}
+                  ? 'Kegiatan terpilih akan ditautkan sebagai sesi pendahulu.'
+                  : 'Kegiatan ini akan dibuat sebagai kegiatan mandiri.'}
               </span>
               <button
                 type="button"

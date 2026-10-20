@@ -35,7 +35,7 @@ export default async function SemuaRapatPage() {
   const availableBiros = dbBiros && dbBiros.length > 0 ? dbBiros : BIRO_LIST;
 
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-500">Memuat data rapat dari Neon DB...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-slate-500">Memuat data kegiatan...</div>}>
       <SemuaRapatClient
         initialMeetings={meetings}
         availableBiros={availableBiros}

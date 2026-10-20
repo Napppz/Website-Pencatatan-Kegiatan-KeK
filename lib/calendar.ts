@@ -192,10 +192,10 @@ export function generateGoogleCalendarUrl(event: CalendarEventData): string {
 
   // Build structured event description
   const descriptionParts: string[] = [
-    `UNDANGAN RAPAT KOORDINASI RESMI`,
+    `UNDANGAN KEGIATAN KOORDINASI RESMI`,
     `Sekretariat Dewan Nasional Kawasan Ekonomi Khusus (KEK) RI`,
     `----------------------------------------------------`,
-    `Nomor Rapat: ${event.meetingNumber}`,
+    `Nomor Kegiatan: ${event.meetingNumber}`,
     `Agenda: ${event.title}`,
     `Waktu: ${event.startTime} - ${event.endTime} WIB`,
     `Lokasi / Ruang: ${virtual.cleanPhysicalLocation || event.location}`,
@@ -204,7 +204,7 @@ export function generateGoogleCalendarUrl(event: CalendarEventData): string {
   // Auto-inject Zoom meeting link into Google Calendar invitation description
   if (activeZoom) {
     descriptionParts.push(`\n----------------------------------------------------`);
-    descriptionParts.push(`TAUTAN RAPAT VIRTUAL (ZOOM):`);
+    descriptionParts.push(`TAUTAN KEGIATAN VIRTUAL (ZOOM):`);
     descriptionParts.push(` ${activeZoom}`);
     if (activeMeetingId) {
       descriptionParts.push(`Meeting ID: ${activeMeetingId}`);
@@ -281,14 +281,14 @@ export function generateIcsCalendar(event: CalendarEventData): string {
   const activeZoom = event.zoomUrl || virtual.zoomUrl;
 
   const descriptionLines = [
-    `UNDANGAN RAPAT KOORDINASI RESMI KEK`,
+    `UNDANGAN KEGIATAN KOORDINASI RESMI KEK`,
     `Nomor: ${event.meetingNumber}`,
     `Agenda: ${event.title}`,
     `Waktu: ${event.startTime} - ${event.endTime} WIB`,
     `Lokasi: ${event.location}`,
     activeZoom ? `Tautan Zoom: ${activeZoom}` : '',
     event.biroName ? `Biro: ${event.biroName}` : '',
-    event.meetingUrl ? `Portal Rapat: ${event.meetingUrl}` : '',
+    event.meetingUrl ? `Portal Kegiatan: ${event.meetingUrl}` : '',
   ]
     .filter(Boolean)
     .join('\\n');
@@ -308,7 +308,7 @@ export function generateIcsCalendar(event: CalendarEventData): string {
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Sekretariat Dewan Nasional KEK//Sistem Notula Rapat//ID',
+    'PRODID:-//Sekretariat Dewan Nasional KEK//Sistem Catatan Kegiatan//ID',
     'CALSCALE:GREGORIAN',
     'METHOD:REQUEST',
     'BEGIN:VTIMEZONE',
@@ -334,7 +334,7 @@ export function generateIcsCalendar(event: CalendarEventData): string {
     'BEGIN:VALARM',
     'TRIGGER:-PT30M',
     'ACTION:DISPLAY',
-    'DESCRIPTION:Pengingat Rapat Koordinasi KEK dalam 30 Menit',
+    'DESCRIPTION:Pengingat Kegiatan Koordinasi KEK dalam 30 Menit',
     'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR',
@@ -370,7 +370,7 @@ export function generateWhatsAppMeetingShareText(event: CalendarEventData, gcalU
 
   let zoomSection = '';
   if (activeZoom) {
-    zoomSection = `\n💻 *Tautan Rapat Virtual (Zoom):*\n🔗 ${activeZoom}\n`;
+    zoomSection = `\n💻 *Tautan Kegiatan Virtual (Zoom):*\n🔗 ${activeZoom}\n`;
     if (activeMeetingId) {
       zoomSection += `🆔 *Meeting ID:* ${activeMeetingId}\n`;
     }
@@ -379,7 +379,7 @@ export function generateWhatsAppMeetingShareText(event: CalendarEventData, gcalU
     }
   }
 
-  return `*UNDANGAN RAPAT KOORDINASI SEKRETARIAT DEWAN NASIONAL KEK*
+  return `*UNDANGAN KEGIATAN KOORDINASI SEKRETARIAT DEWAN NASIONAL KEK*
 --------------------------------------------------
 *Nomor:* ${event.meetingNumber}
 *Agenda:* ${event.title}
@@ -387,14 +387,14 @@ export function generateWhatsAppMeetingShareText(event: CalendarEventData, gcalU
 📅 *Hari, Tanggal:* ${formattedDate}
 ⏰ *Waktu:* ${event.startTime} - ${event.endTime} WIB
 📍 *Lokasi Fisik:* ${virtual.cleanPhysicalLocation || event.location}
-${zoomSection}${event.chairpersonName ? `👤 *Pimpinan Sidang:* ${event.chairpersonName}\n` : ''}${event.biroName ? `🏢 *Penyelenggara:* ${event.biroName}\n` : ''}👥 *Peserta Terdaftar:* ${attendeeCount} Pejabat/Staf
+${zoomSection}${event.chairpersonName ? `👤 *Pimpinan Kegiatan:* ${event.chairpersonName}\n` : ''}${event.biroName ? `🏢 *Penyelenggara:* ${event.biroName}\n` : ''}👥 *Peserta Terdaftar:* ${attendeeCount} Pejabat/Staf
 
 --------------------------------------------------
 *Tambahkan ke Google Calendar Anda:*
 🔗 ${gcalUrl}
 
-*Akses Dokumen Risalah & Notula Digital:*
+*Akses Dokumen & Catatan Kegiatan Digital:*
 🔗 ${event.meetingUrl || 'Portal Sistem KEK'}
 
-_Pesan otomatis dikirim melalui Sistem Log & Notula Rapat Sekretariat Dewan Nasional KEK RI._`;
+_Pesan otomatis dikirim melalui Sistem Log Book Catatan Kegiatan Sekretariat Dewan Nasional KEK RI._`;
 }

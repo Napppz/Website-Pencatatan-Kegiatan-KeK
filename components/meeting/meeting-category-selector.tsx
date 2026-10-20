@@ -108,11 +108,11 @@ export function MeetingCategorySelector({
         <div>
           <label htmlFor="category-select-dropdown" className="font-semibold text-slate-800 flex items-center gap-2 text-sm">
             <FileText className="w-4 h-4 text-[#1E6B7B]" />
-            <span>Kategori Rapat</span>
+            <span>Kategori Kegiatan</span>
             <span className="text-red-500 font-bold">*</span>
           </label>
           <p className="text-xs text-slate-500 mt-0.5">
-            Pilih kategori dokumen naskah dinas dasar pelaksanaan rapat koordinasi.
+            Pilih kategori dokumen naskah dinas dasar pelaksanaan kegiatan koordinasi.
           </p>
         </div>
       </div>
@@ -131,7 +131,7 @@ export function MeetingCategorySelector({
             <option value="NASKAH_MASUK">Daftar Naskah Masuk</option>
             <option value="DISPOSISI_SEKJEN">Disposisi Sekjen</option>
             <option value="DISPOSISI_BIRO">Disposisi Biro</option>
-            <option value="SURAT_DITUNDA">Tunda Rapat</option>
+            <option value="SURAT_DITUNDA">Tunda Kegiatan</option>
           </select>
           <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
@@ -153,7 +153,7 @@ export function MeetingCategorySelector({
       {normalizedKey === 'UNDANGAN_INTERNAL' && (
         <div className="p-3.5 rounded-xl bg-[#F0F9FA] border border-[#BCE3EB] text-xs text-[#1E5F6E] flex items-center gap-2.5 animate-in fade-in duration-150">
           <Building2 className="w-4 h-4 shrink-0 text-[#1E6B7B]" />
-          <span>Rapat koordinasi antar unit kerja internal Sekretariat Dewan Nasional KEK.</span>
+          <span>Kegiatan koordinasi antar unit kerja internal Sekretariat Dewan Nasional KEK.</span>
         </div>
       )}
 
@@ -235,14 +235,14 @@ export function MeetingCategorySelector({
           <div className="flex items-start gap-2.5 text-rose-800 text-[12.5px] leading-relaxed">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <div>
-              <strong>Informasi Penundaan Rapat:</strong> Rapat ini akan dicatat dalam kategori{' '}
-              <strong>Tunda Rapat</strong>. Seluruh agenda dan tindak lanjut akan ditangguhkan hingga disahkan kembali.
+              <strong>Informasi Penundaan Kegiatan:</strong> Kegiatan ini akan dicatat dalam kategori{' '}
+              <strong>Tunda Kegiatan</strong>. Seluruh agenda dan tindak lanjut akan ditangguhkan hingga disahkan kembali.
             </div>
           </div>
 
           <div>
             <label className="text-[12.5px] font-bold text-slate-800 block mb-1">
-              Alasan / Keterangan Penundaan Rapat <span className="text-red-500">*</span>
+              Alasan / Keterangan Penundaan Kegiatan <span className="text-red-500">*</span>
             </label>
             <textarea
               rows={2}
@@ -256,7 +256,7 @@ export function MeetingCategorySelector({
                   postponeReason: e.target.value,
                 })
               }
-              placeholder="Contoh: Rapat ditunda menunggu arahan lanjutan dari pimpinan / penyesuaian jadwal dinas..."
+              placeholder="Contoh: Kegiatan ditunda menunggu arahan lanjutan dari pimpinan / penyesuaian jadwal dinas..."
               className="w-full px-3.5 py-2 rounded-lg bg-white border border-rose-300 text-slate-800 text-[13px] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-600 leading-relaxed"
             />
           </div>

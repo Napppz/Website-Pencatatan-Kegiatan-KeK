@@ -183,14 +183,14 @@ export function LaporanClient() {
             </span>
             <span className="text-xs text-slate-400">•</span>
             <span className="text-xs text-slate-500 font-medium">
-              Log Book Notula Rapat KEK RI
+              Log Book Catatan Kegiatan KEK RI
             </span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mt-1">
-            Laporan Kinerja Rapat &amp; Tindak Lanjut
+            Laporan Kinerja Kegiatan &amp; Tindak Lanjut
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Monitoring periodic aktivitas rapat, ketersediaan notulen, dan performa resolusi seluruh Biro.
+            Monitoring periodic aktivitas kegiatan, ketersediaan catatan kegiatan, dan performa resolusi seluruh Biro.
           </p>
         </div>
 
@@ -372,7 +372,7 @@ export function LaporanClient() {
           </div>
           {summary.kpi.totalMeetings === 0 && (
             <span className="text-[#31889C] font-semibold italic">
-              Tidak ada data rapat pada periode yang dipilih.
+              Tidak ada data kegiatan pada periode yang dipilih.
             </span>
           )}
         </div>
@@ -407,13 +407,13 @@ export function LaporanClient() {
             <div className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-1 hover:shadow-md hover:border-[#BCE3EB] transition-all duration-300 flex items-start justify-between">
               <div>
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Total Rapat
+                  Total Kegiatan
                 </span>
                 <div className="text-2xl font-black text-slate-900 mt-1">
                   {summary.kpi.totalMeetings}
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5">
-                  Aktivitas rapat dalam periode
+                  Aktivitas kegiatan dalam periode
                 </div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shadow-2xs">
@@ -431,7 +431,7 @@ export function LaporanClient() {
                   {summary.kpi.totalActionItems}
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5">
-                  Terkait rapat periode terpilih
+                  Terkait kegiatan periode terpilih
                 </div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
@@ -536,13 +536,13 @@ export function LaporanClient() {
             <div className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-1 hover:shadow-md hover:border-sky-300 transition-all duration-300 flex items-start justify-between">
               <div>
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Rapat Ada Notulen
+                  Kegiatan Ada Catatan
                 </span>
                 <div className="text-2xl font-black text-sky-700 mt-1">
                   {summary.kpi.meetingsWithMinutes}
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5">
-                  {summary.kpi.minutesCompletionRate}% dari total rapat
+                  {summary.kpi.minutesCompletionRate}% dari total kegiatan
                 </div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shadow-2xs">
@@ -554,13 +554,13 @@ export function LaporanClient() {
             <div className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-1 hover:shadow-md hover:border-purple-300 transition-all duration-300 flex items-start justify-between">
               <div>
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Rapat Tanpa Notulen
+                  Kegiatan Tanpa Catatan
                 </span>
                 <div className="text-2xl font-black text-purple-700 mt-1">
                   {summary.kpi.meetingsWithoutMinutes}
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5">
-                  Belum disusun notulis
+                  Belum disusun tim pelaksana
                 </div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 shadow-2xs">
@@ -576,14 +576,14 @@ export function LaporanClient() {
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <h2 className="font-bold text-slate-900 text-base">
-                    Tren Aktivitas Rapat &amp; Tindak Lanjut
+                    Tren Aktivitas Kegiatan &amp; Tindak Lanjut
                   </h2>
                   <span className="text-xs font-semibold text-[#215865] bg-[#F0F9FA] px-2.5 py-0.5 rounded-full border border-[#BCE3EB]">
                     {summary.period.period}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mb-4">
-                  Visualisasi rapat, tindak lanjut selesai, dan keterlambatan per bagian periode.
+                  Visualisasi kegiatan, tindak lanjut selesai, dan keterlambatan per bagian periode.
                 </p>
               </div>
               <TrendChart data={summary.trend} />
@@ -629,7 +629,7 @@ export function LaporanClient() {
                 <thead className="bg-[#F8FAFC] border-b border-slate-200 text-slate-700 font-semibold">
                   <tr>
                     <th className="py-3.5 px-4">Biro</th>
-                    <th className="py-3.5 px-3 text-center">Rapat</th>
+                    <th className="py-3.5 px-3 text-center">Kegiatan</th>
                     <th className="py-3.5 px-3 text-center">Tindak Lanjut</th>
                     <th className="py-3.5 px-3 text-center">Selesai</th>
                     <th className="py-3.5 px-3 text-center">Berjalan</th>
@@ -731,20 +731,20 @@ export function LaporanClient() {
             <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
                 <h2 className="font-bold text-slate-900 text-base">
-                  Daftar Rapat &amp; Ketersediaan Notulen
+                  Daftar Kegiatan &amp; Ketersediaan Catatan
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Rincian notulen dan progres resolusi untuk setiap rapat dalam periode.
+                  Rincian catatan dan progres resolusi untuk setiap kegiatan dalam periode.
                 </p>
               </div>
               <span className="text-xs text-slate-500 font-medium">
-                {summary.meetings.length} Rapat
+                {summary.meetings.length} Kegiatan
               </span>
             </div>
 
             {summary.meetings.length === 0 ? (
               <div className="p-8 text-center text-slate-400 text-xs">
-                Tidak ada data rapat pada periode yang dipilih.
+                Tidak ada data kegiatan pada periode yang dipilih.
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -752,11 +752,11 @@ export function LaporanClient() {
                   <thead className="bg-[#F8FAFC] border-b border-slate-200 text-slate-700 font-semibold">
                     <tr>
                       <th className="py-3 px-4 w-12 text-center">No</th>
-                      <th className="py-3 px-4">Nomor Rapat</th>
-                      <th className="py-3 px-4">Judul Rapat</th>
+                      <th className="py-3 px-4">Nomor Kegiatan</th>
+                      <th className="py-3 px-4">Judul Kegiatan</th>
                       <th className="py-3 px-4">Tanggal</th>
                       <th className="py-3 px-3 text-center">Biro</th>
-                      <th className="py-3 px-3 text-center">Status Notulen</th>
+                      <th className="py-3 px-3 text-center">Status Catatan</th>
                       <th className="py-3 px-4 text-center">Tindak Lanjut</th>
                     </tr>
                   </thead>

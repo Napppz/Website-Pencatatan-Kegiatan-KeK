@@ -405,9 +405,9 @@ export function ActionItemFormDialog({
     if (!finalMeetingId) {
       setFieldErrors((prev) => ({
         ...prev,
-        meetingId: 'Silakan pilih rapat yang terkoneksi dengan tindak lanjut ini.',
+        meetingId: 'Silakan pilih kegiatan yang terkoneksi dengan tindak lanjut ini.',
       }));
-      setErrorMessage('Rapat terkait wajib dipilih.');
+      setErrorMessage('Kegiatan terkait wajib dipilih.');
       return;
     }
 
@@ -435,7 +435,7 @@ export function ActionItemFormDialog({
       title.trim() ||
       currentM?.title?.trim() ||
       normalizedCurrentMeeting?.title?.trim() ||
-      'Tindak Lanjut Rapat'
+      'Tindak Lanjut Kegiatan'
     ).slice(0, 255);
 
     // Zod client validation
@@ -505,7 +505,7 @@ export function ActionItemFormDialog({
               {isEditing ? 'Perbarui Matriks' : 'Matriks Tindak Lanjut'}
             </span>
             <h2 className="text-[18px] font-bold text-slate-900">
-              {isEditing ? 'Ubah Butir Tindak Lanjut' : 'Tambah Tindak Lanjut Rapat'}
+              {isEditing ? 'Ubah Butir Tindak Lanjut' : 'Tambah Tindak Lanjut Kegiatan'}
             </h2>
           </div>
 
@@ -528,12 +528,12 @@ export function ActionItemFormDialog({
               </div>
             )}
 
-            {/* Rapat Terkait / Agenda Sumber */}
+            {/* Kegiatan Terkait / Agenda Sumber */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block font-bold text-slate-800 flex items-center gap-1.5 text-[13px]">
                   <Layers className="w-4 h-4 text-[#31889C]" />
-                  <span>{isMeetingLocked ? 'Rapat Terkait' : 'Rapat Terkait / Agenda Sumber'}</span>
+                  <span>{isMeetingLocked ? 'Kegiatan Terkait' : 'Kegiatan Terkait / Agenda Sumber'}</span>
                   <span className="text-red-500">*</span>
                 </label>
                 {(() => {
@@ -581,21 +581,21 @@ export function ActionItemFormDialog({
               {isMeetingLocked ? (
                 <p className="mt-1.5 text-[11px] text-[#215865] flex items-center gap-1.5 font-medium bg-[#E8F5F7]/80 px-2.5 py-1.5 rounded-lg border border-[#BCE3EB]/80">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#31889C] shrink-0" />
-                  <span>Tindak lanjut ini otomatis terhubung langsung ke rapat ini (tidak perlu memilih rapat lain).</span>
+                  <span>Tindak lanjut ini otomatis terhubung langsung ke kegiatan ini (tidak perlu memilih kegiatan lain).</span>
                 </p>
               ) : effectiveLockedTeamCode ? (
                 <p className="mt-1.5 text-[11px] text-[#215865] flex items-center gap-1.5 font-medium bg-[#E8F5F7]/80 px-2.5 py-1.5 rounded-lg border border-[#BCE3EB]/80">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#31889C] shrink-0" />
-                  <span>Daftar rapat disesuaikan khusus untuk agenda penugasan {displayTeams.find((t) => t.code === effectiveLockedTeamCode)?.name || `Tim ${effectiveLockedTeamCode}`}.</span>
+                  <span>Daftar kegiatan disesuaikan khusus untuk agenda penugasan {displayTeams.find((t) => t.code === effectiveLockedTeamCode)?.name || `Tim ${effectiveLockedTeamCode}`}.</span>
                 </p>
               ) : (
                 <p className="mt-1.5 text-[11px] text-slate-400">
-                  Hubungkan tindak lanjut ini dengan agenda sidang dewan yang relevan. Gunakan pencarian instan atau filter biro untuk menemukan rapat dengan cepat.
+                  Hubungkan tindak lanjut ini dengan agenda kegiatan yang relevan. Gunakan pencarian instan atau filter biro untuk menemukan kegiatan dengan cepat.
                 </p>
               )}
             </div>
 
-            {/* Judul Tindak Lanjut (Otomatis Sesuai Agenda Rapat) */}
+            {/* Judul Tindak Lanjut (Otomatis Sesuai Agenda Kegiatan) */}
             <div className="p-3.5 bg-gradient-to-r from-slate-50 to-[#F0F8FA] border border-[#BCE3EB]/80 rounded-xl space-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#215865] uppercase tracking-wider flex items-center gap-1.5">
@@ -603,11 +603,11 @@ export function ActionItemFormDialog({
                 </span>
                 <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-[#1E6B7B] bg-white px-2 py-0.5 rounded-full border border-[#BCE3EB] shadow-2xs">
                   <CheckCircle2 className="w-3 h-3 text-[#31889C]" />
-                  <span>Otomatis Sesuai Agenda Rapat</span>
+                  <span>Otomatis Sesuai Agenda Kegiatan</span>
                 </span>
               </div>
               <p className="text-[13.5px] font-bold text-slate-800 leading-snug break-words">
-                {activeTitle || '(Mengikuti judul agenda rapat yang dipilih)'}
+                {activeTitle || '(Mengikuti judul agenda kegiatan yang dipilih)'}
               </p>
               {fieldErrors.title && (
                 <p className="mt-1 text-[11px] text-red-600 font-semibold">{fieldErrors.title}</p>
@@ -752,7 +752,7 @@ export function ActionItemFormDialog({
                   {picUserId && (
                     <span className="inline-flex items-center gap-1 text-[10.5px] text-[#1E6B7B] font-bold bg-[#E8F5F7] px-2 py-0.5 rounded-full border border-[#BCE3EB]">
                       <CheckCircle2 className="w-3 h-3 text-[#31889C]" />
-                      <span>Otomatis Sesuai Rapat</span>
+                      <span>Otomatis Sesuai Kegiatan</span>
                     </span>
                   )}
                 </label>
@@ -773,7 +773,7 @@ export function ActionItemFormDialog({
                   placeholder="Pilih Pejabat / PIC Pelaksana..."
                 />
                 <p className="mt-1 text-[11px] text-slate-400">
-                  Otomatis terpilih sesuai pimpinan/PIC saat pendaftaran rapat. Dapat disesuaikan bila diperlukan.
+                  Otomatis terpilih sesuai pimpinan/PIC saat pendaftaran kegiatan. Dapat disesuaikan bila diperlukan.
                 </p>
               </div>
             </div>

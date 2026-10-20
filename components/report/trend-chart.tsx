@@ -58,7 +58,7 @@ export function TrendChart({ data }: TrendChartProps) {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3 pb-2 border-b border-slate-100">
         {/* Interactive Filter Pills */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Rapat */}
+          {/* Kegiatan */}
           <button
             type="button"
             onClick={() => setActiveSeries(activeSeries === 'MEETINGS' ? 'ALL' : 'MEETINGS')}
@@ -69,7 +69,7 @@ export function TrendChart({ data }: TrendChartProps) {
             }`}
           >
             <span className="w-2.5 h-2.5 rounded-full bg-[#31889C]" />
-            <span>Rapat</span>
+            <span>Kegiatan</span>
             <span className="font-bold ml-0.5 px-1 py-0.2 bg-white rounded text-[10px] text-[#215865] border border-[#BCE3EB]">
               {totalMeetings}
             </span>
@@ -114,7 +114,7 @@ export function TrendChart({ data }: TrendChartProps) {
         {hoveredPoint ? (
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-800 animate-in fade-in duration-200 bg-slate-100/80 px-2.5 py-1 rounded-lg border border-slate-200">
             <span className="text-[#31889C] font-bold">{hoveredPoint.label}:</span>
-            <span className="text-[#215865]">{hoveredPoint.totalMeetings} Rapat</span>
+            <span className="text-[#215865]">{hoveredPoint.totalMeetings} Kegiatan</span>
             <span className="text-slate-300">•</span>
             <span className="text-[#4D8F3D]">{hoveredPoint.completed} Selesai</span>
             <span className="text-slate-300">•</span>
@@ -136,7 +136,7 @@ export function TrendChart({ data }: TrendChartProps) {
         >
           {/* Gradients */}
           <defs>
-            <linearGradient id="trend-rapat-grad" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="trend-kegiatan-grad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#31889C" />
               <stop offset="100%" stopColor="#266F80" />
             </linearGradient>
@@ -240,7 +240,7 @@ export function TrendChart({ data }: TrendChartProps) {
                   width={barW}
                   height={animHMeetings}
                   rx="3.5"
-                  fill="url(#trend-rapat-grad)"
+                  fill="url(#trend-kegiatan-grad)"
                   opacity={opMeetings}
                   filter={isHovered ? 'url(#bar-shadow)' : 'none'}
                   style={{

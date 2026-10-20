@@ -153,13 +153,13 @@ export function ActivityTrendChart({
           <div>
             <span className="font-semibold text-[11px] text-[#31889C] uppercase tracking-wider flex items-center gap-1.5">
               <TrendingUp className="w-3.5 h-3.5 text-[#31889C]" />
-              <span>Tren Aktivitas Sidang</span>
+              <span>Tren Aktivitas Kegiatan</span>
             </span>
             <h2 className="font-bold text-[18px] text-slate-900 mt-0.5">
-              Tren Rapat per Bulan ({selectedYear})
+              Tren Kegiatan per Bulan ({selectedYear})
             </h2>
             <p className="text-[12px] text-slate-500 mt-0.5">
-              Klik grafik batang setiap bulan untuk melihat rincian jumlah rapat
+              Klik grafik batang setiap bulan untuk melihat rincian jumlah kegiatan
             </p>
           </div>
 
@@ -178,7 +178,7 @@ export function ActivityTrendChart({
                         ? "bg-[#215865] text-white shadow-2xs"
                         : "text-[#215865]/70 hover:text-[#215865] hover:bg-white/60"
                     )}
-                    title={`Pilih data rapat tahun ${yr}`}
+                    title={`Pilih data kegiatan tahun ${yr}`}
                   >
                     {yr}
                   </button>
@@ -233,7 +233,7 @@ export function ActivityTrendChart({
                       handleMonthClick(item.month);
                     }
                   }}
-                  title={`Klik untuk memfilter & kembali ke atas melihat statistik bulan ${FULL_MONTH_NAMES[item.month] || item.month} (${item.count} rapat)`}
+                  title={`Klik untuk memfilter & kembali ke atas melihat statistik bulan ${FULL_MONTH_NAMES[item.month] || item.month} (${item.count} kegiatan)`}
                 >
                   {/* Tooltip / Value on top of bar */}
                   <div className="h-8 w-full flex items-end justify-center mb-1.5 relative">
@@ -241,7 +241,7 @@ export function ActivityTrendChart({
                       <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center animate-in fade-in zoom-in-75 duration-150">
                         <div className="bg-[#215865] text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap flex items-center gap-1 border border-[#31889C]/50">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#7CC563] animate-pulse" />
-                          <span>{item.count} Rapat</span>
+                          <span>{item.count} Kegiatan</span>
                         </div>
                         <div className="w-1.5 h-1.5 bg-[#215865] rotate-45 -mt-0.5 border-r border-b border-[#31889C]/50" />
                       </div>
@@ -331,7 +331,7 @@ export function ActivityTrendChart({
               <span className="text-[13px] font-bold text-slate-800">
                 {effectiveSelectedMonth
                   ? `Bulan ${fullMonthName} ${selectedYear}`
-                  : `Seluruh Rapat ${selectedYear} (YTD)`}
+                  : `Seluruh Kegiatan ${selectedYear} (YTD)`}
               </span>
               {effectiveSelectedMonth && activeItem?.isPeak && (
                 <span className="text-[10px] font-bold px-1.5 py-0.5 bg-[#FEF3C7] text-[#92400E] rounded-md border border-[#FDE68A]">
@@ -341,7 +341,7 @@ export function ActivityTrendChart({
             </div>
             <p className="text-[11.5px] text-slate-500 truncate">
               {effectiveSelectedMonth
-                ? `${activeItem?.count || 0} rapat (${monthPercentage}% dari total)`
+                ? `${activeItem?.count || 0} kegiatan (${monthPercentage}% dari total)`
                 : 'Klik grafik batang setiap bulan untuk melihat rincian'}
             </p>
           </div>
@@ -365,13 +365,13 @@ export function ActivityTrendChart({
               "bg-[#215865] hover:bg-[#1b4853] text-white px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5 transition-all cursor-pointer",
               effectiveSelectedMonth ? "hover:scale-[1.02] active:scale-95 group" : ""
             )}
-            title={effectiveSelectedMonth ? "Kembali ke ringkasan statistik di atas" : "Total rapat"}
+            title={effectiveSelectedMonth ? "Kembali ke ringkasan statistik di atas" : "Total kegiatan"}
           >
             <span className="text-[15px] font-extrabold tracking-tight">
               {effectiveSelectedMonth ? activeItem?.count ?? 0 : totalYearCount}
             </span>
             <span className="text-[11px] font-medium text-[#BCE3EB]">
-              Rapat
+              Kegiatan
             </span>
             {effectiveSelectedMonth && (
               <ArrowUp className="w-3.5 h-3.5 text-[#7CC563] group-hover:-translate-y-0.5 transition-transform" />

@@ -73,13 +73,13 @@ export function LinkMeetingDialog({
       if (res.success) {
         toast.success(
           selectedId
-            ? 'Rapat sebelumnya berhasil ditautkan sebagai rujukan.'
-            : 'Tautan rapat sebelumnya telah dilepaskan.'
+            ? 'Kegiatan sebelumnya berhasil ditautkan sebagai rujukan.'
+            : 'Tautan kegiatan sebelumnya telah dilepaskan.'
         );
         onClose();
         if (onLinkedSuccess) onLinkedSuccess(res.data);
       } else {
-        toast.error(res.error || 'Gagal menyimpan tautan rapat.');
+        toast.error(res.error || 'Gagal menyimpan tautan kegiatan.');
       }
     } catch {
       toast.error('Terjadi kesalahan sistem.');
@@ -105,10 +105,10 @@ export function LinkMeetingDialog({
             </div>
             <div>
               <span className="text-[11px] font-bold text-[#31889C] uppercase tracking-wider">
-                Alur Rapat Lanjutan
+                Alur Kegiatan Lanjutan
               </span>
               <h2 className="text-[17px] font-bold text-slate-900">
-                Tautkan Rapat Sebelumnya
+                Tautkan Kegiatan Sebelumnya
               </h2>
             </div>
           </div>
@@ -125,8 +125,8 @@ export function LinkMeetingDialog({
         {/* Content */}
         <div className="p-6 space-y-4 overflow-y-auto flex-1 text-[13px]">
           <p className="text-slate-600 leading-relaxed text-[12.5px]">
-            Pilih rapat terdahulu yang menjadi dasar/rujukan untuk rapat <strong>{currentMeetingNumber || 'ini'}</strong>.
-            Peserta dapat langsung memeriksa notula dan memantau evaluasi tindak lanjut rapat sebelumnya.
+            Pilih kegiatan terdahulu yang menjadi dasar/rujukan untuk kegiatan <strong>{currentMeetingNumber || 'ini'}</strong>.
+            Peserta dapat langsung memeriksa notula dan memantau evaluasi tindak lanjut kegiatan sebelumnya.
           </p>
 
           {/* Search Box */}
@@ -134,7 +134,7 @@ export function LinkMeetingDialog({
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Cari nomor naskah, judul rapat, atau biro..."
+              placeholder="Cari nomor naskah, judul kegiatan, atau biro..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#31889C]/25 focus:border-[#31889C] text-[13px] bg-white text-slate-900"
@@ -161,7 +161,7 @@ export function LinkMeetingDialog({
                 {selectedId === null && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
               </div>
               <span className="font-semibold text-slate-700">
-                Tidak ada rapat rujukan (Rapat Mandiri / Rapat Perdana)
+                Tidak ada kegiatan rujukan (Kegiatan Mandiri / Kegiatan Perdana)
               </span>
             </div>
             <Unlink className="w-4 h-4 text-slate-400" />
@@ -171,11 +171,11 @@ export function LinkMeetingDialog({
           {isLoading ? (
             <div className="p-8 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
               <Loader2 className="w-6 h-6 animate-spin text-[#31889C]" />
-              <span>Memuat daftar rapat...</span>
+              <span>Memuat daftar kegiatan...</span>
             </div>
           ) : filteredMeetings.length === 0 ? (
             <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-300">
-              <p className="font-semibold">Tidak ada rapat yang sesuai pencarian.</p>
+              <p className="font-semibold">Tidak ada kegiatan yang sesuai pencarian.</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
@@ -261,7 +261,7 @@ export function LinkMeetingDialog({
                 <span>Menyimpan...</span>
               </>
             ) : (
-              <span>Simpan Rujukan Rapat</span>
+              <span>Simpan Rujukan Kegiatan</span>
             )}
           </button>
         </div>

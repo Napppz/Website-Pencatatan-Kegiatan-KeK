@@ -60,12 +60,12 @@ export function TeamWorkloadDistribution({
           <div>
             <h3 className="font-bold text-[15px] text-slate-900 flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#31889C]" />
-              {hasTeams ? `Beban Rapat Tim Kerja` : `Distribusi Status Rapat`}
+              {hasTeams ? `Beban Kegiatan Tim Kerja` : `Distribusi Status Kegiatan`}
             </h3>
             <p className="text-[11.5px] text-slate-500 mt-0.5 truncate max-w-[200px]" title={biroShortName}>
               {hasTeams
-                ? `Alokasi sesi rapat di ${biroShortName}`
-                : `Status pengesahan rapat ${biroShortName}`}
+                ? `Alokasi kegiatan di ${biroShortName}`
+                : `Status pengesahan kegiatan ${biroShortName}`}
             </p>
           </div>
           <span className="text-[11px] font-bold text-[#31889C] bg-[#E8F5F7] px-2 py-0.5 rounded-full border border-[#BCE3EB] shrink-0">

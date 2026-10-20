@@ -170,7 +170,7 @@ export function MeetingMinutesPreview({
     `1. ${meetingTitle || 'Pembahasan Koordinasi dan Pelaksanaan Tugas'}`;
   const agendaLines = agendaText.split('\n').filter(Boolean);
 
-  // Nomor Surat Undangan dinamis / '-' jika rapat tanpa surat undangan
+  // Nomor Surat Undangan dinamis / '-' jika kegiatan tanpa surat undangan
   const rawInvitationNumber =
     (conclusion as any)?.invitationNumber ||
     (decisions as any)?.invitationNumber ||
@@ -226,7 +226,7 @@ export function MeetingMinutesPreview({
             </div>
           </div>
 
-          {/* Document Type Switcher Tabs (Risalah Rapat vs Nota Dinas) */}
+          {/* Document Type Switcher Tabs (Catatan Kegiatan vs Nota Dinas) */}
           <div className="flex items-center gap-1.5 self-start md:self-auto">
             <span className="text-[11.5px] font-bold text-slate-400 uppercase tracking-wider hidden lg:inline mr-1">
               Jenis Dokumen:
@@ -239,10 +239,10 @@ export function MeetingMinutesPreview({
                     ? 'bg-white text-[#215865] shadow-xs border border-slate-200/60'
                     : 'text-slate-600 hover:text-slate-900'
                   }`}
-                title="Tampilkan lembar Risalah / Notula Rapat"
+                title="Tampilkan lembar Catatan Kegiatan"
               >
                 <FileText className={`w-3.5 h-3.5 ${docType === 'NOTULA' ? 'text-[#31889C]' : 'text-slate-500'}`} />
-                <span>Risalah Rapat</span>
+                <span>Catatan Kegiatan</span>
               </button>
               <button
                 type="button"
@@ -301,7 +301,7 @@ export function MeetingMinutesPreview({
               isApproved ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[12px] font-bold shadow-2xs whitespace-nowrap">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Hasil Rapat Disetujui</span>
+                  <span>Hasil Kegiatan Disetujui</span>
                 </span>
               ) : (
                 <button
@@ -309,14 +309,14 @@ export function MeetingMinutesPreview({
                   disabled={isApproving}
                   onClick={onApproveClick}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[12px] transition-all shadow-xs cursor-pointer disabled:opacity-50 whitespace-nowrap"
-                  title="Admin Tim & Pimpinan: Setujui hasil rapat dan tandai Selesai"
+                  title="Admin Tim & Pimpinan: Setujui hasil kegiatan dan tandai Selesai"
                 >
                   {isApproving ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-100" />
                   )}
-                  <span>Setujui Hasil Rapat</span>
+                  <span>Setujui Hasil Kegiatan</span>
                 </button>
               )
             )}
@@ -357,7 +357,7 @@ export function MeetingMinutesPreview({
                     type="button"
                     onClick={() => onDownloadPdf(docType === 'NOTA_DINAS' ? 'nota-dinas' : 'notula')}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#31889C] hover:bg-[#266F80] text-white font-semibold text-[12px] transition-all shadow-xs cursor-pointer whitespace-nowrap"
-                    title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Risalah Rapat'} dalam format PDF`}
+                    title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Catatan Kegiatan'} dalam format PDF`}
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Unduh PDF</span>
@@ -370,7 +370,7 @@ export function MeetingMinutesPreview({
                     disabled={isDownloadingDocx}
                     onClick={() => onDownloadDocx(docType === 'NOTA_DINAS' ? 'nota-dinas' : 'notula')}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2B579A] hover:bg-[#1E3E6D] text-white font-semibold text-[12px] transition-all shadow-xs cursor-pointer disabled:opacity-50 whitespace-nowrap"
-                    title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Risalah Rapat'} dalam format Word (.docx)`}
+                    title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Catatan Kegiatan'} dalam format Word (.docx)`}
                   >
                     {isDownloadingDocx ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -636,11 +636,11 @@ export function MeetingMinutesPreview({
                 </div>
               </div>
 
-              {/* 3. IDENTITAS & METADATA RAPAT */}
+              {/* 3. IDENTITAS & METADATA KEGIATAN */}
               <div className="space-y-1.5 text-[11pt] mb-5">
-                {/* Judul Rapat */}
+                {/* Judul Kegiatan */}
                 <div className="grid grid-cols-[165px_16px_1fr] sm:grid-cols-[185px_20px_1fr] items-start">
-                  <span className="text-black">Judul Rapat</span>
+                  <span className="text-black">Judul Kegiatan</span>
                   <span className="text-black">:</span>
                   <span className="text-black leading-relaxed">{meetingTitle}</span>
                 </div>
@@ -680,16 +680,16 @@ export function MeetingMinutesPreview({
                 </div>
               </div>
 
-              {/* 4. PELAKSANA RAPAT & PESERTA */}
+              {/* 4. PELAKSANA KEGIATAN & PESERTA */}
               <div className="text-[11pt] mb-5">
                 <div className="font-bold text-black mb-1.5">
-                  Pelaksana Rapat:
+                  Pelaksana Kegiatan:
                 </div>
 
                 <div className="space-y-1.5">
-                  {/* Ketua/Pimpinan Rapat */}
+                  {/* Ketua/Pimpinan Kegiatan */}
                   <div className="grid grid-cols-[165px_16px_1fr] sm:grid-cols-[185px_20px_1fr] items-start">
-                    <span className="text-black">Ketua/Pimpinan Rapat</span>
+                    <span className="text-black">Ketua/Pimpinan Kegiatan</span>
                     <span className="text-black">:</span>
                     <span className="text-black leading-relaxed">{chairpersonName}</span>
                   </div>
@@ -701,9 +701,9 @@ export function MeetingMinutesPreview({
                     <span className="text-black leading-relaxed">{secretaryMetaText}</span>
                   </div>
 
-                  {/* Peserta Rapat */}
+                  {/* Peserta Kegiatan */}
                   <div className="grid grid-cols-[165px_16px_1fr] sm:grid-cols-[185px_20px_1fr] items-start">
-                    <span className="text-black">Peserta Rapat</span>
+                    <span className="text-black">Peserta Kegiatan</span>
                     <span className="text-black">:</span>
                     <div className="text-black space-y-1">
                       {participants.length === 0 ? (
@@ -726,12 +726,12 @@ export function MeetingMinutesPreview({
                 </div>
               </div>
 
-              {/* 5. SUBSTANSI INTI PEMBAHASAN RAPAT */}
+              {/* 5. SUBSTANSI INTI PEMBAHASAN KEGIATAN */}
               <div className="text-[11pt] mb-5">
                 <div className="grid grid-cols-[165px_16px_1fr] sm:grid-cols-[185px_20px_1fr] items-start font-bold text-black mb-1">
                   <div className="leading-tight">
                     <div>Substansi Inti</div>
-                    <div>Pembahasan Rapat</div>
+                    <div>Pembahasan Kegiatan</div>
                   </div>
                   <div>:</div>
                   <div></div>
@@ -889,7 +889,7 @@ export function MeetingMinutesPreview({
             </div>
           ) : (
             <div className="p-12 text-center text-slate-500">
-              ID Rapat tidak tersedia untuk memuat aliran PDF.
+              ID Kegiatan tidak tersedia untuk memuat aliran PDF.
             </div>
           )}
         </div>

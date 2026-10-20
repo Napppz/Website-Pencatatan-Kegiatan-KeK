@@ -110,14 +110,14 @@ export function UploadMeetingDialog({
           data: res.data,
           matchedUserIds: res.data.matchedUserIds || [],
         });
-        toast.success('Berkas berhasil dianalisis & notula otomatis tersusun!');
+        toast.success('Berkas berhasil dianalisis & catatan kegiatan otomatis tersusun!');
       } else {
         setParseError(res.error || 'Gagal memproses berkas dokumen.');
         toast.error(res.error || 'Gagal memproses berkas');
       }
     } catch (err: any) {
       setParseError(err?.message || 'Terjadi kesalahan sistem saat memproses berkas.');
-      toast.error('Gagal membaca berkas rapat.');
+      toast.error('Gagal membaca berkas kegiatan.');
     } finally {
       setIsParsing(false);
       setParseStep('');
@@ -130,7 +130,7 @@ export function UploadMeetingDialog({
     if (onApplyToForm) {
       onApplyToForm(extractedResult.data, extractedResult.matchedUserIds);
     }
-    toast.success('Rincian rapat dan naskah berhasil dimasukkan ke formulir!');
+    toast.success('Rincian kegiatan dan naskah berhasil dimasukkan ke formulir!');
     onClose();
   };
 
@@ -147,16 +147,16 @@ export function UploadMeetingDialog({
 
       if (res.success && res.data) {
         toast.success(
-          `Rapat "${res.data.title}" dan naskah notula resmi berhasil disimpan langsung ke sistem!`
+          `Kegiatan "${res.data.title}" dan naskah catatan resmi berhasil disimpan langsung ke sistem!`
         );
         onClose();
         router.push(`/semua-rapat/${res.data.id}`);
         router.refresh();
       } else {
-        toast.error(res.error || 'Gagal menyimpan rapat otomatis.');
+        toast.error(res.error || 'Gagal menyimpan kegiatan otomatis.');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Terjadi kesalahan saat menyimpan rapat.');
+      toast.error(err?.message || 'Terjadi kesalahan saat menyimpan kegiatan.');
     } finally {
       setIsSavingDirectly(false);
     }
@@ -180,13 +180,13 @@ export function UploadMeetingDialog({
             </div>
             <div>
               <h2 className="text-base font-bold flex items-center gap-2">
-                <span>Unggah &amp; Ekstrak Notula Rapat Otomatis</span>
+                <span>Unggah &amp; Ekstrak Catatan Kegiatan Otomatis</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-semibold">
                   AI &amp; Smart Parser
                 </span>
               </h2>
               <p className="text-[11px] text-white/80">
-                Unggah berkas dokumen (PDF, Word, atau Teks) hasil rapat offline/eksternal. Sistem otomatis mengisi dan menuliskan notula resmi.
+                Unggah berkas dokumen (PDF, Word, atau Teks) hasil kegiatan offline/eksternal. Sistem otomatis mengisi dan menuliskan catatan kegiatan resmi.
               </p>
             </div>
           </div>
@@ -256,7 +256,7 @@ export function UploadMeetingDialog({
                     <div>
                       <p className="text-sm font-bold text-slate-800">{parseStep}</p>
                       <p className="text-[11px] text-slate-500 mt-1">
-                        Memproses dokumen rapat dan mengenali tata naskah dinas...
+                        Memproses dokumen kegiatan dan mengenali tata naskah dinas...
                       </p>
                     </div>
                   </div>
@@ -267,7 +267,7 @@ export function UploadMeetingDialog({
                     </div>
                     <div>
                       <p className="text-sm font-bold text-slate-800">
-                        Klik atau seret berkas dokumen rapat ke sini
+                        Klik atau seret berkas dokumen kegiatan ke sini
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
                         Mendukung format <span className="font-semibold text-slate-700">PDF (.pdf)</span>,{' '}
@@ -300,7 +300,7 @@ export function UploadMeetingDialog({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#31889C]" />
-                    <span>Tanggal, Jam &amp; Lokasi Rapat</span>
+                    <span>Tanggal, Jam &amp; Lokasi Kegiatan</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#31889C]" />
@@ -308,7 +308,7 @@ export function UploadMeetingDialog({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#31889C]" />
-                    <span>Naskah Notula (Agenda &amp; Pembahasan)</span>
+                    <span>Naskah Catatan (Agenda &amp; Pembahasan)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#31889C]" />
@@ -328,7 +328,7 @@ export function UploadMeetingDialog({
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span className="font-semibold">Berkas:</span>
                   <span className="truncate max-w-[280px] font-medium text-slate-700">
-                    {selectedFile?.name || 'Dokumen Rapat'}
+                    {selectedFile?.name || 'Dokumen Kegiatan'}
                   </span>
                 </div>
                 <button
@@ -365,7 +365,7 @@ export function UploadMeetingDialog({
                 {/* Title */}
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Agenda / Judul Rapat
+                    Agenda / Judul Kegiatan
                   </label>
                   <p className="font-bold text-slate-800 text-sm mt-0.5 leading-snug">
                     {extractedResult.data.title}
@@ -447,7 +447,7 @@ export function UploadMeetingDialog({
                   className="px-4 py-2 rounded-lg border border-[#31889C] text-[#31889C] hover:bg-[#31889C]/10 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <FileText className="w-4 h-4" />
-                  <span>Isi ke Formulir Rapat</span>
+                  <span>Isi ke Formulir Kegiatan</span>
                 </button>
               )}
 
@@ -460,12 +460,12 @@ export function UploadMeetingDialog({
                 {isSavingDirectly ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Menyimpan Rapat &amp; Notula...</span>
+                    <span>Menyimpan Kegiatan &amp; Catatan...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 text-amber-300" />
-                    <span>Simpan Rapat &amp; Notula Langsung</span>
+                    <span>Simpan Kegiatan &amp; Catatan Langsung</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

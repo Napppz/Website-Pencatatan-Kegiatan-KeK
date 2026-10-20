@@ -505,7 +505,7 @@ export function ActionItemMatrixView({
               Monitoring &amp; Evaluasi Tindak Lanjut
             </h1>
             <p className="text-[13px] text-slate-500 leading-relaxed max-w-2xl">
-              Pantau realisasi komitmen keputusan rapat dewan KEK per tim kerja pelaksana dan penanggung jawab teknis.
+              Pantau realisasi komitmen keputusan kegiatan dewan KEK per tim kerja pelaksana dan penanggung jawab teknis.
             </p>
           </div>
 
@@ -713,7 +713,7 @@ export function ActionItemMatrixView({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari butir tindak lanjut, ref. rapat, tim kerja, atau PIC..."
+              placeholder="Cari butir tindak lanjut, ref. kegiatan, tim kerja, atau PIC..."
               className="w-full pl-9 pr-8 py-2 text-[12.5px] bg-slate-50/70 hover:bg-slate-50 focus:bg-white border border-slate-200/90 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#31889C]/25 focus:border-[#31889C] transition-all shadow-2xs"
             />
             {search && (
@@ -1007,7 +1007,7 @@ export function ActionItemMatrixView({
           <table className="w-full text-left text-slate-800 text-[13px]">
             <thead className="bg-[#F8FAFC] border-b border-slate-200 text-[11px] font-bold text-slate-700 uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4 w-[110px] whitespace-nowrap">Ref. Rapat</th>
+                <th className="py-3.5 px-4 w-[110px] whitespace-nowrap">Ref. Kegiatan</th>
                 <th className="py-3.5 px-4 min-w-[280px]">Butir Tindak Lanjut &amp; Output</th>
                 <th className="py-3.5 px-4 w-[190px] whitespace-nowrap">Tim Kerja &amp; PIC</th>
                 <th className="py-3.5 px-4 w-[140px] whitespace-nowrap">Tenggat Waktu</th>
@@ -1052,7 +1052,7 @@ export function ActionItemMatrixView({
                       key={task.id}
                       className="hover:bg-[#F0F9FA]/70 transition-colors group"
                     >
-                      {/* Ref. Rapat */}
+                      {/* Ref. Kegiatan */}
                       <td className="py-3.5 px-4 align-top">
                         {task.meeting ? (
                           <Link

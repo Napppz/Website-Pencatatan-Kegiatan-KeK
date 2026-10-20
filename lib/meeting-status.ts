@@ -32,7 +32,7 @@ export const MEETING_STATUS_DETAILS: Record<MeetingStatus, MeetingStatusDetail> 
     badgeLabel: 'Draf',
     variant: 'draft',
     tagline: 'Notula sedang disusun awal oleh notulis',
-    description: 'Naskah risalah awal masih dalam proses penulisan dan perumusan oleh notulis rapat. Belum diedarkan ke biro lain.',
+    description: 'Naskah risalah awal masih dalam proses penulisan dan perumusan oleh notulis. Belum diedarkan ke biro/tim lain.',
     colorClass: {
       bg: 'bg-slate-50',
       border: 'border-slate-200',
@@ -41,7 +41,7 @@ export const MEETING_STATUS_DETAILS: Record<MeetingStatus, MeetingStatusDetail> 
       activeStep: 'bg-slate-700 text-white',
       badgeStyle: 'bg-slate-100 border-slate-200 text-slate-700',
     },
-    whenToUse: 'Digunakan saat rapat baru dijadwalkan atau risalah notula baru saja mulai ditulis.',
+    whenToUse: 'Digunakan saat kegiatan baru dijadwalkan atau risalah notula baru saja mulai ditulis.',
     nextStepNote: 'Kirim ke tahap "Review" jika draf awal sudah selesai disusun dan siap ditelaah bersama tim.',
   },
   REVIEW: {
@@ -53,7 +53,7 @@ export const MEETING_STATUS_DETAILS: Record<MeetingStatus, MeetingStatusDetail> 
     badgeLabel: 'Review',
     variant: 'review',
     tagline: 'Pemeriksaan & masukan substansi oleh biro/tim perumus',
-    description: 'Draf risalah diedarkan kepada tim perumus, peserta rapat, atau staf biro terkait untuk diperiksa keakuratan substansi dan diselaraskan.',
+    description: 'Draf risalah diedarkan kepada tim perumus, peserta kegiatan, atau staf biro terkait untuk diperiksa keakuratan substansi dan diselaraskan.',
     colorClass: {
       bg: 'bg-[#FFF8CC]',
       border: 'border-[#FFEE99]',
@@ -63,7 +63,7 @@ export const MEETING_STATUS_DETAILS: Record<MeetingStatus, MeetingStatusDetail> 
       badgeStyle: 'bg-[#FEF9C3] border-[#FDE047] text-[#854D0E]',
     },
     whenToUse: 'Digunakan saat draf notula sedang diedarkan untuk pemeriksaan, koreksi, dan sinkronisasi data.',
-    nextStepNote: 'Ajukan ke Pimpinan Sidang untuk "Disetujui" setelah perbaikan dan koreksi substansi disepakati.',
+    nextStepNote: 'Ajukan ke Pimpinan untuk "Disetujui" setelah perbaikan dan koreksi substansi disepakati.',
   },
   APPROVED: {
     key: 'APPROVED',
@@ -73,8 +73,8 @@ export const MEETING_STATUS_DETAILS: Record<MeetingStatus, MeetingStatusDetail> 
     fullTitle: 'Tahap 3: Disetujui (Validasi Pimpinan)',
     badgeLabel: 'Disetujui',
     variant: 'approved',
-    tagline: 'Materi risalah telah disetujui pimpinan sidang',
-    description: 'Substansi risalah rapat dan butir kesepakatan telah diperiksa dan divalidasi oleh Pimpinan Sidang / Sekretaris KEK, menunggu pengesahan dan penerbitan formal.',
+    tagline: 'Materi risalah telah disetujui pimpinan',
+    description: 'Substansi risalah kegiatan dan butir kesepakatan telah diperiksa dan divalidasi oleh Pimpinan, menunggu pengesahan dan penerbitan formal.',
     colorClass: {
       bg: 'bg-[#E0F2FE]',
       border: 'border-[#BAE6FD]',
@@ -83,7 +83,7 @@ export const MEETING_STATUS_DETAILS: Record<MeetingStatus, MeetingStatusDetail> 
       activeStep: 'bg-[#0284C7] text-white',
       badgeStyle: 'bg-[#E0F2FE] border-[#BAE6FD] text-[#0369A1]',
     },
-    whenToUse: 'Digunakan saat substansi sudah disetujui Pimpinan Sidang, tetapi dokumen final belum ditandatangani/diterbitkan resmi.',
+    whenToUse: 'Digunakan saat substansi sudah disetujui Pimpinan, tetapi dokumen final belum ditandatangani/diterbitkan resmi.',
     nextStepNote: 'Ubah ke "Final" setelah naskah risalah resmi ditandatangani dan siap didistribusikan.',
   },
   FINAL: {
@@ -105,7 +105,7 @@ export const MEETING_STATUS_DETAILS: Record<MeetingStatus, MeetingStatusDetail> 
       badgeStyle: 'bg-[#DCFCE7] border-[#86EFAC] text-[#15803D]',
     },
     whenToUse: 'Digunakan saat risalah sudah selesai 100%, disahkan secara resmi, dan menjadi arsip negara berkekuatan tetap.',
-    nextStepNote: 'Pantau pelaksanaan butir kesepakatan sidang di menu Matriks Tindak Lanjut.',
+    nextStepNote: 'Pantau pelaksanaan butir kesepakatan di menu Status Pekerjaan.',
   },
 };
 
@@ -146,8 +146,8 @@ const DETAIL_BELUM_DIMULAI: ProgressStatusDetail = {
   step: 1,
   subtitle: 'Persiapan / Terjadwal',
   badgeLabel: 'Belum Dimulai',
-  tagline: 'Rapat baru diagendakan & persiapan risalah',
-  description: 'Rapat telah dijadwalkan dan dokumen/agenda sedang dalam persiapan awal.',
+  tagline: 'Kegiatan baru diagendakan & persiapan risalah',
+  description: 'Kegiatan telah dijadwalkan dan dokumen/agenda sedang dalam persiapan awal.',
   colorClass: {
     bg: 'bg-sky-50',
     border: 'border-sky-300',
@@ -163,8 +163,8 @@ const DETAIL_DALAM_PROSES: ProgressStatusDetail = {
   step: 2,
   subtitle: 'Sedang Berlangsung / Telaah',
   badgeLabel: 'Dalam Proses',
-  tagline: 'Rapat berlangsung & notula dalam telaah',
-  description: 'Rapat sedang dilaksanakan atau draf notula sedang ditelaah & dibahas lintas tim.',
+  tagline: 'Kegiatan berlangsung & notula dalam telaah',
+  description: 'Kegiatan sedang dilaksanakan atau draf notula sedang ditelaah & dibahas lintas tim.',
   colorClass: {
     bg: 'bg-amber-50',
     border: 'border-amber-300',
@@ -180,8 +180,8 @@ const DETAIL_SELESAI: ProgressStatusDetail = {
   step: 3,
   subtitle: 'Selesai & Disahkan',
   badgeLabel: 'Selesai',
-  tagline: 'Rapat selesai & risalah resmi sah',
-  description: 'Rapat telah selesai dilaksanakan, risalah disahkan pimpinan resmi dan mengikat.',
+  tagline: 'Kegiatan selesai & risalah resmi sah',
+  description: 'Kegiatan telah selesai dilaksanakan, risalah disahkan pimpinan resmi dan mengikat.',
   colorClass: {
     bg: 'bg-emerald-50',
     border: 'border-emerald-300',

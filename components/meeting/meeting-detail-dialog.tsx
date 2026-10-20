@@ -89,14 +89,14 @@ export function MeetingDetailDialog({
       link.href = url;
       link.download = type === 'nota-dinas'
         ? `Nota-Dinas-${meeting.code || 'KEK'}.pdf`
-        : `Risalah-Rapat-${meeting.code || 'KEK'}.pdf`;
+        : `Catatan-Kegiatan-${meeting.code || 'KEK'}.pdf`;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
       toast.success(
         type === 'nota-dinas'
-          ? `Nota Dinas rapat ${meeting.code || 'KEK'} berhasil diunduh (PDF).`
-          : `Risalah rapat ${meeting.code || 'KEK'} berhasil diunduh (PDF).`
+          ? `Nota Dinas kegiatan ${meeting.code || 'KEK'} berhasil diunduh (PDF).`
+          : `Catatan kegiatan ${meeting.code || 'KEK'} berhasil diunduh (PDF).`
       );
     } catch (err: any) {
       toast.error(err?.message || 'Terjadi kesalahan saat mengunduh PDF.');
@@ -121,14 +121,14 @@ export function MeetingDetailDialog({
       const cleanCode = (meeting.code || 'KEK').replace(/[^a-zA-Z0-9_-]/g, '_');
       link.download = type === 'nota-dinas'
         ? `Nota-Dinas-${cleanCode}.docx`
-        : `Risalah-Rapat-${cleanCode}.docx`;
+        : `Catatan-Kegiatan-${cleanCode}.docx`;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
       toast.success(
         type === 'nota-dinas'
-          ? `Nota Dinas rapat ${meeting.code || 'KEK'} berhasil diunduh (Word .docx).`
-          : `Risalah rapat ${meeting.code || 'KEK'} berhasil diunduh (Word .docx).`
+          ? `Nota Dinas kegiatan ${meeting.code || 'KEK'} berhasil diunduh (Word .docx).`
+          : `Catatan kegiatan ${meeting.code || 'KEK'} berhasil diunduh (Word .docx).`
       );
     } catch (err: any) {
       toast.error(err?.message || 'Terjadi kesalahan saat mengunduh Word.');
@@ -183,9 +183,9 @@ export function MeetingDetailDialog({
 
   const handleDelete = async () => {
     const confirmed = await confirmModal({
-      title: `Hapus Rapat ${meeting.code}?`,
-      message: `Apakah Anda yakin ingin menghapus rapat "${meeting.title}" dari database?`,
-      confirmText: 'Ya, Hapus Rapat',
+      title: `Hapus Kegiatan ${meeting.code}?`,
+      message: `Apakah Anda yakin ingin menghapus kegiatan "${meeting.title}" dari database?`,
+      confirmText: 'Ya, Hapus Kegiatan',
       variant: 'danger',
     });
 
@@ -198,7 +198,7 @@ export function MeetingDetailDialog({
       const { deleteMeetingAction } = await import('@/app/actions/meeting-actions');
       const res = await deleteMeetingAction(meeting.id);
       if (res.success) {
-        toast.success(`Rapat ${meeting.code} berhasil dihapus dari database.`);
+        toast.success(`Kegiatan ${meeting.code} berhasil dihapus dari database.`);
         onClose();
         if (onMeetingUpdated) {
           onMeetingUpdated();
@@ -206,10 +206,10 @@ export function MeetingDetailDialog({
           router.refresh();
         }
       } else {
-        toast.error(res.error || 'Gagal menghapus rapat');
+        toast.error(res.error || 'Gagal menghapus kegiatan');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Gagal menghapus rapat');
+      toast.error(err?.message || 'Gagal menghapus kegiatan');
     } finally {
       setIsDeleting(false);
     }
@@ -223,9 +223,9 @@ export function MeetingDetailDialog({
   const handleStartMeeting = async () => {
     if (!meeting) return;
     const confirmed = await confirmModal({
-      title: 'Mulai Pelaksanaan Rapat?',
-      message: `Apakah Anda ingin memulai pelaksanaan rapat "${meeting.title}" sekarang? Status rapat akan langsung diubah menjadi "Dalam Proses".`,
-      confirmText: 'Ya, Mulai Rapat',
+      title: 'Mulai Pelaksanaan Kegiatan?',
+      message: `Apakah Anda ingin memulai pelaksanaan kegiatan "${meeting.title}" sekarang? Status kegiatan akan langsung diubah menjadi "Dalam Proses".`,
+      confirmText: 'Ya, Mulai Kegiatan',
       variant: 'primary',
     });
     if (!confirmed) return;
@@ -235,14 +235,14 @@ export function MeetingDetailDialog({
       const { updateMeetingStatusAction } = await import('@/app/actions/meeting-actions');
       const res = await updateMeetingStatusAction(meeting.id, 'Dalam Proses');
       if (res.success) {
-        toast.success(`Rapat ${meeting.code} resmi dimulai (Status: Dalam Proses).`);
+        toast.success(`Kegiatan ${meeting.code} resmi dimulai (Status: Dalam Proses).`);
         onClose();
         router.push(`/semua-rapat/${meeting.id}?tab=minutes`);
       } else {
-        toast.error(res.error || 'Gagal memulai rapat');
+        toast.error(res.error || 'Gagal memulai kegiatan');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Gagal memulai rapat');
+      toast.error(err?.message || 'Gagal memulai kegiatan');
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -251,8 +251,8 @@ export function MeetingDetailDialog({
   const handleApproveMeeting = async () => {
     if (!meeting) return;
     const confirmed = await confirmModal({
-      title: 'Setujui & Selesaikan Rapat?',
-      message: `Apakah Anda ingin menyetujui hasil risalah rapat "${meeting.title}"? Status rapat akan otomatis diubah menjadi SELESAI.`,
+      title: 'Setujui & Selesaikan Kegiatan?',
+      message: `Apakah Anda ingin menyetujui hasil risalah kegiatan "${meeting.title}"? Status kegiatan akan otomatis diubah menjadi SELESAI.`,
       confirmText: 'Ya, Setujui & Selesaikan',
       variant: 'primary',
     });
@@ -263,7 +263,7 @@ export function MeetingDetailDialog({
       const { approveMeetingAction } = await import('@/app/actions/meeting-actions');
       const res = await approveMeetingAction(meeting.id);
       if (res.success) {
-        toast.success(`Hasil rapat ${meeting.code} resmi disetujui (Status: Selesai).`);
+        toast.success(`Hasil kegiatan ${meeting.code} resmi disetujui (Status: Selesai).`);
         onClose();
         if (onMeetingUpdated) {
           onMeetingUpdated();
@@ -271,10 +271,10 @@ export function MeetingDetailDialog({
           router.refresh();
         }
       } else {
-        toast.error(res.error || 'Gagal menyetujui hasil rapat');
+        toast.error(res.error || 'Gagal menyetujui hasil kegiatan');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Gagal menyetujui hasil rapat');
+      toast.error(err?.message || 'Gagal menyetujui hasil kegiatan');
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -286,7 +286,7 @@ export function MeetingDetailDialog({
       const { updateMeetingStatusAction } = await import('@/app/actions/meeting-actions');
       const res = await updateMeetingStatusAction(meeting.id, newStatus);
       if (res.success) {
-        toast.success(`Status rapat ${meeting.code} berhasil diubah ke "${newStatus}".`);
+        toast.success(`Status kegiatan ${meeting.code} berhasil diubah ke "${newStatus}".`);
         onClose();
         if (onMeetingUpdated) {
           onMeetingUpdated();
@@ -335,28 +335,28 @@ export function MeetingDetailDialog({
                   onOpenSeriesModal(meeting.id);
                 }}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-semibold text-[#215865] bg-[#E8F5F7] hover:bg-[#BCE3EB] transition-colors cursor-pointer"
-                title="Lihat Linimasa Semua Rapat Terkait Agenda Ini"
+                title="Lihat Linimasa Semua Kegiatan Terkait Agenda Ini"
               >
                 <Layers className="w-3.5 h-3.5 text-[#31889C]" />
                 <span>Rangkaian Agenda</span>
               </button>
             )}
 
-            {/* Quick Action Button: Mulai Rapat / Setujui Hasil Rapat */}
+            {/* Quick Action Button: Mulai Kegiatan / Setujui Hasil Kegiatan */}
             {isBelumDimulai && canChangeStatus && (
               <button
                 type="button"
                 disabled={isUpdatingStatus}
                 onClick={handleStartMeeting}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[12px] font-bold text-white bg-[#31889C] hover:bg-[#266F80] transition-colors cursor-pointer shadow-xs disabled:opacity-50"
-                title="Mulai Rapat (Otomatis ubah status ke Dalam Proses)"
+                title="Mulai Kegiatan (Otomatis ubah status ke Dalam Proses)"
               >
                 {isUpdatingStatus ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <Play className="w-3.5 h-3.5 fill-current" />
                 )}
-                <span>Mulai Rapat</span>
+                <span>Mulai Kegiatan</span>
               </button>
             )}
 
@@ -366,14 +366,14 @@ export function MeetingDetailDialog({
                 disabled={isUpdatingStatus}
                 onClick={handleApproveMeeting}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[12px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
-                title="Admin Tim & Pimpinan: Setujui hasil rapat (Otomatis ubah status ke Selesai)"
+                title="Admin Tim & Pimpinan: Setujui hasil kegiatan (Otomatis ubah status ke Selesai)"
               >
                 {isUpdatingStatus ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <CheckCircle2 className="w-3.5 h-3.5" />
                 )}
-                <span>Setujui Hasil Rapat</span>
+                <span>Setujui Hasil Kegiatan</span>
               </button>
             )}
 
@@ -388,7 +388,7 @@ export function MeetingDetailDialog({
               href={`/semua-rapat/${meeting.id}`}
               onClick={onClose}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[12px] font-semibold text-[#215865] bg-[#E8F5F7] hover:bg-[#BCE3EB] transition-colors"
-              title="Buka Halaman Rapat Penuh"
+              title="Buka Halaman Kegiatan Penuh"
             >
               <span>Halaman Penuh</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -417,7 +417,7 @@ export function MeetingDetailDialog({
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>Informasi Rapat</span>
+            <span>Informasi Kegiatan</span>
           </button>
 
           <button
@@ -449,7 +449,7 @@ export function MeetingDetailDialog({
 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-6 text-[13px]">
-          {/* TAB 1: INFORMASI RAPAT */}
+          {/* TAB 1: INFORMASI KEGIATAN */}
           {activeTab === 'info' && (
             <>
               {/* Title */}
@@ -507,7 +507,7 @@ export function MeetingDetailDialog({
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-[#0B5CFF] hover:bg-blue-100 text-[10.5px] font-bold border border-blue-200 transition-colors"
-                              title="Buka Ruang Rapat Zoom"
+                              title="Buka Ruang Virtual Zoom"
                             >
                               <Video className="w-3 h-3 text-[#0B5CFF]" />
                               <span>Buka Zoom</span>
@@ -610,7 +610,7 @@ export function MeetingDetailDialog({
               <div className="p-3.5 bg-[#F0F9FA] rounded-xl border border-[#BCE3EB] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <span className="text-[12px] font-bold text-slate-900 block">
-                    {canChangeStatus ? 'Ubah Status Pemantauan Rapat' : 'Status Pemantauan Rapat'}
+                    {canChangeStatus ? 'Ubah Status Pemantauan Kegiatan' : 'Status Pemantauan Kegiatan'}
                   </span>
                   <span className="text-[11px] text-slate-500">
                     Status saat ini: <strong className="text-slate-800">{normalizeProgressStatus(meeting.progressStatus || mapStatusToProgress(meeting.status))}</strong>
@@ -673,7 +673,7 @@ export function MeetingDetailDialog({
             </>
           )}
 
-          {/* TAB 2: NOTULEN & HASIL RAPAT */}
+          {/* TAB 2: NOTULEN & HASIL KEGIATAN */}
           {activeTab === 'minutes' && (
             <div className="pt-1">
               <MeetingMinutesSection meetingId={meeting.id} meeting={meeting} />
@@ -684,7 +684,7 @@ export function MeetingDetailDialog({
           {activeTab === 'actionItems' && (
             <div className="pt-1">
               {isLoadingItems ? (
-                <div className="p-8 text-center text-slate-500">Memuat tindak lanjut rapat...</div>
+                <div className="p-8 text-center text-slate-500">Memuat tindak lanjut kegiatan...</div>
               ) : (
                 <ActionItemList
                   meetingId={meeting.id}
@@ -706,10 +706,10 @@ export function MeetingDetailDialog({
               disabled={isDeleting}
               onClick={handleDelete}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 text-[12px] font-semibold transition-colors cursor-pointer disabled:opacity-50"
-              title="Hapus rapat dari database"
+              title="Hapus kegiatan dari database"
             >
               <Trash2 className="w-4 h-4" />
-              <span>{isDeleting ? 'Menghapus...' : 'Hapus Rapat'}</span>
+              <span>{isDeleting ? 'Menghapus...' : 'Hapus Kegiatan'}</span>
             </button>
           ) : (
             <div />
@@ -778,17 +778,17 @@ export function MeetingDetailDialog({
                   disabled={isExporting}
                   onClick={() => onDownloadPdf ? onDownloadPdf(meeting) : handleExportPdf('notula')}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#31889C] text-white font-semibold text-[12px] hover:bg-[#266F80] shadow-sm transition-all cursor-pointer disabled:opacity-50"
-                  title="Unduh Risalah Rapat Resmi Format PDF"
+                  title="Unduh Risalah Catatan Kegiatan Resmi Format PDF"
                 >
                   <FileDown className="w-3.5 h-3.5" />
-                  <span>{isExporting ? 'Membuat PDF...' : 'Notulen PDF'}</span>
+                  <span>{isExporting ? 'Membuat PDF...' : 'Catatan PDF'}</span>
                 </button>
                 <button
                   type="button"
                   disabled={isExportingDocx}
                   onClick={() => handleExportDocx('notula')}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2B579A] text-white font-semibold text-[12px] hover:bg-[#1E3E6D] shadow-sm transition-all cursor-pointer disabled:opacity-50"
-                  title="Unduh Risalah Rapat Resmi Format Word (.docx)"
+                  title="Unduh Risalah Catatan Kegiatan Resmi Format Word (.docx)"
                 >
                   {isExportingDocx ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -558,13 +558,13 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
           </div>
         </div>
 
-        {/* Executive KPI Bar (Jumlah Rapat & Status Pemantauan: Selesai, Dalam Proses, Belum Dimulai) */}
+        {/* Executive KPI Bar (Jumlah Kegiatan & Status Pemantauan: Selesai, Dalam Proses, Belum Dimulai) */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 p-4 bg-slate-50/80 border-b border-slate-200 text-center">
           <div className="bg-white p-2.5 rounded-xl border border-slate-200/90 shadow-2xs">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Jumlah Rapat</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Jumlah Kegiatan</p>
             <p className="text-[20px] font-extrabold text-[#215865] mt-0.5">{kpiMeetingCount}</p>
             <p className="text-[10px] text-slate-400 mt-0.5">
-              {dateFilter === 'ALL' ? 'Agenda resmi tim' : 'Rapat periode ini'}
+              {dateFilter === 'ALL' ? 'Agenda resmi tim' : 'Kegiatan periode ini'}
             </p>
           </div>
           <div className="bg-white p-2.5 rounded-xl border border-slate-200/90 shadow-2xs">
@@ -633,7 +633,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
               )}
             >
               <Calendar className="w-3.5 h-3.5" />
-              <span>Daftar Rapat ({kpiMeetingCount})</span>
+              <span>Daftar Kegiatan ({kpiMeetingCount})</span>
             </button>
             <button
               type="button"
@@ -743,15 +743,15 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                               <Link
                                 href={meetingHref}
                                 onClick={onClose}
-                                title={`Buka rincian rapat ${job.meetingNumber || ''}`}
+                                title={`Buka rincian kegiatan ${job.meetingNumber || ''}`}
                                 className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-[#1E6B7B] bg-[#F0F9FA] hover:bg-[#E0F3F7] hover:border-[#31889C] px-2 py-0.5 rounded border border-[#BCE3EB] transition-colors cursor-pointer group/link"
                               >
-                                <span>Rapat {job.meetingNumber}</span>
+                                <span>Kegiatan {job.meetingNumber}</span>
                                 <ExternalLink className="w-2.5 h-2.5 text-[#1E6B7B] group-hover/link:translate-x-0.5 transition-transform" />
                               </Link>
                             ) : job.meetingNumber ? (
                               <span className="text-[11px] font-mono font-bold text-[#1E6B7B] bg-[#F0F9FA] px-2 py-0.5 rounded border border-[#BCE3EB]">
-                                Rapat {job.meetingNumber}
+                                Kegiatan {job.meetingNumber}
                               </span>
                             ) : null}
 
@@ -780,7 +780,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                           </div>
                         </div>
 
-                        {/* Status Lifecycle Indicator & Link Detail Rapat */}
+                        {/* Status Lifecycle Indicator & Link Detail Kegiatan */}
                         <div className="sm:text-right shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
                           <div>{getStatusBadge(job.status)}</div>
 
@@ -789,9 +789,9 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                               href={meetingHref}
                               onClick={onClose}
                               className="inline-flex items-center gap-1 text-[11.5px] font-bold text-[#215865] hover:text-[#31889C] hover:underline transition-colors cursor-pointer"
-                              title={`Buka detail rapat ${job.meetingNumber || ''}`}
+                              title={`Buka detail kegiatan ${job.meetingNumber || ''}`}
                             >
-                              <span>Detail Rapat</span>
+                              <span>Detail Kegiatan</span>
                               <ExternalLink className="w-3 h-3" />
                             </Link>
                           )}
@@ -834,7 +834,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
             </div>
           )}
 
-          {/* TAB 2: DAFTAR RAPAT TIM */}
+          {/* TAB 2: DAFTAR KEGIATAN TIM */}
           {activeTab === 'meetings' && (
             <div className="space-y-2.5">
               {filteredMeetings.length > 0 ? (
@@ -852,7 +852,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                             href={meetingDetailHref}
                             onClick={onClose}
                             className="text-[11.5px] font-mono font-extrabold text-[#215865] bg-[#F0F9FA] hover:bg-[#E0F3F7] hover:border-[#31889C] px-2 py-0.5 rounded border border-[#BCE3EB] transition-colors inline-flex items-center gap-1 cursor-pointer"
-                            title={`Buka detail rapat ${m.meetingNumber}`}
+                            title={`Buka detail kegiatan ${m.meetingNumber}`}
                           >
                             <span>{m.meetingNumber}</span>
                             <ExternalLink className="w-2.5 h-2.5" />
@@ -865,7 +865,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                           href={meetingDetailHref}
                           onClick={onClose}
                           className="font-bold text-[14px] text-slate-900 group-hover:text-[#31889C] hover:underline transition-colors leading-snug block"
-                          title="Klik untuk membuka detail rapat"
+                          title="Klik untuk membuka detail kegiatan"
                         >
                           {m.title}
                         </Link>
@@ -875,9 +875,9 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                         href={meetingDetailHref}
                         onClick={onClose}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#BCE3EB] bg-[#F0F9FA] hover:bg-[#E8F5F7] text-[#215865] text-xs font-bold transition shadow-2xs shrink-0 cursor-pointer"
-                        title="Buka detail dan notula rapat"
+                        title="Buka detail dan notula kegiatan"
                       >
-                        <span>Detail Rapat</span>
+                        <span>Detail Kegiatan</span>
                         <ExternalLink className="w-3 h-3" />
                       </Link>
                     </div>
@@ -887,11 +887,11 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                 <div className="p-8 text-center bg-white rounded-xl border border-dashed border-slate-200">
                   <Calendar className="w-8 h-8 text-slate-300 mx-auto mb-2" />
                   <p className="text-[13px] font-bold text-slate-700">
-                    Tidak ada rapat pada periode ini
+                    Tidak ada kegiatan pada periode ini
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
                     {dateFilter !== 'ALL'
-                      ? `Belum ada agenda rapat yang dijadwalkan pada ${
+                      ? `Belum ada agenda kegiatan yang dijadwalkan pada ${
                           dateFilter === 'TODAY'
                             ? 'Hari Ini'
                             : dateFilter === 'THIS_WEEK'
@@ -900,7 +900,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                             ? 'Bulan Ini'
                             : 'tanggal yang dipilih'
                         }.`
-                      : `Seluruh rapat yang dibuat untuk ${team.fullName} akan tampil di sini.`}
+                      : `Seluruh kegiatan yang dibuat untuk ${team.fullName} akan tampil di sini.`}
                   </p>
                   {dateFilter !== 'ALL' && (
                     <button
@@ -909,7 +909,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                       className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F0F9FA] hover:bg-[#E8F5F7] text-[#215865] border border-[#BCE3EB] rounded-lg text-xs font-bold transition cursor-pointer"
                     >
                       <RotateCcw className="w-3 h-3" />
-                      <span>Tampilkan Semua Rapat ({team.meetingCount})</span>
+                      <span>Tampilkan Semua Kegiatan ({team.meetingCount})</span>
                     </button>
                   )}
                 </div>
@@ -970,7 +970,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#31889C] hover:bg-[#266F80] text-white text-xs font-bold transition shadow-xs cursor-pointer"
             >
               <PlusCircle className="w-3.5 h-3.5" />
-              <span>Jadwalkan Rapat {team.fullName}</span>
+              <span>Catat Kegiatan {team.fullName}</span>
             </Link>
             <Link
               href={`/semua-rapat?tim=${team.code}`}
@@ -978,7 +978,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition cursor-pointer"
             >
               <FileText className="w-3.5 h-3.5 text-[#31889C]" />
-              <span>Lihat Semua Rapat Tim</span>
+              <span>Lihat Semua Kegiatan Tim</span>
             </Link>
           </div>
 

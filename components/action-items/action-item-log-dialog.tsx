@@ -66,7 +66,7 @@ const STATUS_BULLET: Record<string, string> = {
 };
 
 const QUICK_NOTE_TEMPLATES = [
-  '🎯 Tindak lanjut telah selesai dilaksanakan sesuai arahan rapat.',
+  '🎯 Tindak lanjut telah selesai dilaksanakan sesuai arahan kegiatan.',
   '📄 Draf regulasi/dokumen telah disusun dan siap difinalisasi.',
   '🤝 Sedang berkoordinasi dengan kementerian/biro terkait.',
   '📊 Masih dalam proses penyusunan dan pengumpulan data.',

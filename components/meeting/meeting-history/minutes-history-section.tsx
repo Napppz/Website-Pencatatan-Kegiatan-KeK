@@ -93,7 +93,7 @@ const CATEGORY_CONFIG: Record<
     themeColor: 'text-teal-700',
   },
   STATUS: {
-    badgeLabel: 'Status Rapat',
+    badgeLabel: 'Status Kegiatan',
     badgeStyle: 'bg-violet-50 text-violet-700 border-violet-200',
     createdLabel: 'Status Ditetapkan',
     updatedLabel: 'Status Diubah',
@@ -437,7 +437,7 @@ export function extractDocumentSections(
       createSection('date', '📅 Tanggal Naskah', ndOld?.dateText, ndNew?.dateText),
       createSection('attachments', '📎 Lampiran', ndOld?.attachments, ndNew?.attachments),
       createSection('discussion', '💬 Substansi Inti Pembahasan', oldVal?.discussion, newVal?.discussion),
-      createSection('conclusion', '📝 Kesimpulan Rapat', oldVal?.conclusion, newVal?.conclusion),
+      createSection('conclusion', '📝 Kesimpulan Kegiatan', oldVal?.conclusion, newVal?.conclusion),
       createSection('decisions', '✅ Arahan & Tindak Lanjut', oldVal?.decisions, newVal?.decisions),
       createSection('agenda', '📋 Catatan Tambahan', oldVal?.agenda, newVal?.agenda),
     ];
@@ -464,9 +464,9 @@ export function extractDocumentSections(
         oldConclusion?.chairpersonName,
         newConclusion?.chairpersonName
       ),
-      createSection('agenda', '📋 Agenda Sidang', oldVal?.agenda, newVal?.agenda),
+      createSection('agenda', '📋 Agenda Kegiatan', oldVal?.agenda, newVal?.agenda),
       createSection('discussion', '💬 Substansi Inti Pembahasan', oldVal?.discussion, newVal?.discussion),
-      createSection('conclusion', '📝 Kesimpulan Rapat', oldConclusion, newConclusion),
+      createSection('conclusion', '📝 Kesimpulan Kegiatan', oldConclusion, newConclusion),
       createSection('decisions', '✅ Kesepakatan & Tindak Lanjut', oldVal?.decisions, newVal?.decisions),
     ];
 
@@ -478,7 +478,7 @@ export function extractDocumentSections(
   if (category === 'STATUS') {
     const oldStatus = oldVal?.status || (typeof oldVal === 'string' ? oldVal : '');
     const newStatus = newVal?.status || (typeof newVal === 'string' ? newVal : '');
-    const sec = createSection('status', '🏷️ Status Rapat', oldStatus, newStatus);
+    const sec = createSection('status', '🏷️ Status Kegiatan', oldStatus, newStatus);
     if (sec) return [sec];
   }
 
@@ -530,7 +530,7 @@ function HistoryItem({ entry }: HistoryItemProps) {
     ? catConfig.createdLabel
     : catConfig.updatedLabel;
 
-  const userName = entry.user?.name || 'Sistem Log Book Rapat';
+  const userName = entry.user?.name || 'Sistem Log Book Kegiatan';
   const userRole = entry.user?.role;
   const hasDetails = entry.oldValue !== null || entry.newValue !== null;
 
@@ -695,7 +695,7 @@ function HistoryItem({ entry }: HistoryItemProps) {
                     <div className="bg-gradient-to-r from-violet-50/80 via-slate-50 to-indigo-50/80 border border-violet-200/80 rounded-xl p-4 space-y-3">
                       <div className="text-[11px] font-bold text-violet-800 uppercase tracking-wide flex items-center gap-1.5">
                         <FileCheck className="w-3.5 h-3.5 text-violet-600" />
-                        <span>Alur Pergeseran Status Rapat</span>
+                        <span>Alur Pergeseran Status Kegiatan</span>
                       </div>
 
                       <div className="flex items-center justify-between gap-3 flex-wrap bg-white p-3.5 rounded-lg border border-violet-100 shadow-2xs">
@@ -1066,13 +1066,13 @@ export function MinutesHistorySection({
           </div>
           <div>
             <h3 className="font-bold text-slate-900 text-[16px] flex items-center gap-2">
-              <span>Riwayat Perubahan Dokumen Rapat</span>
+              <span>Riwayat Perubahan Dokumen Kegiatan</span>
               <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
                 Audit Trail
               </span>
             </h3>
             <p className="text-[12px] text-slate-500 mt-0.5">
-              Merekam seluruh riwayat perubahan naskah <strong>Nota Dinas</strong>, <strong>Risalah Notulen</strong> (Substansi Inti Pembahasan, Kesimpulan, dan Arahan), serta pergeseran status rapat dengan penandaan kata demi kata (word diff).
+              Merekam seluruh riwayat perubahan naskah <strong>Nota Dinas</strong>, <strong>Risalah Notulen</strong> (Substansi Inti Pembahasan, Kesimpulan, dan Arahan), serta pergeseran status kegiatan dengan penandaan kata demi kata (word diff).
             </p>
           </div>
         </div>
@@ -1172,7 +1172,7 @@ export function MinutesHistorySection({
               ? 'Riwayat akan otomatis tercatat setiap kali naskah Nota Dinas diedit atau disimpan melalui editor.'
               : filterCategory === 'notula'
               ? 'Riwayat akan otomatis tercatat setiap kali naskah Risalah Notula disimpan atau diperbarui.'
-              : 'Riwayat akan otomatis muncul saat staf atau pimpinan melakukan penyimpanan dokumen atau perubahan status rapat.'}
+              : 'Riwayat akan otomatis muncul saat staf atau pimpinan melakukan penyimpanan dokumen atau perubahan status kegiatan.'}
           </p>
         </div>
       ) : (

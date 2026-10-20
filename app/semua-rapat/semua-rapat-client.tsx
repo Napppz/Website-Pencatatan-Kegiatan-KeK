@@ -277,7 +277,7 @@ export function SemuaRapatClient({
     { label: 'Daftar Naskah Masuk', value: 'NASKAH_MASUK', count: countNaskahMasuk, icon: '📥' },
     { label: 'Disposisi Sekjen', value: 'DISPOSISI_SEKJEN', count: countDisposisiSekjen, icon: '🏛️' },
     { label: 'Disposisi Biro', value: 'DISPOSISI_BIRO', count: countDisposisiBiro, icon: '📑' },
-    { label: 'Tunda Rapat', value: 'SURAT_DITUNDA', count: countTundaRapat, icon: '⏳' },
+    { label: 'Tunda Kegiatan', value: 'SURAT_DITUNDA', count: countTundaRapat, icon: '⏳' },
   ];
 
   const handleSelectCategory = (val: string) => {
@@ -619,14 +619,14 @@ export function SemuaRapatClient({
         setConfirmInput('');
         setMeetingsList([]);
         toast.success(
-          `Berhasil menghapus seluruh data rapat (${res.count ?? initialMeetings.length} rapat telah dibersihkan).`
+          `Berhasil menghapus seluruh data kegiatan (${res.count ?? initialMeetings.length} kegiatan telah dibersihkan).`
         );
         router.refresh();
       } else {
-        toast.error(res.error || 'Gagal menghapus seluruh data rapat');
+        toast.error(res.error || 'Gagal menghapus seluruh data kegiatan');
       }
     } catch (err: any) {
-      toast.error(`Terjadi kesalahan: ${err?.message || 'Gagal menghapus rapat'}`);
+      toast.error(`Terjadi kesalahan: ${err?.message || 'Gagal menghapus kegiatan'}`);
     } finally {
       setIsDeletingAll(false);
     }
@@ -641,7 +641,7 @@ export function SemuaRapatClient({
           <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
           <div>
             <span className="font-bold">Akses Dibatasi: </span>
-            Anda tidak memiliki hak akses untuk membuka rapat dari biro lain. Anda telah diarahkan kembali ke daftar rapat biro Anda ({lockedBiroCode}).
+            Anda tidak memiliki hak akses untuk membuka kegiatan dari biro lain. Anda telah diarahkan kembali ke daftar kegiatan biro Anda ({lockedBiroCode}).
           </div>
         </div>
       )}
@@ -855,7 +855,7 @@ export function SemuaRapatClient({
                       ? "bg-slate-100 border-slate-300 text-slate-900"
                       : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
                 )}
-                title="Filter berdasarkan Status Rapat"
+                title="Filter berdasarkan Status Kegiatan"
               >
                 <span className={cn("w-2 h-2 rounded-full shrink-0", selectedStatusDot)} />
                 <span className="truncate max-w-[120px]">{selectedStatusLabel}</span>
@@ -878,7 +878,7 @@ export function SemuaRapatClient({
               {openDropdown === 'STATUS' && (
                 <div className="absolute left-0 mt-1.5 w-64 bg-white rounded-xl shadow-xl border border-slate-200/90 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
                   <div className="px-2.5 py-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                    Status Rapat
+                    Status Kegiatan
                   </div>
                   {statusFilters.map((tab) => {
                     const isActive =
@@ -1003,7 +1003,7 @@ export function SemuaRapatClient({
                       ? "bg-slate-100 border-slate-300 text-slate-900"
                       : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
                 )}
-                title="Filter berdasarkan Jenis Rapat"
+                title="Filter berdasarkan Jenis Kegiatan"
               >
                 <span>{selectedJenisIcon}</span>
                 <span className="truncate max-w-[130px]">{selectedJenisLabel}</span>
@@ -1026,7 +1026,7 @@ export function SemuaRapatClient({
               {openDropdown === 'JENIS' && (
                 <div className="absolute right-0 sm:left-0 sm:right-auto mt-1.5 w-64 max-h-72 overflow-y-auto bg-white rounded-xl shadow-xl border border-slate-200/90 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
                   <div className="px-2.5 py-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase sticky top-0 bg-white border-b border-slate-100 mb-1">
-                    Jenis Rapat
+                    Jenis Kegiatan
                   </div>
                   {jenisFilters.map((jf) => {
                     const isActive = jf.value === 'ALL'
@@ -1255,7 +1255,7 @@ export function SemuaRapatClient({
               {/* Bulan */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                  Bulan Rapat
+                  Bulan Kegiatan
                 </label>
                 <select
                   value={monthIdx !== null ? (monthIdx + 1).toString() : 'ALL'}
@@ -1350,7 +1350,7 @@ export function SemuaRapatClient({
         }}
       />
 
-      {/* Danger Modal: Konfirmasi Hapus Semua Rapat */}
+      {/* Danger Modal: Konfirmasi Hapus Semua Kegiatan */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
           <div className="bg-white rounded-2xl border border-red-200 shadow-2xl max-w-lg w-full p-6 animate-in fade-in zoom-in-95 duration-200">
@@ -1361,11 +1361,11 @@ export function SemuaRapatClient({
               </div>
               <div className="space-y-1">
                 <h3 className="font-bold text-[18px] text-slate-900">
-                  Konfirmasi Hapus Semua Rapat
+                  Konfirmasi Hapus Semua Kegiatan
                 </h3>
                 <p className="text-[13px] text-slate-600 leading-relaxed">
-                  Tindakan ini akan menghapus permanen <strong>seluruh data rapat ({initialMeetings.length} rapat)</strong>,
-                  beserta notulen risalah, presensi peserta, dan butir tindak lanjut dari basis data Neon PostgreSQL.
+                  Tindakan ini akan menghapus permanen <strong>seluruh data kegiatan ({initialMeetings.length} kegiatan)</strong>,
+                  beserta notulen risalah dan butir tindak lanjut dari basis data.
                 </p>
               </div>
             </div>
@@ -1374,7 +1374,7 @@ export function SemuaRapatClient({
             <div className="mt-4 p-3.5 bg-red-50 border border-red-200 rounded-xl text-[12.5px] text-red-800 space-y-1">
               <span className="font-bold block">⚠️ Peringatan: Tindakan ini permanen!</span>
               <p>
-                Seluruh data sidang akan dikosongkan. Nomor urut rapat masing-masing biro juga akan direset kembali ke 001.
+                Seluruh data kegiatan akan dikosongkan. Nomor urut kegiatan masing-masing biro juga akan direset kembali ke 001.
               </p>
             </div>
 
@@ -1419,7 +1419,7 @@ export function SemuaRapatClient({
                 ) : (
                   <Trash2 className="w-4 h-4" />
                 )}
-                <span>{isDeletingAll ? 'Menghapus Semua...' : 'Ya, Hapus Semua Rapat'}</span>
+                <span>{isDeletingAll ? 'Menghapus Semua...' : 'Ya, Hapus Semua Kegiatan'}</span>
               </button>
             </div>
           </div>

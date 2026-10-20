@@ -210,7 +210,7 @@ export async function generateActionItemDocx(
     height: { value: convertInchesToTwip(0.35), rule: 'atLeast' },
     children: [
       headerCell('No.', 4),
-      headerCell('Ref. Rapat', 10),
+      headerCell('Ref. Kegiatan', 10),
       headerCell('Butir Tindak Lanjut', 26),
       headerCell('Biro & PIC', 14),
       headerCell('Tenggat', 10),
@@ -243,7 +243,7 @@ export async function generateActionItemDocx(
           [para(`${idx + 1}`, { bold: true, size: 18, align: AlignmentType.CENTER, color: TEAL_DARK })],
           4, rowBg,
         ),
-        // Ref. Rapat
+        // Ref. Kegiatan
         dataCell(
           [
             para(item.meeting?.meetingNumber ?? '—', { bold: true, size: 18, color: TEAL }),
@@ -633,7 +633,7 @@ export async function generateActionItemDocx(
             alignment: AlignmentType.LEFT,
             children: [
               new TextRun({
-                text: 'Dokumen ini digenerate secara otomatis oleh sistem Log & Notulen Rapat Sekretariat Jenderal Dewan Nasional KEK. Keabsahan data mengacu pada database resmi sistem.',
+                text: 'Dokumen ini digenerate secara otomatis oleh sistem Log Book Catatan Kegiatan Sekretariat Jenderal Dewan Nasional KEK. Keabsahan data mengacu pada database resmi sistem.',
                 size: 16,
                 italics: true,
                 color: '94A3B8',

@@ -39,7 +39,7 @@ const STATUS_BADGES: Record<string, { label: string; class: string }> = {
     class: 'bg-[#FFF8CC] text-[#8A7200] border-[#FFEE99]',
   },
   DRAFT: {
-    label: 'Draf Risalah',
+    label: 'Draf Catatan',
     class: 'bg-[#F1F5F9] text-[#64748B] border-[#E2E8F0]',
   },
 };
@@ -89,20 +89,20 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
       setDownloadingId(meeting.id);
       const res = await fetch(`/api/meetings/${meeting.id}/pdf`);
       if (!res.ok) {
-        throw new Error('Gagal menghasilkan berkas risalah PDF');
+        throw new Error('Gagal menghasilkan berkas catatan kegiatan PDF');
       }
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Risalah-Resmi-${meeting.code}-${meeting.date.replace(/\s+/g, '-')}.pdf`;
+      a.download = `Catatan-Kegiatan-${meeting.code}-${meeting.date.replace(/\s+/g, '-')}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      toast.success(`Risalah resmi ${meeting.code} berhasil diunduh.`);
+      toast.success(`Catatan resmi kegiatan ${meeting.code} berhasil diunduh.`);
     } catch (e: any) {
-      toast.error(e?.message || 'Terjadi kesalahan saat mengunduh berkas risalah.');
+      toast.error(e?.message || 'Terjadi kesalahan saat mengunduh berkas catatan kegiatan.');
     } finally {
       setDownloadingId(null);
     }
@@ -149,10 +149,10 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
             <span>Arsip Resmi Dewan Nasional KEK RI</span>
           </span>
           <h1 className="text-[24px] md:text-[28px] font-bold text-slate-900 tracking-tight">
-            Repositori Risalah &amp; Dokumen Sidang
+            Repositori Dokumen &amp; Hasil Kegiatan
           </h1>
           <p className="text-[13px] text-slate-600 leading-relaxed">
-            Pusat penyimpanan digital notulen rapat, berita acara kesepakatan 5 biro, dan berkas penetapan regulasi KEK RI yang terhubung langsung dengan basis data Neon PostgreSQL.
+            Pusat penyimpanan digital catatan kegiatan, berita acara kesepakatan 5 biro, dan berkas penetapan regulasi KEK RI yang terhubung langsung dengan basis data Neon PostgreSQL.
           </p>
         </div>
 
@@ -177,7 +177,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col">
           <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-            Total Dokumen Risalah
+            Total Dokumen Kegiatan
           </span>
           <div className="mt-1 flex items-baseline gap-1.5">
             <span className="text-[26px] font-extrabold text-slate-900">{stats.total}</span>
@@ -210,13 +210,13 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col">
           <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-            Draf Notulen Baru
+            Draf Catatan Baru
           </span>
           <div className="mt-1 flex items-baseline gap-1.5">
             <span className="text-[26px] font-extrabold text-slate-700">{stats.draft}</span>
             <span className="text-[12px] font-semibold text-slate-500">Draft</span>
           </div>
-          <span className="text-[11px] text-slate-500 mt-2 font-medium">Sedang dirampungkan notulis</span>
+          <span className="text-[11px] text-slate-500 mt-2 font-medium">Sedang dirampungkan tim pelaksana</span>
         </div>
       </div>
 
@@ -228,7 +228,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Cari risalah rapat, nomor dokumen, atau topik pembahasan..."
+            placeholder="Cari catatan kegiatan, nomor dokumen, atau topik pembahasan..."
             className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-[13px] bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#31889C]/25 focus:border-[#31889C] transition-all placeholder:text-slate-400"
           />
           <Search className="w-4 h-4 text-[#31889C] absolute left-3 top-2.5 pointer-events-none" />
@@ -268,7 +268,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
             <option value="FINAL">Disahkan (Final)</option>
             <option value="APPROVED">Disetujui</option>
             <option value="REVIEW">Menunggu Review</option>
-            <option value="DRAFT">Draf Risalah</option>
+            <option value="DRAFT">Draf Catatan</option>
           </select>
 
           {(searchTerm || selectedBiro !== 'ALL' || selectedStatus !== 'ALL') && (
@@ -294,14 +294,14 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[15px] text-slate-900">
-              Daftar Dokumen Risalah
+              Daftar Dokumen Kegiatan
             </span>
             <span className="px-2.5 py-0.5 rounded-full bg-[#F0F9FA] text-[#215865] border border-[#BCE3EB] font-bold text-[11px]">
               {filteredMeetings.length} Berkas Tersedia
             </span>
           </div>
           <span className="text-[12px] text-slate-500 hidden sm:inline">
-            Format resmi: Dokumen PDF Surat Keputusan &amp; Risalah Sidang
+            Format resmi: Dokumen PDF Surat Keputusan &amp; Catatan Kegiatan
           </span>
         </div>
 
@@ -314,7 +314,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
               Tidak Ada Dokumen Yang Cocok
             </h3>
             <p className="text-[13px] text-slate-500 max-w-sm mt-1">
-              Tidak ada berkas risalah rapat yang sesuai dengan kriteria filter atau kata kunci pencarian Anda.
+              Tidak ada berkas catatan kegiatan yang sesuai dengan kriteria filter atau kata kunci pencarian Anda.
             </p>
           </div>
         ) : (
@@ -339,7 +339,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
                         <Link
                           href={`/semua-rapat/${m.id}`}
                           className="font-bold text-[12px] text-[#215865] bg-[#F0F9FA] hover:bg-[#E8F5F7] hover:underline px-2.5 py-0.5 rounded-lg border border-[#BCE3EB] transition-colors"
-                          title={`Buka Risalah Rapat ${m.code}`}
+                          title={`Buka Catatan Kegiatan ${m.code}`}
                         >
                           {m.code}
                         </Link>
@@ -354,7 +354,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
                         <Link
                           href={`/semua-rapat/${m.id}`}
                           className="text-[12px] text-slate-500 hover:text-[#31889C] hover:underline font-medium flex items-center gap-1 transition-colors"
-                          title={`Buka Risalah Rapat ${m.code}`}
+                          title={`Buka Catatan Kegiatan ${m.code}`}
                         >
                           <Calendar className="w-3.5 h-3.5 text-slate-400" />
                           <span>{m.date}</span>
@@ -364,7 +364,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
                       <Link
                         href={`/semua-rapat/${m.id}`}
                         className="font-bold text-[15px] text-slate-900 group-hover:text-[#31889C] hover:underline transition-colors block"
-                        title={`Buka Risalah Rapat ${m.code}`}
+                        title={`Buka Catatan Kegiatan ${m.code}`}
                       >
                         {m.title}
                       </Link>
@@ -392,7 +392,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-[12.5px] transition-all hover:border-slate-300"
                     >
                       <Eye className="w-3.5 h-3.5 text-slate-600" />
-                      <span>Buka Risalah</span>
+                      <span>Buka Catatan</span>
                     </Link>
 
                     <button
@@ -400,7 +400,7 @@ export function DokumenClient({ initialMeetings, biros }: DokumenClientProps) {
                       disabled={isDownloadingThis}
                       onClick={() => handleDownloadPdf(m)}
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#31889C] hover:bg-[#266F80] text-white font-semibold text-[12.5px] transition-all shadow-xs shadow-[#31889C]/20 cursor-pointer disabled:opacity-50"
-                      title={`Unduh Dokumen PDF Resmi Rapat ${m.code}`}
+                      title={`Unduh Dokumen PDF Resmi Kegiatan ${m.code}`}
                     >
                       {isDownloadingThis ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -78,7 +78,7 @@ export function MeetingMinutesEditor({
   const [decisions, setDecisions] = useState<JSONContent | null>(initialMinutes?.decisions || null);
   const [conclusion, setConclusion] = useState<JSONContent | null>(initialMinutes?.conclusion || null);
 
-  // Inisialisasi Nama Ketua / Pimpinan Rapat (Dapat Diisi Sendiri)
+  // Inisialisasi Nama Ketua / Pimpinan Kegiatan (Dapat Diisi Sendiri)
   const initialChairpersonName =
     (initialMinutes?.conclusion as any)?.chairpersonName ||
     (initialMinutes?.decisions as any)?.chairpersonName ||
@@ -154,7 +154,7 @@ export function MeetingMinutesEditor({
     initialNota.sender || 'Kepala Bagian Program dan Tata Kelola'
   );
   const [ndSubject, setNdSubject] = useState<string>(
-    initialNota.subject || (meeting?.title ? `Laporan Kegiatan ${meeting.title}` : 'Laporan Kegiatan Rapat')
+    initialNota.subject || (meeting?.title ? `Laporan Kegiatan ${meeting.title}` : 'Laporan Hasil Kegiatan')
   );
 
   const rawDate = meeting?.date ? new Date(meeting.date) : null;
@@ -169,7 +169,7 @@ export function MeetingMinutesEditor({
   const [ndDateText, setNdDateText] = useState<string>(initialNota.dateText || defaultDateText);
   const [ndAttachments, setNdAttachments] = useState<string>(initialNota.attachments || '1 (satu) berkas');
 
-  const defaultIntro = `Menindaklanjuti pelaksanaan rapat ${meeting?.title || ''} yang dilaksanakan pada ${ndDateText}${meeting?.location ? ` bertempat di ${meeting.location}` : ''}, bersama ini kami sampaikan laporan pokok-pokok pembahasan sebagai berikut:`;
+  const defaultIntro = `Menindaklanjuti pelaksanaan kegiatan ${meeting?.title || ''} yang dilaksanakan pada ${ndDateText}${meeting?.location ? ` bertempat di ${meeting.location}` : ''}, bersama ini kami sampaikan laporan pokok-pokok pembahasan sebagai berikut:`;
   const [ndIntroText, setNdIntroText] = useState<string>(initialNota.introText || defaultIntro);
 
   const [ndSignerRole, setNdSignerRole] = useState<string>(
@@ -205,7 +205,7 @@ export function MeetingMinutesEditor({
         const finalNdDocNum = ndDocumentNumber.trim();
         const finalInvitationNum = invitationNumber.trim() || undefined;
 
-        // Jika nomor surat notula diubah dan berbeda dari nomor rapat asli di DB, sinkronkan ke tabel Meeting (hanya jika diisi resmi)
+        // Jika nomor surat notula diubah dan berbeda dari nomor kegiatan asli di DB, sinkronkan ke tabel Meeting (hanya jika diisi resmi)
         if (docType === 'NOTULA' && finalNotulaDocNum && finalNotulaDocNum !== '-' && meeting?.meetingNumber && finalNotulaDocNum !== meeting.meetingNumber) {
           try {
             await updateMeetingNumberAction(meetingId, finalNotulaDocNum);
@@ -384,7 +384,7 @@ export function MeetingMinutesEditor({
         onPreviewClick();
       }
     } else if (!isSuccess && !isDraft) {
-      toast.error('Gagal menyimpan naskah rapat. Silakan periksa kembali isian Anda.');
+      toast.error('Gagal menyimpan naskah kegiatan. Silakan periksa kembali isian Anda.');
     }
   };
 
@@ -420,7 +420,7 @@ export function MeetingMinutesEditor({
           content: [
             {
               type: 'text',
-              text: `Rapat membahas terkait ${topicTitle.toLowerCase()}, adapun hasil rapat sebagaimana berikut:`,
+              text: `Kegiatan membahas terkait ${topicTitle.toLowerCase()}, adapun hasil kegiatan sebagaimana berikut:`,
             },
           ],
         },
@@ -684,17 +684,17 @@ export function MeetingMinutesEditor({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* 0. Pilihan Jenis Dokumen Rapat (Notula vs Nota Dinas) */}
+      {/* 0. Pilihan Jenis Dokumen Kegiatan (Notula vs Nota Dinas) */}
       <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <label className="text-[14px] font-bold text-slate-900 flex items-center gap-2">
-            <span>Pilihan Jenis Dokumen Rapat</span>
+            <span>Pilihan Jenis Dokumen Kegiatan</span>
             <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8F5F7] text-[#215865] border border-[#BCE3EB]">
               Tersedia 2 Format Resmi
             </span>
           </label>
           <p className="text-[12px] text-slate-500 mt-1">
-            Pilih format dokumen naskah dinas yang ingin dibuat untuk rapat ini:
+            Pilih format dokumen naskah dinas yang ingin dibuat untuk kegiatan ini:
           </p>
         </div>
 
@@ -745,7 +745,7 @@ export function MeetingMinutesEditor({
                 </span>
               </div>
               <h3 className="font-bold text-[16px] text-slate-900 mt-1">
-                {ndSubject || meeting?.title || 'Laporan Kegiatan Rapat'}
+                {ndSubject || meeting?.title || 'Laporan Hasil Kegiatan'}
               </h3>
               <p className="text-[12px] text-slate-600 mt-0.5">
                 Pengirim: <span className="font-semibold text-slate-800">{ndSender}</span> ({ndSignerName}) &bull; Kepada: <span className="font-semibold text-slate-800">{ndRecipient}</span>
@@ -846,7 +846,7 @@ export function MeetingMinutesEditor({
                         }}
                         className="text-[11px] font-semibold text-[#31889C] hover:underline cursor-pointer"
                       >
-                        Salin dari Kode Rapat ({meeting.meetingNumber})
+                        Salin dari Kode Kegiatan ({meeting.meetingNumber})
                       </button>
                     )}
                   </div>
@@ -969,7 +969,7 @@ export function MeetingMinutesEditor({
                 type="button"
                 onClick={() => {
                   setNdIntroText(
-                    `Menindaklanjuti pelaksanaan kegiatan ${meeting?.title || 'rapat'} yang dilaksanakan pada ${ndDateText}${meeting?.location ? ` bertempat di ${meeting.location}` : ''}, bersama ini kami sampaikan laporan pokok-pokok pembahasan sebagai berikut:`
+                    `Menindaklanjuti pelaksanaan kegiatan ${meeting?.title || 'kegiatan'} yang dilaksanakan pada ${ndDateText}${meeting?.location ? ` bertempat di ${meeting.location}` : ''}, bersama ini kami sampaikan laporan pokok-pokok pembahasan sebagai berikut:`
                   );
                   hasChangesRef.current = true;
                 }}
@@ -1004,7 +1004,7 @@ export function MeetingMinutesEditor({
             <TiptapEditor
               content={discussion}
               onChange={handleFieldChange(setDiscussion)}
-              placeholder="Ketikkan butir-butir pokok pembahasan rapat di sini..."
+              placeholder="Ketikkan butir-butir pokok pembahasan kegiatan di sini..."
             />
           </div>
 
@@ -1016,7 +1016,7 @@ export function MeetingMinutesEditor({
             <TiptapEditor
               content={conclusion}
               onChange={handleFieldChange(setConclusion)}
-              placeholder="Ketikkan kesimpulan pembahasan rapat di sini..."
+              placeholder="Ketikkan kesimpulan pembahasan kegiatan di sini..."
             />
           </div>
 
@@ -1359,7 +1359,7 @@ export function MeetingMinutesEditor({
           </div>
         </div>
       ) : (
-        /* ================= FORM NOTULA / RISALAH RAPAT ================= */
+        /* ================= FORM NOTULA / CATATAN KEGIATAN ================= */
         <div className="space-y-6">
           {/* Top Helper Header: Form Info Sesuai Naskah Dinas */}
           <div className="bg-[#F8FAFC] border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1373,7 +1373,7 @@ export function MeetingMinutesEditor({
                 </span>
               </div>
               <h3 className="font-bold text-[16px] text-slate-900 mt-1">
-                {meeting?.title || 'Pengisian Notula Rapat'}
+                {meeting?.title || 'Pengisian Catatan Kegiatan'}
               </h3>
               <p className="text-[12px] text-slate-600 mt-0.5">
                 Pimpinan: <span className="font-semibold text-slate-800">{chairpersonName || 'Belum Ditugaskan'}</span> • Notulis: <span className="font-semibold text-slate-800">{signerName || 'Pranata Hubungan Masyarakat Terampil'}</span>
@@ -1475,7 +1475,7 @@ export function MeetingMinutesEditor({
 
           {/* Editor Sections (Berurutan Persis Seperti Naskah Dinas) */}
           <div className="space-y-6">
-            {/* BAGIAN 1: AGENDA RAPAT */}
+            {/* BAGIAN 1: AGENDA KEGIATAN */}
             {(activeTab === 'all' || activeTab === 'agenda') && (
               <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -1485,7 +1485,7 @@ export function MeetingMinutesEditor({
                     </div>
                     <div>
                       <h4 className="font-bold text-[14px] text-slate-900 uppercase tracking-wide">
-                        1. Agenda Rapat
+                        1. Agenda Kegiatan
                       </h4>
                       <p className="text-[11px] text-slate-500">
                         Pokok materi yang dicantumkan pada bagian atas identitas notula
@@ -1506,7 +1506,7 @@ export function MeetingMinutesEditor({
               </div>
             )}
 
-            {/* BAGIAN 2: SUBSTANSI INTI PEMBAHASAN RAPAT */}
+            {/* BAGIAN 2: SUBSTANSI INTI PEMBAHASAN KEGIATAN */}
             {(activeTab === 'all' || activeTab === 'discussion') && (
               <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -1516,10 +1516,10 @@ export function MeetingMinutesEditor({
                     </div>
                     <div>
                       <h4 className="font-bold text-[14px] text-slate-900 uppercase tracking-wide">
-                        2. Substansi Inti Pembahasan Rapat
+                        2. Substansi Inti Pembahasan Kegiatan
                       </h4>
                       <p className="text-[11px] text-slate-500">
-                        Paragraf pengantar hasil rapat dan butir-butir pembahasan bernomor (1., 2., 3., dst.)
+                        Paragraf pengantar hasil kegiatan dan butir-butir pembahasan bernomor (1., 2., 3., dst.)
                       </p>
                     </div>
                   </div>
@@ -1531,7 +1531,7 @@ export function MeetingMinutesEditor({
                 <TiptapEditor
                   content={discussion}
                   onChange={handleFieldChange(setDiscussion)}
-                  placeholder={`Rapat membahas terkait [topik rapat], adapun hasil rapat sebagaimana berikut:\n\n1. [Poin pembahasan pertama]...\n2. [Poin pembahasan kedua]...`}
+                  placeholder={`Kegiatan membahas terkait [topik kegiatan], adapun hasil kegiatan sebagaimana berikut:\n\n1. [Poin pembahasan pertama]...\n2. [Poin pembahasan kedua]...`}
                   minHeight="220px"
                 />
               </div>
@@ -1550,7 +1550,7 @@ export function MeetingMinutesEditor({
                         3. Kesimpulan
                       </h4>
                       <p className="text-[11px] text-slate-500">
-                        Poin-poin kesimpulan dan arahan akhir hasil musyawarah rapat
+                        Poin-poin kesimpulan dan arahan akhir hasil musyawarah kegiatan
                       </p>
                     </div>
                   </div>
@@ -1599,7 +1599,7 @@ export function MeetingMinutesEditor({
               </div>
             )}
 
-            {/* BAGIAN 5: PELAKSANA RAPAT & PENANDATANGAN (KETUA & NOTULIS) */}
+            {/* BAGIAN 5: PELAKSANA KEGIATAN & PENANDATANGAN (KETUA & NOTULIS) */}
             {(activeTab === 'all' || activeTab === 'closer') && (
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-6">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -1609,10 +1609,10 @@ export function MeetingMinutesEditor({
                     </div>
                     <div>
                       <h4 className="font-bold text-[15px] text-slate-900 uppercase tracking-wide">
-                        Identitas Pelaksana Rapat &amp; Penandatangan
+                        Identitas Pelaksana Kegiatan &amp; Penandatangan
                       </h4>
                       <p className="text-[11.5px] text-slate-500">
-                        Ubah nama &amp; jabatan Ketua/Pimpinan Rapat serta Notulis yang akan tercantum pada lembar naskah notula dinas &amp; berkas PDF
+                        Ubah nama &amp; jabatan Ketua/Pimpinan Kegiatan serta Notulis yang akan tercantum pada lembar naskah catatan dinas &amp; berkas PDF
                       </p>
                     </div>
                   </div>
@@ -1622,12 +1622,12 @@ export function MeetingMinutesEditor({
                   </span>
                 </div>
 
-                {/* Input 1: Nomor Surat Undangan Rapat (Opsional) */}
+                {/* Input 1: Nomor Surat Undangan Kegiatan (Opsional) */}
                 <div className="space-y-2 p-4 bg-[#F8FAFC] rounded-xl border border-slate-200">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                     <label className="text-[12.5px] font-bold text-slate-800 flex items-center gap-1.5">
                       <FileText className="w-4 h-4 text-[#31889C]" />
-                      <span>Nomor Surat Undangan Rapat (Opsional)</span>
+                      <span>Nomor Surat Undangan Kegiatan (Opsional)</span>
                     </label>
                     <div className="flex items-center gap-2">
                       {invitationNumber && invitationNumber.trim() !== '' && (
@@ -1667,7 +1667,7 @@ export function MeetingMinutesEditor({
                     className="w-full px-4 py-2.5 text-[13.5px] bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#31889C]/20 focus:border-[#31889C] transition-all text-slate-900 font-medium placeholder:text-slate-400"
                   />
                   <p className="text-[11px] text-slate-500">
-                    Dicantumkan pada baris <strong>Nomor Surat Undangan : ...</strong> di tabel identitas notula &amp; PDF. Jika dikosongkan, otomatis menampilkan tanda <strong>&apos;-&apos;</strong> sesuai kaidah tata naskah dinas untuk rapat yang tidak memakai surat undangan tersendiri.
+                    Dicantumkan pada baris <strong>Nomor Surat Undangan : ...</strong> di tabel identitas catatan &amp; PDF. Jika dikosongkan, otomatis menampilkan tanda <strong>&apos;-&apos;</strong> sesuai kaidah tata naskah dinas untuk kegiatan yang tidak memakai surat undangan tersendiri.
                   </p>
                 </div>
 
@@ -1703,7 +1703,7 @@ export function MeetingMinutesEditor({
                           }}
                           className="text-[11px] font-semibold text-[#31889C] hover:underline cursor-pointer"
                         >
-                          Gunakan Kode Rapat ({meeting.meetingNumber})
+                          Gunakan Kode Kegiatan ({meeting.meetingNumber})
                         </button>
                       )}
                     </div>
@@ -1723,12 +1723,12 @@ export function MeetingMinutesEditor({
                   </p>
                 </div>
 
-                {/* Input Ketua / Pimpinan Rapat */}
+                {/* Input Ketua / Pimpinan Kegiatan */}
                 <div className="space-y-2 p-4 bg-[#F0F9FA] rounded-xl border border-[#BCE3EB]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                     <label className="text-[12.5px] font-bold text-slate-800 flex items-center gap-1.5">
                       <UserCheck className="w-4 h-4 text-[#31889C]" />
-                      <span>Ketua / Pimpinan Rapat (Pejabat yang Memimpin Sidang)</span>
+                      <span>Ketua / Pimpinan Kegiatan (Pejabat yang Memimpin Kegiatan)</span>
                     </label>
                     <div className="flex flex-wrap items-center gap-2">
                       {chairpersonName && chairpersonName.trim() !== '' && (
@@ -1752,7 +1752,7 @@ export function MeetingMinutesEditor({
                           }}
                           className="text-[11px] font-semibold text-[#31889C] hover:text-[#266F80] hover:underline cursor-pointer"
                         >
-                          + Pimpinan Rapat ({meeting.chairperson.name})
+                          + Pimpinan Kegiatan ({meeting.chairperson.name})
                         </button>
                       )}
                     </div>
@@ -1768,7 +1768,7 @@ export function MeetingMinutesEditor({
                     className="w-full px-4 py-2.5 text-[13.5px] bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#31889C]/20 focus:border-[#31889C] transition-all text-slate-900 font-medium placeholder:text-slate-400"
                   />
                   <p className="text-[11px] text-slate-500">
-                    Ketikkan jabatan kedinasan dan nama lengkap pejabat pimpinan rapat. Baris ini dicetak pada bagian <strong>Pelaksana Rapat &rarr; Ketua/Pimpinan Rapat</strong> di naskah dinas &amp; dokumen PDF.
+                    Ketikkan jabatan kedinasan dan nama lengkap pejabat pimpinan kegiatan. Baris ini dicetak pada bagian <strong>Pelaksana Kegiatan &rarr; Ketua/Pimpinan Kegiatan</strong> di naskah dinas &amp; dokumen PDF.
                   </p>
                 </div>
 
@@ -1845,17 +1845,17 @@ export function MeetingMinutesEditor({
 
                 {/* Pratinjau Tampilan Format Lembar Notula & Tanda Tangan */}
                 <div className="pt-2">
-                  <p className="text-[11.5px] font-bold text-slate-700 mb-2">Pratinjau Pelaksana Rapat &amp; Kolom Tanda Tangan:</p>
+                  <p className="text-[11.5px] font-bold text-slate-700 mb-2">Pratinjau Pelaksana Kegiatan &amp; Kolom Tanda Tangan:</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-[12px] text-slate-900 space-y-2">
                       <p className="font-bold text-slate-800 border-b border-slate-200 pb-1.5 flex items-center justify-between">
-                        <span>Baris Pelaksana Rapat:</span>
+                        <span>Baris Pelaksana Kegiatan:</span>
                         <span className="text-[10.5px] text-[#31889C] font-normal">Halaman Depan</span>
                       </p>
                       <div className="space-y-1.5 text-[12px]">
-                        <p className="font-semibold text-slate-800">Pelaksana Rapat:</p>
+                        <p className="font-semibold text-slate-800">Pelaksana Kegiatan:</p>
                         <div className="grid grid-cols-[120px_10px_1fr] items-start text-[11.5px] leading-relaxed">
-                          <span className="text-slate-600">Ketua/Pimpinan Rapat</span>
+                          <span className="text-slate-600">Ketua/Pimpinan Kegiatan</span>
                           <span>:</span>
                           <span className="text-slate-950 font-medium">{chairpersonName || 'Wakil Ketua II, Tim Pelaksana Dewan Nasional KEK, Budi Santoso'}</span>
                         </div>

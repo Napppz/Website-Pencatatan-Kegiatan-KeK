@@ -263,7 +263,7 @@ export function PicSelector({
                 </div>
               ) : (
                 <span className="text-xs text-slate-400 font-normal">
-                  Pilih staf PIC rapat dari tim kerja...
+                  Pilih staf PIC kegiatan dari tim kerja...
                 </span>
               )}
             </div>

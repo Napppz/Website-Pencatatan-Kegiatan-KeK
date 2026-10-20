@@ -283,10 +283,10 @@ export function ActionItemList({
             Matriks &amp; Komitmen Tindak Lanjut
           </span>
           <h3 className="text-[17px] font-bold text-slate-900 mt-0.5">
-            Daftar Butir Tindak Lanjut Rapat
+            Daftar Butir Tindak Lanjut Kegiatan
           </h3>
           <p className="text-[12px] text-slate-500 mt-0.5">
-            Tindak lanjut resmi hasil arahan rapat pleno dewan dan biro pelaksana KEK RI.
+            Tindak lanjut resmi hasil arahan kegiatan dewan dan biro pelaksana KEK RI.
           </p>
         </div>
 
@@ -455,8 +455,8 @@ export function ActionItemList({
             </h4>
             <p className="text-[13px] text-slate-500 leading-relaxed">
               {canCreateItem
-                ? 'Rapat ini belum memiliki tindak lanjut yang terdaftar. Tambahkan butir pekerjaan dan delegasikan kepada tim kerja pelaksana.'
-                : 'Belum ada tindak lanjut yang didaftarkan untuk rapat ini oleh Notulis atau Administrator.'}
+                ? 'Kegiatan ini belum memiliki tindak lanjut yang terdaftar. Tambahkan butir pekerjaan dan delegasikan kepada tim kerja pelaksana.'
+                : 'Belum ada tindak lanjut yang didaftarkan untuk kegiatan ini oleh Notulis atau Administrator.'}
             </p>
             {canCreateItem && (
               <button

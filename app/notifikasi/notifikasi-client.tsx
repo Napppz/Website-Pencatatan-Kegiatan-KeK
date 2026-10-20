@@ -277,7 +277,7 @@ export function NotifikasiClient({
             Notifikasi &amp; Peringatan Dewan
           </h1>
           <p className="text-[13px] text-slate-500 mt-1">
-            Pemberitahuan resmi mengenai rapat terjadwal, pengesahan risalah, dan eskalasi tindak lanjut.
+            Pemberitahuan resmi mengenai kegiatan terjadwal, pengesahan catatan kegiatan, dan eskalasi tindak lanjut.
           </p>
         </div>
 
@@ -409,7 +409,7 @@ export function NotifikasiClient({
           }`}
         >
           <Calendar className="w-3.5 h-3.5" />
-          <span>Undangan Rapat ({notifications.filter((n) => n.type === 'meeting').length})</span>
+          <span>Undangan Kegiatan ({notifications.filter((n) => n.type === 'meeting').length})</span>
         </button>
 
         <button
@@ -439,7 +439,7 @@ export function NotifikasiClient({
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          Agenda &amp; Risalah (
+          Agenda &amp; Catatan (
           {
             notifications.filter(
               (n) => n.type === 'info' || n.type === 'success'
@@ -569,13 +569,13 @@ export function NotifikasiClient({
                       )}
                       <span className={`text-[11px] font-semibold uppercase tracking-wider ${isMeeting ? 'text-emerald-700' : 'text-slate-400'}`}>
                         {isMeeting
-                          ? 'Undangan Rapat Resmi'
+                          ? 'Undangan Kegiatan Resmi'
                           : isDanger
                           ? 'Eskalasi Mendesak'
                           : isWarning
                           ? 'Perhatian Batas Waktu'
                           : isSuccess
-                          ? 'Penyelesaian Risalah'
+                          ? 'Penyelesaian Catatan Kegiatan'
                           : 'Informasi Agenda'}
                       </span>
                     </div>
@@ -591,7 +591,7 @@ export function NotifikasiClient({
                           }`}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <span>{isMeeting ? 'Buka Agenda Rapat' : 'Buka Rincian'}</span>
+                          <span>{isMeeting ? 'Buka Agenda Kegiatan' : 'Buka Rincian'}</span>
                           <ExternalLink className="w-3 h-3" />
                         </Link>
                       )}

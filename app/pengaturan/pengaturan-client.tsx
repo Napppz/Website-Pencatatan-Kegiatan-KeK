@@ -309,7 +309,7 @@ export function PengaturanClient({
                   Pemberitahuan Email Otomatis
                 </div>
                 <div className="text-[12px] text-slate-500">
-                  Terima email saat ada notulen rapat baru atau risalah resmi disahkan dewan.
+                  Terima email saat ada catatan kegiatan baru atau dokumen resmi disahkan dewan.
                 </div>
               </div>
               <input

@@ -132,8 +132,8 @@ export async function generateActionItemExcel(
   });
 
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'Log Book Notula Rapat KEK RI';
-  workbook.lastModifiedBy = 'Log Book Notula Rapat KEK RI';
+  workbook.creator = 'Log Book Catatan Kegiatan KEK RI';
+  workbook.lastModifiedBy = 'Log Book Catatan Kegiatan KEK RI';
   workbook.created = new Date();
   workbook.modified = new Date();
   workbook.properties.date1904 = false;
@@ -152,7 +152,7 @@ export async function generateActionItemExcel(
   });
 
   // Title rows
-  const titleRow1 = matrixSheet.addRow(['LAPORAN MATRIKS TINDAK LANJUT — LOG BOOK NOTULA RAPAT KEK RI']);
+  const titleRow1 = matrixSheet.addRow(['LAPORAN MATRIKS TINDAK LANJUT — LOG BOOK CATATAN KEGIATAN KEK RI']);
   titleRow1.height = 22;
   titleRow1.getCell(1).font = { bold: true, size: 13, color: { argb: 'FF1E3A8A' } };
   titleRow1.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };
@@ -171,9 +171,9 @@ export async function generateActionItemExcel(
   // Column definitions
   const columns = [
     { header: 'No', key: 'no', width: 6 },
-    { header: 'Nomor Rapat', key: 'meetingNumber', width: 16 },
-    { header: 'Judul Rapat', key: 'meetingTitle', width: 30 },
-    { header: 'Tanggal Rapat', key: 'meetingDate', width: 15 },
+    { header: 'Nomor Kegiatan', key: 'meetingNumber', width: 16 },
+    { header: 'Judul Kegiatan', key: 'meetingTitle', width: 30 },
+    { header: 'Tanggal Kegiatan', key: 'meetingDate', width: 15 },
     { header: 'Tindak Lanjut', key: 'title', width: 40 },
     { header: 'Deskripsi', key: 'description', width: 45 },
     { header: 'PIC Biro', key: 'picBiro', width: 25 },
@@ -260,10 +260,10 @@ export async function generateActionItemExcel(
           cell.alignment = { horizontal: 'center', vertical: 'middle' };
           cell.font = { size: 9, color: { argb: 'FF64748B' } };
         } else if (colNumber === 2) {
-          // Nomor Rapat
+          // Nomor Kegiatan
           cell.font = { bold: true, size: 9, color: { argb: 'FFB45309' } };
         } else if (colNumber === 3 || colNumber === 5) {
-          // Judul Rapat & Tindak Lanjut — wrap
+          // Judul Kegiatan & Tindak Lanjut — wrap
           cell.alignment = { vertical: 'top', wrapText: true };
           cell.font = { size: 9 };
         } else if (colNumber === 6) {
@@ -413,7 +413,7 @@ export async function generateActionItemExcel(
 
   const subTitle = summarySheet.getRow(rowIdx);
   subTitle.getCell(1).value =
-    'Sistem Informasi Manajemen Rapat & Tindak Lanjut — Dewan Nasional Kawasan Ekonomi Khusus RI';
+    'Sistem Informasi Manajemen Kegiatan & Tindak Lanjut — Dewan Nasional Kawasan Ekonomi Khusus RI';
   subTitle.getCell(1).font = { size: 10, color: { argb: 'FF475569' }, italic: true };
   subTitle.height = 18;
   summarySheet.mergeCells(rowIdx, 1, rowIdx, 6);

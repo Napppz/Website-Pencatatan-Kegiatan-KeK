@@ -156,7 +156,7 @@ function LoginForm() {
                   autoComplete="email"
                   spellCheck={false}
                   disabled={isLoading}
-                  placeholder="nama@simrapat.local atau nama@kek.go.id"
+                  placeholder="nama@kek.go.id atau email kedinasan"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);

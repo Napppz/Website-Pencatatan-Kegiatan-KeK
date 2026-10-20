@@ -6,7 +6,7 @@ import { NotifikasiClient } from './notifikasi-client';
 export const metadata: Metadata = {
   title: 'Notifikasi Sistem & Peringatan — Sekretariat Dewan Nasional KEK',
   description:
-    'Pusat pemberitahuan resmi mengenai jadwal rapat, risalah, dan eskalasi tindak lanjut Dewan Nasional KEK.',
+    'Pusat pemberitahuan resmi mengenai jadwal kegiatan, catatan kegiatan, dan eskalasi tindak lanjut Dewan Nasional KEK.',
 };
 
 export const dynamic = 'force-dynamic';

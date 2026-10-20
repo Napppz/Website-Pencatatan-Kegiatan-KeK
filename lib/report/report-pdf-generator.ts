@@ -12,9 +12,9 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
         bufferPages: true,
         info: {
           Title: `Laporan Berkala - ${data.period.label}`,
-          Author: 'Log Book Notula Rapat KEK RI',
-          Subject: 'Laporan Berkala Aktivitas Rapat & Tindak Lanjut',
-          Creator: 'Log Book Notula Rapat KEK RI',
+          Author: 'Log Book Catatan Kegiatan KEK RI',
+          Subject: 'Laporan Berkala Aktivitas Kegiatan & Tindak Lanjut',
+          Creator: 'Log Book Catatan Kegiatan KEK RI',
         },
       });
 
@@ -42,7 +42,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
           .fontSize(8)
           .fillColor('#64748B')
           .text(
-            'LOG BOOK NOTULA RAPAT KEK RI • LAPORAN BERKALA',
+            'LOG BOOK CATATAN KEGIATAN KEK RI • LAPORAN BERKALA',
             leftMargin,
             24,
             { width: printableWidth, align: 'left' }
@@ -89,7 +89,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
         .fontSize(7.5)
         .fillColor('#64748B')
         .text(
-          'Sistem Informasi Log Book Notula Rapat Dewan Nasional KEK RI',
+          'Sistem Informasi Log Book Catatan Kegiatan Dewan Nasional KEK RI',
           headerTextX,
           61,
           { width: headerTextWidth }
@@ -130,7 +130,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
         .font('Helvetica-Bold')
         .fontSize(13)
         .fillColor('#0F172A')
-        .text('LAPORAN BERKALA AKTIVITAS RAPAT & TINDAK LANJUT', leftMargin, titleBoxY + 8, {
+        .text('LAPORAN BERKALA AKTIVITAS KEGIATAN & TINDAK LANJUT', leftMargin, titleBoxY + 8, {
           width: printableWidth,
           align: 'center',
         });
@@ -163,15 +163,15 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
       doc.y += 6;
 
       const kpis = [
-        { label: 'Total Rapat', val: String(data.kpi.totalMeetings), color: '#31889C' },
+        { label: 'Total Kegiatan', val: String(data.kpi.totalMeetings), color: '#31889C' },
         { label: 'Total Tindak Lanjut', val: String(data.kpi.totalActionItems), color: '#4F46E5' },
         { label: 'Completion Rate', val: `${data.kpi.completionRate}%`, color: '#7CC563' },
         { label: 'Selesai (Completed)', val: String(data.kpi.completedActionItems), color: '#7CC563' },
         { label: 'Berjalan (In Progress)', val: String(data.kpi.inProgressActionItems), color: '#31889C' },
         { label: 'Menunggu (Pending)', val: String(data.kpi.pendingActionItems), color: '#64748B' },
         { label: 'Terlambat (Overdue)', val: String(data.kpi.overdueActionItems), color: '#DC2626' },
-        { label: 'Rapat Ada Notulen', val: String(data.kpi.meetingsWithMinutes), color: '#31889C' },
-        { label: 'Rapat Tanpa Notulen', val: String(data.kpi.meetingsWithoutMinutes), color: '#9333EA' },
+        { label: 'Kegiatan Ada Catatan', val: String(data.kpi.meetingsWithMinutes), color: '#31889C' },
+        { label: 'Kegiatan Tanpa Catatan', val: String(data.kpi.meetingsWithoutMinutes), color: '#9333EA' },
       ];
 
       const cardCols = 3;
@@ -242,7 +242,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
 
       const headers = [
         'Biro',
-        'Rapat',
+        'Kegiatan',
         'Tdk Lanjut',
         'Selesai',
         'Berjalan',
@@ -378,7 +378,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
 
         const trendHeaders = [
           'Bagian Periode',
-          'Jumlah Rapat',
+          'Jumlah Kegiatan',
           'Tindak Lanjut',
           'Selesai',
           'Terlambat',
@@ -456,7 +456,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
         .font('Helvetica-Bold')
         .fontSize(10)
         .fillColor('#0F172A')
-        .text('DAFTAR RAPAT & KETERSEDIAAN NOTULEN', leftMargin, doc.y);
+        .text('DAFTAR KEGIATAN & KETERSEDIAAN CATATAN', leftMargin, doc.y);
 
       doc.y += 6;
 
@@ -466,7 +466,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
           .fontSize(8.5)
           .fillColor('#64748B')
           .text(
-            'Tidak ada data rapat pada periode yang dipilih.',
+            'Tidak ada data kegiatan pada periode yang dipilih.',
             leftMargin,
             doc.y
           );
@@ -482,7 +482,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
           .fillColor('#1E293B')
           .fill();
 
-        const mHeaders = ['No', 'No. Rapat', 'Judul Rapat', 'Tanggal', 'Biro', 'Notulen'];
+        const mHeaders = ['No', 'No. Kegiatan', 'Judul Kegiatan', 'Tanggal', 'Biro', 'Catatan'];
         let mHX = leftMargin;
         doc.font('Helvetica-Bold').fontSize(7.5).fillColor('#FFFFFF');
         mHeaders.forEach((mh, i) => {
@@ -569,7 +569,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
           .fontSize(7.5)
           .fillColor('#64748B')
           .text(
-            `Log Book Notula Rapat KEK RI • Dokumen Laporan Berkala • Dicetak pada ${new Date().toLocaleDateString('id-ID')}`,
+            `Log Book Catatan Kegiatan KEK RI • Dokumen Laporan Berkala • Dicetak pada ${new Date().toLocaleDateString('id-ID')}`,
             leftMargin,
             812,
             { width: printableWidth / 2, align: 'left' }

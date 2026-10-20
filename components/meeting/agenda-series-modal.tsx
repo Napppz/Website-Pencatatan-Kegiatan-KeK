@@ -57,7 +57,7 @@ export function AgendaSeriesModal({
             setData(res.data);
             setActiveSessionId(meetingId);
           } else {
-            toast.error(res.error || 'Gagal memuat rangkaian rapat terkait.');
+            toast.error(res.error || 'Gagal memuat rangkaian kegiatan terkait.');
           }
         })
         .catch(() => {
@@ -99,11 +99,11 @@ export function AgendaSeriesModal({
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `Risalah-Rapat-${code || 'KEK'}.pdf`;
+      link.download = `Catatan-Kegiatan-${code || 'KEK'}.pdf`;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
-      toast.success(`Risalah rapat ${code} berhasil diunduh (PDF).`);
+      toast.success(`Catatan kegiatan ${code} berhasil diunduh (PDF).`);
     } catch (err: any) {
       toast.error(err?.message || 'Terjadi kesalahan saat mengunduh PDF.');
     } finally {
@@ -153,16 +153,16 @@ export function AgendaSeriesModal({
               <div>
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#215865] bg-[#E8F5F7] px-2.5 py-0.5 rounded-md border border-[#BCE3EB]">
-                    Rangkaian Agenda Rapat
+                    Rangkaian Agenda Kegiatan
                   </span>
                   {data && (
                     <span className="text-[11.5px] font-bold text-[#31889C] bg-[#F0F9FA] px-2.5 py-0.5 rounded-md border border-[#BCE3EB]">
-                      {data.totalSessions} Pertemuan Terkait (Rapat Ke-1 s/d Ke-{data.totalSessions})
+                      {data.totalSessions} Pertemuan Terkait (Kegiatan Ke-1 s/d Ke-{data.totalSessions})
                     </span>
                   )}
                 </div>
                 <h2 className="text-[18px] sm:text-[20px] font-bold text-slate-900 leading-snug line-clamp-2">
-                  {isLoading ? 'Memuat rangkaian rapat...' : (data?.agendaTitle || 'Daftar Rapat Terkait')}
+                  {isLoading ? 'Memuat rangkaian kegiatan...' : (data?.agendaTitle || 'Daftar Kegiatan Terkait')}
                 </h2>
               </div>
             </div>
@@ -201,12 +201,12 @@ export function AgendaSeriesModal({
             <div className="py-16 flex flex-col items-center justify-center space-y-3">
               <Loader2 className="w-8 h-8 animate-spin text-[#31889C]" />
               <p className="text-[13px] font-semibold text-slate-500">
-                Mengumpulkan seluruh sesi rapat terkait dalam agenda ini...
+                Mengumpulkan seluruh sesi kegiatan terkait dalam agenda ini...
               </p>
             </div>
           ) : !data || data.sessions.length === 0 ? (
             <div className="py-12 text-center text-slate-500 text-[13px]">
-              Tidak ada data rapat terkait ditemukan.
+              Tidak ada data kegiatan terkait ditemukan.
             </div>
           ) : (
             <div className="relative pl-4 sm:pl-6 space-y-4">
@@ -345,7 +345,7 @@ export function AgendaSeriesModal({
                             disabled={downloadingId === session.id}
                             onClick={() => handleDownloadPdf(session.id, session.code)}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-[#F0F9FA] hover:border-[#BCE3EB] hover:text-[#215865] text-[12px] font-semibold transition-colors cursor-pointer disabled:opacity-50"
-                            title="Unduh Risalah Rapat (PDF)"
+                            title="Unduh Catatan Kegiatan (PDF)"
                           >
                             {downloadingId === session.id ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -359,7 +359,7 @@ export function AgendaSeriesModal({
                             type="button"
                             onClick={() => handleOpenDetail(session.id)}
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#31889C] text-white hover:bg-[#266F80] text-[12px] font-semibold transition-colors cursor-pointer shadow-2xs"
-                            title="Buka notula dan tindak lanjut lengkap rapat ini"
+                            title="Buka notula dan tindak lanjut lengkap kegiatan ini"
                           >
                             <span>Buka Notula &amp; Detail</span>
                             <ArrowRight className="w-3.5 h-3.5" />
@@ -379,7 +379,7 @@ export function AgendaSeriesModal({
           <div className="text-[12px] text-slate-500 flex items-center gap-1.5">
             <Info className="w-4 h-4 text-[#31889C] shrink-0" />
             <span>
-              Setiap rapat dalam rangkaian ini saling terhubung untuk pelacakan notula dan evaluasi tindak lanjut berkelanjutan.
+              Setiap kegiatan dalam rangkaian ini saling terhubung untuk pelacakan notula dan evaluasi tindak lanjut berkelanjutan.
             </span>
           </div>
 
@@ -394,7 +394,7 @@ export function AgendaSeriesModal({
                 title="Buat sesi pertemuan lanjutan untuk agenda ini"
               >
                 <Plus className="w-4 h-4 text-[#31889C]" />
-                <span>+ Jadwalkan Rapat Ke-{nextSessionNumber}</span>
+                <span>+ Jadwalkan Kegiatan Ke-{nextSessionNumber}</span>
               </Link>
             )}
 

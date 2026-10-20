@@ -174,7 +174,7 @@ export function extractMeetingFromText(text: string): ExtractedMeetingData {
   if (tentangMatch) {
     title = tentangMatch[1].replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
   } else {
-    const rapatMatch = text.match(/(?:RAPAT\s+[A-Z0-9\s,.-]{10,140})/);
+    const rapatMatch = text.match(/(?:(?:RAPAT|KEGIATAN)\s+[A-Z0-9\s,.-]{10,140})/);
     if (rapatMatch) {
       title = rapatMatch[0].trim();
     } else {
@@ -182,7 +182,7 @@ export function extractMeetingFromText(text: string): ExtractedMeetingData {
         .split('\n')
         .map((s) => s.trim())
         .filter((s) => s.length > 5 && !/NOTULA|CATATAN|MINUTES/i.test(s));
-      title = firstLines[0] || 'Rapat Koordinasi KEK';
+      title = firstLines[0] || 'Kegiatan Koordinasi KEK';
     }
   }
 
@@ -209,7 +209,7 @@ export function extractMeetingFromText(text: string): ExtractedMeetingData {
   // 6. Chairperson & Secretary
   let chairpersonName = '';
   const chairMatch = text.match(
-    /(?:Pimpinan Rapat|Ketua Sidang|Ketua Rapat|Dipimpin Oleh)\s*:\s*([^\n\r]+)/i
+    /(?:Pimpinan Kegiatan|Pimpinan Rapat|Ketua Sidang|Ketua Rapat|Dipimpin Oleh)\s*:\s*([^\n\r]+)/i
   );
   if (chairMatch) {
     chairpersonName = chairMatch[1].replace(/\([^\)]+\)/g, '').trim();
@@ -359,13 +359,13 @@ export function extractMeetingFromText(text: string): ExtractedMeetingData {
   const agendaJson = textToTipTapDoc(sections.agenda || `Pembahasan terkait ${title}`);
   const discussionJson = textToTipTapDoc(
     sections.discussion || 'Pemaparan substansi teknis dan diskusi bersama pihak terkait.',
-    `Rapat membahas terkait ${title.toLowerCase()}, adapun hasil rapat sebagaimana berikut:`
+    `Kegiatan membahas terkait ${title.toLowerCase()}, adapun hasil kegiatan sebagaimana berikut:`
   );
   const decisionsJson = textToTipTapDoc(
-    sections.decisions || 'Seluruh peserta rapat menyepakati tindak lanjut dan koordinasi intensif.'
+    sections.decisions || 'Seluruh peserta kegiatan menyepakati tindak lanjut dan koordinasi intensif.'
   );
   const conclusionJson = textToTipTapDoc(
-    sections.conclusion || 'Rapat koordinasi berjalan lancar dan menghasilkan komitmen bersama.'
+    sections.conclusion || 'Kegiatan koordinasi berjalan lancar dan menghasilkan komitmen bersama.'
   );
 
   return {

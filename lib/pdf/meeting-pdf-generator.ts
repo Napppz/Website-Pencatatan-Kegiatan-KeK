@@ -153,10 +153,10 @@ export async function generateMeetingPdf(meeting: MeetingPdfData): Promise<Buffe
         },
         bufferPages: true,
         info: {
-          Title: `Notula - ${meeting.meetingNumber || (meeting as any).code || 'KEK/ND/2026'}`,
+          Title: `Catatan - ${meeting.meetingNumber || (meeting as any).code || 'KEK/ND/2026'}`,
           Author: 'Sekretariat Jenderal Dewan Nasional KEK RI',
-          Subject: `Notula Rapat ${meeting.title}`,
-          Creator: 'Log Book Notula Rapat KEK RI',
+          Subject: `Catatan Kegiatan ${meeting.title}`,
+          Creator: 'Log Book Catatan Kegiatan KEK RI',
         },
       });
 
@@ -289,8 +289,8 @@ export async function generateMeetingPdf(meeting: MeetingPdfData): Promise<Buffe
         doc.y = curY + rowH;
       };
 
-      // 1. Judul Rapat
-      renderMetaRow('Judul Rapat', meeting.title || '-');
+      // 1. Judul Kegiatan
+      renderMetaRow('Judul Kegiatan', meeting.title || '-');
 
       // 2. Hari/Tanggal
       renderMetaRow('Hari/Tanggal', formatIndonesianDate(meeting.date));
@@ -321,11 +321,11 @@ export async function generateMeetingPdf(meeting: MeetingPdfData): Promise<Buffe
       renderMetaRow('Agenda', agendaText);
 
       // -------------------------------------------------------------
-      // 4. PELAKSANA RAPAT & PESERTA
+      // 4. PELAKSANA KEGIATAN & PESERTA
       // -------------------------------------------------------------
       doc.moveDown(0.7);
       doc.font(fonts.arialBold).fontSize(11).fillColor('#000000');
-      doc.text('Pelaksana Rapat:', leftMargin, doc.y);
+      doc.text('Pelaksana Kegiatan:', leftMargin, doc.y);
       doc.moveDown(0.3);
 
       // Ketua / Pimpinan Rapat (kustom dari notula dinas atau data rapat)
@@ -342,7 +342,7 @@ export async function generateMeetingPdf(meeting: MeetingPdfData): Promise<Buffe
         meeting.chairperson?.name ||
         '-';
 
-      renderMetaRow('Ketua/Pimpinan Rapat', chairpersonName);
+      renderMetaRow('Ketua/Pimpinan Kegiatan', chairpersonName);
 
       // Ekstraksi nama dan jabatan notulis kustom jika diinput di notulen, fallback ke data rapat
       const customSignerName =
@@ -381,11 +381,11 @@ export async function generateMeetingPdf(meeting: MeetingPdfData): Promise<Buffe
       const secretaryMetaText = `${roleClean}, ${finalSignerName}`;
       renderMetaRow('Pencatat', secretaryMetaText);
 
-      // Peserta Rapat
+      // Peserta Kegiatan
       const participants = meeting.participants || [];
       const pCurY = doc.y;
       doc.font(fonts.arial).fontSize(11).fillColor('#000000');
-      doc.text('Peserta Rapat', leftMargin, pCurY, { width: colLabelW });
+      doc.text('Peserta Kegiatan', leftMargin, pCurY, { width: colLabelW });
       doc.text(':', leftMargin + colLabelW, pCurY, { width: colSepW });
 
       if (participants.length === 0) {
@@ -409,13 +409,13 @@ export async function generateMeetingPdf(meeting: MeetingPdfData): Promise<Buffe
       }
 
       // -------------------------------------------------------------
-      // 5. SUBSTANSI INTI PEMBAHASAN RAPAT
+      // 5. SUBSTANSI INTI PEMBAHASAN KEGIATAN
       // -------------------------------------------------------------
       doc.moveDown(0.8);
       const subCurY = doc.y;
       doc.font(fonts.arial).fontSize(11).fillColor('#000000');
       doc.text('Substansi Inti', leftMargin, subCurY, { width: colLabelW });
-      doc.text('Pembahasan Rapat', leftMargin, subCurY + 13, { width: colLabelW });
+      doc.text('Pembahasan Kegiatan', leftMargin, subCurY + 13, { width: colLabelW });
       doc.text(':', leftMargin + colLabelW, subCurY, { width: colSepW });
       doc.y = subCurY + 30;
 
@@ -624,7 +624,7 @@ export async function generateNotaDinasPdf(meeting: MeetingPdfData): Promise<Buf
           Title: `Nota Dinas - ${notaData.documentNumber}`,
           Author: 'Sekretariat Jenderal Dewan Nasional KEK RI',
           Subject: `Nota Dinas ${notaData.subject}`,
-          Creator: 'Log Book Notula Rapat KEK RI',
+          Creator: 'Log Book Catatan Kegiatan KEK RI',
         },
       });
 

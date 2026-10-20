@@ -156,13 +156,13 @@ export function MeetingTable({
               : item
           )
         );
-        toast.success(`Rapat ${meeting.code || meeting.meetingNumber || ''} resmi dimulai (Dalam Proses).`);
+        toast.success(`Kegiatan ${meeting.code || meeting.meetingNumber || ''} resmi dimulai (Dalam Proses).`);
         router.push(`/semua-rapat/${meeting.id}?tab=minutes`);
       } else {
-        toast.error(res.error || 'Gagal memulai rapat.');
+        toast.error(res.error || 'Gagal memulai kegiatan.');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Gagal memulai rapat.');
+      toast.error(err?.message || 'Gagal memulai kegiatan.');
     } finally {
       setUpdatingStatusId(null);
     }
@@ -170,8 +170,8 @@ export function MeetingTable({
 
   const handleApproveMeeting = async (meeting: any) => {
     const confirmed = await confirmModal({
-      title: `Setujui & Selesaikan Rapat?`,
-      message: `Apakah Anda ingin menyetujui hasil risalah rapat "${meeting.title}"? Status rapat akan otomatis diubah menjadi SELESAI.`,
+      title: `Setujui & Selesaikan Kegiatan?`,
+      message: `Apakah Anda ingin menyetujui hasil risalah kegiatan "${meeting.title}"? Status kegiatan akan otomatis diubah menjadi SELESAI.`,
       confirmText: 'Ya, Setujui & Selesaikan',
       variant: 'primary',
     });
@@ -192,13 +192,13 @@ export function MeetingTable({
               : item
           )
         );
-        toast.success(`Hasil rapat berhasil disetujui. Status rapat kini SELESAI.`);
+        toast.success(`Hasil kegiatan berhasil disetujui. Status kegiatan kini SELESAI.`);
         router.refresh();
       } else {
-        toast.error(res.error || 'Gagal menyetujui hasil rapat.');
+        toast.error(res.error || 'Gagal menyetujui hasil kegiatan.');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Gagal menyetujui hasil rapat.');
+      toast.error(err?.message || 'Gagal menyetujui hasil kegiatan.');
     } finally {
       setUpdatingStatusId(null);
     }
@@ -213,9 +213,9 @@ export function MeetingTable({
     const norm = (str: string) =>
       (str || '')
         .toLowerCase()
-        .replace(/\s*[\(\[\-–—]\s*(sesi|rapat|pertemuan|lanjutan|part|bagian)\s*\w*[\)\]]?/gi, '')
+        .replace(/\s*[\(\[\-–—]\s*(sesi|rapat|kegiatan|pertemuan|lanjutan|part|bagian)\s*\w*[\)\]]?/gi, '')
         .replace(/\s*-\s*lanjutan\b/gi, '')
-        .replace(/\s*rapat\s*ke\s*\d+\b/gi, '')
+        .replace(/\s*(rapat|kegiatan)\s*ke\s*\d+\b/gi, '')
         .replace(/\s+/g, ' ')
         .trim();
 
@@ -291,9 +291,9 @@ export function MeetingTable({
 
   const handleDeleteSingleMeeting = async (m: Meeting) => {
     const confirmed = await confirmModal({
-      title: `Hapus Rapat ${m.code}?`,
-      message: `Apakah Anda yakin ingin menghapus permanen rapat "${m.title}" beserta seluruh notulen dan butir tindak lanjutnya dari database?`,
-      confirmText: 'Ya, Hapus Rapat',
+      title: `Hapus Kegiatan ${m.code}?`,
+      message: `Apakah Anda yakin ingin menghapus permanen kegiatan "${m.title}" beserta seluruh notulen dan butir tindak lanjutnya dari database?`,
+      confirmText: 'Ya, Hapus Kegiatan',
       variant: 'danger',
     });
 
@@ -307,16 +307,16 @@ export function MeetingTable({
       if (res.success) {
         setDeletedMeetingIds((prev) => new Set(prev).add(m.id));
         setMeetings((prev) => prev.filter((item) => item.id !== m.id));
-        toast.success(`Rapat ${m.code} berhasil dihapus dari database.`);
+        toast.success(`Kegiatan ${m.code} berhasil dihapus dari database.`);
         if (onMeetingDeleted) {
           onMeetingDeleted(m.id);
         }
         router.refresh();
       } else {
-        toast.error(res.error || 'Gagal menghapus rapat.');
+        toast.error(res.error || 'Gagal menghapus kegiatan.');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Gagal menghapus rapat.');
+      toast.error(err?.message || 'Gagal menghapus kegiatan.');
     } finally {
       setDeletingRowId(null);
     }
@@ -334,12 +334,12 @@ export function MeetingTable({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Risalah-Rapat-${mCode}.pdf`;
+      a.download = `Risalah-Kegiatan-${mCode}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      toast.success(`Risalah rapat ${mCode} berhasil diunduh (PDF).`);
+      toast.success(`Risalah kegiatan ${mCode} berhasil diunduh (PDF).`);
     } catch (e: any) {
       toast.error(e?.message || 'Gagal mengunduh dokumen PDF.');
     } finally {
@@ -548,7 +548,7 @@ export function MeetingTable({
         }
       }
 
-      // Check jenis rapat filter
+      // Check jenis kegiatan filter
       if (filterJenis && filterJenis !== 'ALL') {
         const target = String(filterJenis).toLowerCase().trim();
         const mKind = (m.meetingKind || '').toLowerCase().trim();
@@ -658,7 +658,7 @@ export function MeetingTable({
                     ? "bg-amber-50 text-amber-900 border-amber-300 ring-2 ring-amber-300/40 hover:bg-amber-100"
                     : "bg-emerald-50 text-emerald-900 border-emerald-300 ring-2 ring-emerald-300/40 hover:bg-emerald-100"
                 )}
-                title="Pilih filter status rapat"
+                title="Pilih filter status kegiatan"
               >
                 <div className="flex items-center gap-1.5">
                   <span
@@ -712,7 +712,7 @@ export function MeetingTable({
               {isStatusDropdownOpen && (
                 <div className="absolute left-0 sm:right-0 sm:left-auto top-full mt-1.5 z-40 w-56 bg-white rounded-xl shadow-xl border border-slate-200 p-1.5 space-y-1 animate-in fade-in zoom-in-95">
                   <div className="px-2 py-1 text-[10.5px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Filter Status Rapat
+                    Filter Status Kegiatan
                   </div>
 
                   {/* Semua Status */}
@@ -920,10 +920,10 @@ export function MeetingTable({
                     </div>
                     <div>
                       <h4 className="font-bold text-[15px] text-slate-800">
-                        Tidak Ada Risalah Rapat Ditemukan
+                        Tidak Ada Catatan Kegiatan Ditemukan
                       </h4>
                       <p className="text-[13px] text-slate-500 mt-1">
-                        Tidak ada agenda rapat yang cocok dengan kata kunci atau filter yang Anda terapkan.
+                        Tidak ada agenda kegiatan yang cocok dengan kata kunci atau filter yang Anda terapkan.
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap justify-center">
@@ -967,7 +967,7 @@ export function MeetingTable({
                           <Link
                             href={`/semua-rapat/${meeting.id}`}
                             className="group/link inline-flex flex-col cursor-pointer"
-                            title={`Buka Risalah Rapat ${meeting.code}`}
+                            title={`Buka Catatan Kegiatan ${meeting.code}`}
                           >
                             <span className={cn(
                               "font-bold text-[12px] font-mono tracking-tight px-2 py-0.5 rounded border inline-flex items-center gap-1.5 transition-all shadow-2xs w-fit",
@@ -1221,7 +1221,7 @@ export function MeetingTable({
                             disabled={deletingRowId === meeting.id}
                             onClick={() => handleDeleteSingleMeeting(meeting)}
                             className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
-                            title={`Hapus Rapat ${meeting.code}`}
+                            title={`Hapus Kegiatan ${meeting.code}`}
                           >
                             {deletingRowId === meeting.id ? (
                               <Loader2 className="w-4 h-4 animate-spin text-red-600" />
@@ -1248,7 +1248,7 @@ export function MeetingTable({
             <strong className="text-slate-800">
               {filteredMeetings.length === 0 ? 0 : startIndex + 1}–{endIndex}
             </strong>{' '}
-            dari total <strong className="text-slate-800">{filteredMeetings.length}</strong> risalah rapat terdaftar
+            dari total <strong className="text-slate-800">{filteredMeetings.length}</strong> kegiatan terdaftar
           </span>
 
           <div className="flex items-center gap-1.5">
@@ -1307,7 +1307,7 @@ export function MeetingTable({
         </div>
       )}
 
-      {/* Agenda Series Modal (Linimasa Rapat Terkait) */}
+      {/* Agenda Series Modal (Linimasa Kegiatan Terkait) */}
       <AgendaSeriesModal
         isOpen={isSeriesModalOpen}
         onClose={() => {

@@ -117,8 +117,8 @@ export function CommandPalette({ isOpen, onClose, onCreateMeeting }: CommandPale
     () => [
       {
         id: 'act-new-meeting',
-        title: 'Buat Agenda Rapat Baru',
-        subtitle: 'Buka formulir registrasi notula & jadwal sidang baru',
+        title: 'Catat Kegiatan Baru',
+        subtitle: 'Buka formulir registrasi dan pencatatan kegiatan baru',
         category: 'action',
         icon: <PlusCircle className="w-4 h-4 text-[#1E6B7B]" />,
         action: () => {
@@ -129,8 +129,8 @@ export function CommandPalette({ isOpen, onClose, onCreateMeeting }: CommandPale
       },
       {
         id: 'act-all-meetings',
-        title: 'Semua Risalah Rapat',
-        subtitle: 'Lihat seluruh daftar arsip dan log sidang KEK',
+        title: 'Semua Log Kegiatan',
+        subtitle: 'Lihat seluruh daftar arsip dan log kegiatan Biro 3 KEK',
         category: 'action',
         icon: <FileText className="w-4 h-4 text-[#31889C]" />,
         action: () => {
@@ -284,7 +284,7 @@ export function CommandPalette({ isOpen, onClose, onCreateMeeting }: CommandPale
               setSelectedIndex(0);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Ketik nomor rapat (misal: 012), nama agenda, atau biro..."
+            placeholder="Ketik nomor kegiatan (misal: 012), nama agenda, atau biro..."
             className="w-full bg-transparent text-slate-800 text-[14px] placeholder:text-slate-400 focus:outline-none"
           />
           {query ? (
@@ -335,7 +335,7 @@ export function CommandPalette({ isOpen, onClose, onCreateMeeting }: CommandPale
             )}
           >
             <Calendar className="w-3.5 h-3.5" />
-            <span>Rapat ({filteredMeetings.length})</span>
+            <span>Kegiatan ({filteredMeetings.length})</span>
           </button>
           <button
             type="button"
@@ -525,7 +525,7 @@ export function CommandPalette({ isOpen, onClose, onCreateMeeting }: CommandPale
               <span>Pilih</span>
             </span>
           </div>
-          <span className="text-slate-400">Pencarian Cepat Agenda KEK</span>
+          <span className="text-slate-400">Pencarian Cepat Kegiatan KEK</span>
         </div>
       </div>
     </div>

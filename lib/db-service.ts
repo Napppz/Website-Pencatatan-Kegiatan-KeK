@@ -634,9 +634,9 @@ export async function getDashboardStats() {
       const metrics: DashboardMetric[] = [
         {
           id: 'total-rapat',
-          label: 'Total Rapat (YTD)',
+          label: 'Total Kegiatan (YTD)',
           value: totalMeetings,
-          unit: 'Rapat',
+          unit: 'Kegiatan',
           changeValue: '+100%',
           changeLabel: 'Tersinkronisasi Neon DB',
           variant: 'default',
@@ -644,7 +644,7 @@ export async function getDashboardStats() {
         },
         {
           id: 'rapat-bulan-ini',
-          label: 'Rapat Bulan Ini',
+          label: 'Kegiatan Bulan Ini',
           value: thisMonthMeetings,
           unit: 'Agenda',
           badgeText: `${approvedMeetings} Disetujui`,
@@ -914,7 +914,7 @@ export async function getDashboardStats() {
         },
         {
           key: 'SURAT_DITUNDA',
-          label: 'Tunda Rapat',
+          label: 'Tunda Kegiatan',
           count: countTundaRapat,
           percentage: totalMeetings > 0 ? Math.round((countTundaRapat / totalMeetings) * 100) : 0,
         },

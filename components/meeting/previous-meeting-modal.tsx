@@ -90,13 +90,13 @@ export function PreviousMeetingModal({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Notula-Rapat-${previousMeeting.meetingNumber || 'KEK'}.pdf`;
+      a.download = `Catatan-Kegiatan-${previousMeeting.meetingNumber || 'KEK'}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      toast.success('Notula rapat sebelumnya berhasil diunduh.');
+      toast.success('Catatan kegiatan sebelumnya berhasil diunduh.');
     } catch {
-      toast.error('Gagal mengunduh dokumen PDF rapat sebelumnya.');
+      toast.error('Gagal mengunduh dokumen PDF kegiatan sebelumnya.');
     } finally {
       setIsDownloadingPdf(false);
     }
@@ -145,7 +145,7 @@ export function PreviousMeetingModal({
             </div>
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-teal-100">
-                Rujukan Rapat Sebelumnya
+                Rujukan Kegiatan Sebelumnya
               </span>
               <h2 className="text-[17px] font-bold text-white leading-tight">
                 {previousMeeting.meetingNumber} — {previousMeeting.title}
@@ -218,7 +218,7 @@ export function PreviousMeetingModal({
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>Notula & Kesimpulan Rapat</span>
+            <span>Notula &amp; Kesimpulan Kegiatan</span>
           </button>
           <button
             type="button"
@@ -241,7 +241,7 @@ export function PreviousMeetingModal({
               {!minutes && (
                 <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-300">
                   <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
-                  <p className="font-semibold text-slate-700">Belum ada dokumen notula yang tersimpan untuk rapat ini.</p>
+                  <p className="font-semibold text-slate-700">Belum ada dokumen notula yang tersimpan untuk kegiatan ini.</p>
                 </div>
               )}
 
@@ -251,7 +251,7 @@ export function PreviousMeetingModal({
                   {minutes.agenda && (
                     <div className="p-4 bg-[#F8FAFC] rounded-xl border border-slate-200 space-y-1.5">
                       <h4 className="text-[12px] font-bold text-[#31889C] uppercase tracking-wider">
-                        Agenda Rapat
+                        Agenda Kegiatan
                       </h4>
                       <div className="text-slate-900 leading-relaxed font-['Arial',sans-serif]">
                         {typeof minutes.agenda === 'string'
@@ -284,7 +284,7 @@ export function PreviousMeetingModal({
                   {minutes.decisions && (
                     <div className="p-4 bg-sky-50/60 rounded-xl border border-sky-200 space-y-2">
                       <h4 className="text-[12px] font-bold text-sky-800 uppercase tracking-wider">
-                        Kesepakatan &amp; Arahan Sidang
+                        Kesepakatan &amp; Arahan Kegiatan
                       </h4>
                       <div className="text-slate-800 leading-relaxed font-['Arial',sans-serif] space-y-2">
                         {typeof minutes.decisions === 'string'
@@ -303,7 +303,7 @@ export function PreviousMeetingModal({
                       <div className="flex items-center justify-between">
                         <h4 className="text-[12px] font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                          <span>Poin Kesimpulan Rapat</span>
+                          <span>Poin Kesimpulan Kegiatan</span>
                         </h4>
                         <button
                           type="button"
@@ -354,7 +354,7 @@ export function PreviousMeetingModal({
               {/* Items List */}
               {actionItems.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-300">
-                  <p className="font-semibold">Tidak ada butir tindak lanjut pada rapat sebelumnya.</p>
+                  <p className="font-semibold">Tidak ada butir tindak lanjut pada kegiatan sebelumnya.</p>
                 </div>
               ) : (
                 <div className="space-y-2.5">
@@ -427,7 +427,7 @@ export function PreviousMeetingModal({
               className="inline-flex items-center gap-1.5 text-slate-600 hover:text-[#31889C] font-semibold cursor-pointer"
             >
               <Link2 className="w-4 h-4" />
-              <span>Ganti / Lepas Tautan Rapat Ini</span>
+              <span>Ganti / Lepas Tautan Kegiatan Ini</span>
             </button>
           ) : (
             <div />

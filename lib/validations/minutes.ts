@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const meetingMinutesSchema = z.object({
-  meetingId: z.string().min(1, 'ID Rapat wajib disertakan'),
+  meetingId: z.string().min(1, 'ID Kegiatan wajib disertakan'),
   agenda: z.any().optional().nullable(),
   discussion: z.any().optional().nullable(),
   decisions: z.any().optional().nullable(),

@@ -98,7 +98,7 @@ export function MeetingStatusBadge({
       {isNew && (
         <span
           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFF0DC] border border-[#FEDEBE] text-[#C2410C] font-extrabold text-[10px] uppercase shadow-2xs"
-          title="Rapat baru ditambahkan"
+          title="Kegiatan baru ditambahkan"
         >
           <Sparkles className="w-2.5 h-2.5 text-[#F99D1C]" />
           <span>Baru</span>
@@ -182,7 +182,7 @@ export function MeetingProgressBadge({
       {isNew && (
         <span
           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFF0DC] border border-[#FEDEBE] text-[#C2410C] font-extrabold text-[10px] uppercase shadow-2xs"
-          title="Rapat baru ditambahkan"
+          title="Kegiatan baru ditambahkan"
         >
           <Sparkles className="w-2.5 h-2.5 text-[#F99D1C]" />
           <span>Baru</span>

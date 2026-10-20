@@ -221,7 +221,7 @@ export function UpdateMeetingOutputDialog({
             <label className="block text-xs font-bold text-slate-700 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <Link2 className="w-4 h-4 text-blue-600" />
-                <span>Tautan Berkas Google Drive (Dokumentasi / Materi / Risalah):</span>
+                <span>Tautan Berkas Google Drive (Dokumentasi / Materi / Catatan Kegiatan):</span>
               </span>
               {driveLink && (
                 <a
@@ -243,7 +243,7 @@ export function UpdateMeetingOutputDialog({
               className="w-full px-3.5 h-[42px] rounded-xl border border-slate-300 bg-white text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1E6B7B]/20 focus:border-[#1E6B7B]"
             />
             <p className="text-[11px] text-slate-400">
-              Cantumkan folder penyimpanan berkas, foto dokumentasi, risalah rapat, atau naskah paparan.
+              Cantumkan folder penyimpanan berkas, foto dokumentasi, catatan kegiatan, atau naskah paparan.
             </p>
           </div>
 

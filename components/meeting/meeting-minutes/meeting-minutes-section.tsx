@@ -136,7 +136,7 @@ export function MeetingMinutesSection({
       const cleanCode = code.replace(/[^a-zA-Z0-9_-]/g, '_');
       link.download = targetType === 'nota-dinas'
         ? `Nota-Dinas-${cleanCode}.pdf`
-        : `Risalah-Rapat-${cleanCode}.pdf`;
+        : `Catatan-Kegiatan-${cleanCode}.pdf`;
 
       document.body.appendChild(link);
       link.click();
@@ -145,7 +145,7 @@ export function MeetingMinutesSection({
       toast.success(
         targetType === 'nota-dinas'
           ? 'Nota Dinas resmi berhasil diunduh (PDF).'
-          : 'Risalah Rapat resmi berhasil diunduh (PDF).'
+          : 'Catatan Kegiatan resmi berhasil diunduh (PDF).'
       );
     } catch (err: any) {
       toast.error(err?.message || 'Terjadi kesalahan saat mengunduh PDF.');
@@ -173,7 +173,7 @@ export function MeetingMinutesSection({
       const cleanCode = code.replace(/[^a-zA-Z0-9_-]/g, '_');
       link.download = targetType === 'nota-dinas'
         ? `Nota-Dinas-${cleanCode}.docx`
-        : `Risalah-Rapat-${cleanCode}.docx`;
+        : `Catatan-Kegiatan-${cleanCode}.docx`;
 
       document.body.appendChild(link);
       link.click();
@@ -182,7 +182,7 @@ export function MeetingMinutesSection({
       toast.success(
         targetType === 'nota-dinas'
           ? 'Nota Dinas resmi berhasil diunduh (Word .docx).'
-          : 'Risalah Rapat resmi berhasil diunduh (Word .docx).'
+          : 'Catatan Kegiatan resmi berhasil diunduh (Word .docx).'
       );
     } catch (err: any) {
       toast.error(err?.message || 'Terjadi kesalahan saat mengunduh file Word (.docx).');
@@ -196,7 +196,7 @@ export function MeetingMinutesSection({
     return (
       <div className="p-12 text-center bg-white rounded-xl border border-slate-200 shadow-xs flex flex-col items-center justify-center">
         <Loader2 className="w-8 h-8 text-[#31889C] animate-spin mb-3" />
-        <p className="text-[14px] font-semibold text-slate-800">Menyiapkan Lembar Naskah Rapat...</p>
+        <p className="text-[14px] font-semibold text-slate-800">Menyiapkan Lembar Naskah Kegiatan...</p>
         <p className="text-[12px] text-slate-500 mt-1">
           Menyusun format resmi Notula / Nota Dinas dan butir pembahasan dari basis data
         </p>
@@ -241,7 +241,7 @@ export function MeetingMinutesSection({
           <div className="flex items-center gap-2.5 text-amber-900">
             <Info className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
-              <strong>Notulen Belum Diisi:</strong> Lembar naskah rapat ini masih kosong.{' '}
+              <strong>Catatan Belum Diisi:</strong> Lembar naskah kegiatan ini masih kosong.{' '}
               {canEditMinutes
                 ? 'Klik tombol di samping untuk mulai mengisi catatan pembahasan, kesimpulan, dan tindak lanjut.'
                 : 'Naskah sedang dalam proses penyusunan resmi oleh Notulis / Administrator.'}

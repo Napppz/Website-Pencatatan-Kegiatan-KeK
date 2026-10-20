@@ -116,7 +116,7 @@ export const MEETING_CATEGORY_OPTIONS: MeetingCategoryOption[] = [
     badgeLabel: 'Undangan Internal',
     badgeClass: 'bg-[#E8F5F7] text-[#215865] border-[#BCE3EB]',
     badgeIcon: '🏢',
-    description: 'Rapat koordinasi antar unit kerja internal Sekretariat Dewan Nasional KEK.',
+    description: 'Kegiatan koordinasi antar unit kerja internal Sekretariat Dewan Nasional KEK.',
   },
   {
     key: 'NASKAH_MASUK',
@@ -124,7 +124,7 @@ export const MEETING_CATEGORY_OPTIONS: MeetingCategoryOption[] = [
     badgeLabel: 'Daftar Naskah Masuk',
     badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
     badgeIcon: '📥',
-    description: 'Rapat koordinasi berdasarkan agenda daftar naskah dinas atau surat masuk via SRIKANDI.',
+    description: 'Kegiatan koordinasi berdasarkan agenda daftar naskah dinas atau surat masuk via SRIKANDI.',
   },
   {
     key: 'DISPOSISI_SEKJEN',
@@ -144,11 +144,11 @@ export const MEETING_CATEGORY_OPTIONS: MeetingCategoryOption[] = [
   },
   {
     key: 'SURAT_DITUNDA',
-    label: 'Tunda Rapat',
-    badgeLabel: 'Tunda Rapat',
+    label: 'Tunda Kegiatan',
+    badgeLabel: 'Tunda Kegiatan',
     badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
     badgeIcon: '⏳',
-    description: 'Agenda rapat mengalami penundaan jadwal atau penjadwalan ulang.',
+    description: 'Agenda kegiatan mengalami penundaan jadwal atau penjadwalan ulang.',
   },
 ];
 
@@ -216,12 +216,12 @@ export function getMeetingCategoryInfo(
   if (cat === 'SURAT_DITUNDA' || cat === 'TUNDA_RAPAT') {
     return {
       key: 'SURAT_DITUNDA',
-      label: 'Tunda Rapat',
-      subLabel: 'Rapat Ditunda',
-      badgeLabel: 'Tunda Rapat',
+      label: 'Tunda Kegiatan',
+      subLabel: 'Kegiatan Ditunda',
+      badgeLabel: 'Tunda Kegiatan',
       badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
       badgeIcon: '⏳',
-      description: 'Agenda rapat mengalami penundaan jadwal atau penjadwalan ulang.',
+      description: 'Agenda kegiatan mengalami penundaan jadwal atau penjadwalan ulang.',
     };
   }
 
@@ -257,7 +257,7 @@ export function getMeetingCategoryInfo(
       badgeLabel: 'Daftar Naskah Masuk',
       badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
       badgeIcon: '📥',
-      description: 'Rapat koordinasi berdasarkan agenda daftar naskah dinas atau surat masuk via SRIKANDI.',
+      description: 'Kegiatan koordinasi berdasarkan agenda daftar naskah dinas atau surat masuk via SRIKANDI.',
     };
   }
 
@@ -268,7 +268,7 @@ export function getMeetingCategoryInfo(
     badgeLabel: 'Undangan Internal',
     badgeClass: 'bg-[#E8F5F7] text-[#215865] border-[#BCE3EB]',
     badgeIcon: '🏢',
-    description: 'Rapat koordinasi antar unit kerja internal Sekretariat Dewan Nasional KEK.',
+    description: 'Kegiatan koordinasi antar unit kerja internal Sekretariat Dewan Nasional KEK.',
   };
 }
 

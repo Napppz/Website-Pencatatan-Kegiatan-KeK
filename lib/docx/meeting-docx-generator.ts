@@ -187,7 +187,7 @@ export async function generateMeetingDocx(meeting: MeetingPdfData): Promise<Buff
 
   // Metadata Table Rows
   const metaRows: Array<{ label: string; value: string | Paragraph[] }> = [
-    { label: 'Judul Rapat', value: meeting.title || '-' },
+    { label: 'Judul Kegiatan', value: meeting.title || '-' },
     { label: 'Hari/Tanggal', value: formatIndonesianDate(meeting.date) },
     { label: 'Nomor Surat Undangan', value: invitationNumber },
     { label: 'Pukul', value: normalizeTime(meeting.startTime, meeting.endTime) },
@@ -234,7 +234,7 @@ export async function generateMeetingDocx(meeting: MeetingPdfData): Promise<Buff
     });
   });
 
-  // Pelaksana Rapat Section in metadata
+  // Pelaksana Kegiatan Section in metadata
   const participants = meeting.participants || [];
   const participantParagraphs: Paragraph[] =
     participants.length === 0
@@ -270,9 +270,9 @@ export async function generateMeetingDocx(meeting: MeetingPdfData): Promise<Buff
         });
 
   const pelaksanaRows: Array<{ label: string; value: string | Paragraph[] }> = [
-    { label: 'Ketua/Pimpinan Rapat', value: signerInfo.chairpersonName },
+    { label: 'Ketua/Pimpinan Kegiatan', value: signerInfo.chairpersonName },
     { label: 'Pencatat', value: signerInfo.secretaryMetaText },
-    { label: 'Peserta Rapat', value: participantParagraphs },
+    { label: 'Peserta Kegiatan', value: participantParagraphs },
   ];
 
   pelaksanaRows.forEach((r) => {
@@ -587,11 +587,11 @@ export async function generateMeetingDocx(meeting: MeetingPdfData): Promise<Buff
             rows: tableChildren,
           }),
 
-          // ─── SUBSTANSI INTI PEMBAHASAN RAPAT ───
+          // ─── SUBSTANSI INTI PEMBAHASAN KEGIATAN ───
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Substansi Inti Pembahasan Rapat:',
+                text: 'Substansi Inti Pembahasan Kegiatan:',
                 bold: true,
                 font: 'Arial',
                 size: 22,
