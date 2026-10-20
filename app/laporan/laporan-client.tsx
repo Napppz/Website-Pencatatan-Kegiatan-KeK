@@ -183,7 +183,7 @@ export function LaporanClient() {
             </span>
             <span className="text-xs text-slate-400">•</span>
             <span className="text-xs text-slate-500 font-medium">
-              SIM-RAPAT KEK RI
+              Log Book Notula Rapat KEK RI
             </span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mt-1">

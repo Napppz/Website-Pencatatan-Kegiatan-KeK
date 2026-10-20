@@ -194,15 +194,15 @@ async function runStage6Tests() {
     saUserRes.error
   );
 
-  // Test 7: ADMIN tidak dapat membuka user management
+  // Test 7: ADMIN dapat membuka user management tersaring sesuai tim kerja
   setTestAuthUser(adminUser);
   const adminUserRes = await getUsersAction();
   assert(
-    !adminUserRes.success,
+    adminUserRes.success && Array.isArray(adminUserRes.data),
     7,
-    'ADMIN ditolak saat mengakses user management',
+    'ADMIN dapat mengakses user management tersaring sesuai tim kerja',
     'Authorization',
-    'ADMIN unexpectedly allowed to access user management'
+    adminUserRes.error
   );
 
   // Test 8: NOTULIS tidak dapat membuka user management
@@ -332,7 +332,7 @@ async function runStage6Tests() {
   const createdMeetingRes = await createMeetingAction({
     title: 'Rapat Pleno Koordinasi Stage 6 Test',
     biroCode: 'BPPK',
-    date: '2026-10-10',
+    date: '2026-11-20',
     startTime: '10:00',
     endTime: '12:00',
     location: 'Ruang Rapat Pleno',

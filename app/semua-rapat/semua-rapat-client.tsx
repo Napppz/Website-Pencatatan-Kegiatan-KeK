@@ -103,6 +103,7 @@ export function SemuaRapatClient({
   // Filter params
   const statusParam = searchParams.get('status') as string | null;
   const kategoriParam = searchParams.get('kategori') as string | null;
+  const jenisParam = searchParams.get('jenis') as string | null;
   const rawTimParam = searchParams.get('tim') || searchParams.get('biro');
   const timParam = effectiveLockedTeamCode
     ? effectiveLockedTeamCode.toUpperCase()
@@ -113,11 +114,26 @@ export function SemuaRapatClient({
   const yearParam = searchParams.get('tahun') || searchParams.get('year');
   const dayParam = searchParams.get('hari') || searchParams.get('day');
   const dateParam = searchParams.get('tanggal') || searchParams.get('date');
+  const periodeParam = searchParams.get('periode');
 
   const monthIdx = parseMonthFilterIndex(monthParam);
   const dayIdx = parseDayFilterIndex(dayParam);
   const targetYear = yearParam ? parseInt(yearParam, 10) : null;
   const targetDate = dateParam ? dateParam.trim() : null;
+
+  const currentWeekRange = useMemo(() => {
+    const current = new Date();
+    const day = current.getDay(); // 0 is Sun, 1 is Mon...
+    const diffToMonday = current.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(current.getFullYear(), current.getMonth(), diffToMonday);
+    const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
+    return {
+      startIso: monday.toLocaleDateString('en-CA'),
+      endIso: sunday.toLocaleDateString('en-CA'),
+    };
+  }, []);
+
+  const isThisWeekPresetActive = periodeParam === 'mingguan' || periodeParam === 'minggu_ini';
 
   // Available unique years in dataset
   const availableYears = useMemo(() => {
@@ -138,8 +154,10 @@ export function SemuaRapatClient({
     if (m.primaryTeamCode?.toUpperCase() === c) return true;
     if (m.primaryTeamId?.toUpperCase().includes(c)) return true;
     if (c === 'INV' && (m.primaryTeamName?.toLowerCase().includes('investasi') || m.primaryTeamCode === 'TIM-001' || m.primaryTeamId === 'TIM-001')) return true;
-    if (c === 'KS' && (m.primaryTeamName?.toLowerCase().includes('kerja sama') || m.primaryTeamCode === 'TIM-003' || m.primaryTeamId === 'TIM-003')) return true;
+    if (c === 'KS' && (m.primaryTeamName?.toLowerCase().includes('kerja sama') || m.primaryTeamName?.toLowerCase().includes('kerjasama') || m.primaryTeamCode === 'TIM-003' || m.primaryTeamId === 'TIM-003')) return true;
     if (c === 'KOM' && (m.primaryTeamName?.toLowerCase().includes('komunikasi') || m.primaryTeamCode === 'TIM-002' || m.primaryTeamId === 'TIM-002')) return true;
+    if (c === 'SI' && (m.primaryTeamName?.toLowerCase().includes('sistem informasi') || m.primaryTeamCode === 'TIM-004' || m.primaryTeamId === 'TIM-004')) return true;
+    if (c === 'POKJA' && (m.primaryTeamName?.toLowerCase().includes('pokja') || m.primaryTeamCode === 'TIM-005' || m.primaryTeamId === 'TIM-005')) return true;
     return false;
   };
 
@@ -157,6 +175,13 @@ export function SemuaRapatClient({
   // Meetings filtered by Tim AND Date/Month/Day/Year AND Search Filter AND Category
   const fullyFilteredMeetings = useMemo(() => {
     return teamFilteredMeetings.filter((m) => {
+      if (isThisWeekPresetActive) {
+        const parsed = parseMeetingDate(m.date);
+        if (!parsed) return false;
+        if (parsed.isoDate < currentWeekRange.startIso || parsed.isoDate > currentWeekRange.endIso) {
+          return false;
+        }
+      }
       if (monthIdx !== null || dayIdx !== null || targetYear !== null || targetDate !== null) {
         const parsed = parseMeetingDate(m.date);
         if (!parsed) return false;
@@ -181,6 +206,15 @@ export function SemuaRapatClient({
           if (cat !== 'SURAT_DITUNDA' && cat !== 'TUNDA_RAPAT') return false;
         }
       }
+      if (jenisParam && jenisParam !== 'ALL') {
+        const target = jenisParam.toLowerCase().trim();
+        const mKind = (m.meetingKind || '').toLowerCase().trim();
+        if (target === 'none' || target === 'tanpa jenis') {
+          if (mKind !== '') return false;
+        } else {
+          if (mKind !== target) return false;
+        }
+      }
       if (searchFilter.trim()) {
         const q = searchFilter.toLowerCase();
         const matches =
@@ -196,7 +230,7 @@ export function SemuaRapatClient({
       }
       return true;
     });
-  }, [teamFilteredMeetings, monthIdx, dayIdx, targetYear, targetDate, searchFilter, kategoriParam]);
+  }, [teamFilteredMeetings, isThisWeekPresetActive, currentWeekRange, monthIdx, dayIdx, targetYear, targetDate, searchFilter, kategoriParam, jenisParam]);
 
   const countAll = fullyFilteredMeetings.length;
   const countBelumDimulai = fullyFilteredMeetings.filter(
@@ -256,6 +290,71 @@ export function SemuaRapatClient({
     router.push(params.toString() ? `/semua-rapat?${params.toString()}` : '/semua-rapat');
   };
 
+  const STANDARD_JENIS_RAPAT = [
+    'Kunker',
+    'Rapat Kerja',
+    'Rapat/Audiensi',
+    'Seminar/Forum',
+    'Media Gathering',
+    'Penandatanganan Mou',
+    'Groundbreaking',
+    'Pelantikan',
+    'Seremoni',
+  ];
+
+  const availableJenisRapat = useMemo(() => {
+    const set = new Set<string>();
+    STANDARD_JENIS_RAPAT.forEach((j) => set.add(j));
+    meetingsList.forEach((m) => {
+      if (m.meetingKind && m.meetingKind.trim()) {
+        set.add(m.meetingKind.trim());
+      }
+    });
+    return Array.from(set);
+  }, [meetingsList]);
+
+  const countTanpaJenis = teamFilteredMeetings.filter((m) => !m.meetingKind || !m.meetingKind.trim()).length;
+
+  const jenisFilters = useMemo(() => {
+    const list = [
+      { label: 'Semua Jenis', value: 'ALL', count: teamFilteredMeetings.length, icon: '📂' },
+      ...availableJenisRapat
+        .map((jenis) => {
+          const count = teamFilteredMeetings.filter(
+            (m) => (m.meetingKind || '').toLowerCase().trim() === jenis.toLowerCase().trim()
+          ).length;
+          return {
+            label: jenis,
+            value: jenis,
+            count,
+            icon: '📌',
+          };
+        })
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
+    ];
+
+    if (countTanpaJenis > 0) {
+      list.push({
+        label: 'Tanpa Jenis',
+        value: 'NONE',
+        count: countTanpaJenis,
+        icon: '⚪',
+      });
+    }
+
+    return list;
+  }, [availableJenisRapat, teamFilteredMeetings, countTanpaJenis]);
+
+  const handleSelectJenis = (val: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (val === 'ALL' || !val) {
+      params.delete('jenis');
+    } else {
+      params.set('jenis', val);
+    }
+    router.push(params.toString() ? `/semua-rapat?${params.toString()}` : '/semua-rapat');
+  };
+
   const statusFilters: {
     label: string;
     value: string;
@@ -274,20 +373,23 @@ export function SemuaRapatClient({
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1; // 1-12
 
-  const hasActiveTimeFilter = Boolean(monthParam || yearParam || dayParam || dateParam);
   const isTodayPresetActive = dateParam === todayIso;
   const isThisMonthPresetActive =
     !dateParam &&
+    !isThisWeekPresetActive &&
     yearParam === currentYear.toString() &&
     monthIdx === new Date().getMonth();
   const isThisYearPresetActive =
     !dateParam &&
+    !isThisWeekPresetActive &&
     monthIdx === null &&
     dayIdx === null &&
     yearParam === currentYear.toString();
 
+  const hasActiveTimeFilter = Boolean(monthParam || yearParam || dayParam || dateParam || isThisWeekPresetActive);
+
   const isCustomTimeActive = Boolean(
-    dateParam ||
+    (dateParam && !isTodayPresetActive) ||
     dayParam ||
     (yearParam && !isThisYearPresetActive && !isThisMonthPresetActive) ||
     (monthParam && !isThisMonthPresetActive)
@@ -303,9 +405,10 @@ export function SemuaRapatClient({
   }, [isCustomTimeActive]);
 
   const activeTimeLabel = useMemo(() => {
-    if (isTodayPresetActive) return 'Hari Ini';
-    if (isThisMonthPresetActive) return 'Bulan Ini';
-    if (isThisYearPresetActive) return 'Tahun Ini';
+    if (isTodayPresetActive) return 'Harian (Hari Ini)';
+    if (isThisWeekPresetActive) return 'Mingguan (Minggu Ini)';
+    if (isThisMonthPresetActive) return 'Bulanan (Bulan Ini)';
+    if (isThisYearPresetActive) return 'Tahunan (Tahun Ini)';
     const parts = [
       targetYear ? `Tahun ${targetYear}` : null,
       monthIdx !== null ? MONTH_NAMES_INDONESIA[monthIdx] : null,
@@ -313,17 +416,18 @@ export function SemuaRapatClient({
       dateParam ? `Tgl ${dateParam}` : null,
     ].filter(Boolean);
     return parts.length > 0 ? parts.join(' • ') : null;
-  }, [isTodayPresetActive, isThisMonthPresetActive, isThisYearPresetActive, targetYear, monthIdx, dayIdx, dateParam]);
+  }, [isTodayPresetActive, isThisWeekPresetActive, isThisMonthPresetActive, isThisYearPresetActive, targetYear, monthIdx, dayIdx, dateParam]);
 
   const hasAnyActiveFilter = Boolean(
     statusParam ||
     timParam ||
     (kategoriParam && kategoriParam !== 'ALL') ||
+    (jenisParam && jenisParam !== 'ALL') ||
     hasActiveTimeFilter ||
     searchFilter.trim()
   );
 
-  const handlePreset = (preset: 'ALL' | 'TODAY' | 'THIS_MONTH' | 'THIS_YEAR') => {
+  const handlePreset = (preset: 'ALL' | 'TODAY' | 'THIS_WEEK' | 'THIS_MONTH' | 'THIS_YEAR') => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('tanggal');
     params.delete('date');
@@ -333,9 +437,12 @@ export function SemuaRapatClient({
     params.delete('month');
     params.delete('tahun');
     params.delete('year');
+    params.delete('periode');
 
     if (preset === 'TODAY') {
       params.set('tanggal', todayIso);
+    } else if (preset === 'THIS_WEEK') {
+      params.set('periode', 'mingguan');
     } else if (preset === 'THIS_MONTH') {
       params.set('tahun', currentYear.toString());
       params.set('bulan', currentMonth.toString());
@@ -368,6 +475,7 @@ export function SemuaRapatClient({
     params.delete('day');
     params.delete('tanggal');
     params.delete('date');
+    params.delete('periode');
     router.push(params.toString() ? `/semua-rapat?${params.toString()}` : '/semua-rapat');
   };
 
@@ -376,6 +484,7 @@ export function SemuaRapatClient({
     const params = new URLSearchParams(searchParams.toString());
     params.delete('status');
     params.delete('kategori');
+    params.delete('jenis');
     if (!effectiveLockedTeamCode) {
       params.delete('tim');
       params.delete('biro');
@@ -388,6 +497,7 @@ export function SemuaRapatClient({
     params.delete('day');
     params.delete('tanggal');
     params.delete('date');
+    params.delete('periode');
     router.push(params.toString() ? `/semua-rapat?${params.toString()}` : '/semua-rapat');
   };
 
@@ -431,6 +541,8 @@ export function SemuaRapatClient({
     { code: 'INV', name: 'Tim Investasi', shortName: 'Investasi' },
     { code: 'KS', name: 'Tim Kerja Sama', shortName: 'Kerja Sama' },
     { code: 'KOM', name: 'Tim Komunikasi', shortName: 'Komunikasi' },
+    { code: 'SI', name: 'Tim Sistem Informasi', shortName: 'Sistem Informasi' },
+    { code: 'POKJA', name: 'Pokja', shortName: 'Pokja' },
   ];
 
   const handleSelectTeam = (val: string) => {
@@ -449,7 +561,7 @@ export function SemuaRapatClient({
     handleSelectTeam(val);
   };
 
-  const [openDropdown, setOpenDropdown] = useState<'TIM' | 'STATUS' | 'KATEGORI' | 'PERIODE' | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<'TIM' | 'STATUS' | 'KATEGORI' | 'JENIS' | 'PERIODE' | null>(null);
   const filterToolbarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -482,6 +594,14 @@ export function SemuaRapatClient({
     ? selectedCatObj.label
     : 'Semua Kategori';
   const selectedCatIcon = selectedCatObj?.icon || '🏷️';
+
+  const selectedJenisObj = jenisFilters.find(
+    (j) => j.value.toLowerCase() === (jenisParam || 'ALL').toLowerCase()
+  );
+  const selectedJenisLabel = selectedJenisObj && selectedJenisObj.value !== 'ALL'
+    ? selectedJenisObj.label
+    : 'Semua Jenis';
+  const selectedJenisIcon = selectedJenisObj?.icon || '📌';
 
   const selectedPeriodeLabel = activeTimeLabel || 'Semua Periode';
 
@@ -550,34 +670,34 @@ export function SemuaRapatClient({
             </span>
             <span className="text-[12px] text-slate-300 hidden sm:inline">•</span>
             <span className="text-[12px] font-medium text-slate-500">
-              Total <strong>{teamFilteredMeetings.length}</strong> Risalah Terdaftar
+              Total <strong>{teamFilteredMeetings.length}</strong> Kegiatan Terdaftar
             </span>
           </div>
 
           <h1 className="text-[22px] sm:text-[24px] font-extrabold text-slate-900 mt-1.5 tracking-tight">
             {effectiveLockedTeamCode
-              ? `Risalah Rapat — Tim ${effectiveLockedTeamName || effectiveLockedTeamCode}`
+              ? `Arsip Kegiatan — Tim ${effectiveLockedTeamName || effectiveLockedTeamCode}`
               : lockedBiroCode
-                ? `Risalah Rapat — ${currentUserBiroName || `Biro ${lockedBiroCode}`}`
-                : 'Daftar Risalah Rapat KEK RI'}
+                ? `Arsip Kegiatan — ${currentUserBiroName || `Biro ${lockedBiroCode}`}`
+                : 'Arsip Kegiatan & Aktivitas — Biro 3 (IKK)'}
           </h1>
           <p className="text-[13px] text-slate-500 mt-1 max-w-2xl leading-relaxed">
             {effectiveLockedTeamCode
-              ? `Arsip lengkap agenda, risalah keputusan, dan status tindak lanjut khusus penugasan Tim ${effectiveLockedTeamName || effectiveLockedTeamCode}.`
+              ? `Arsip lengkap kegiatan, agenda, hasil kerja, dan status pekerjaan khusus Tim ${effectiveLockedTeamName || effectiveLockedTeamCode}.`
               : lockedBiroCode
-                ? `Arsip lengkap agenda, risalah keputusan, dan status tindak lanjut khusus penugasan ${currentUserBiroName || `Biro ${lockedBiroCode}`}.`
-                : 'Pusat kendali agenda sidang, perumusan notula keputusan, dan pemantauan tindak lanjut seluruh Biro KEK.'}
+                ? `Arsip lengkap kegiatan, agenda, hasil kerja, dan status pekerjaan ${currentUserBiroName || `Biro ${lockedBiroCode}`}.`
+                : 'Sistem monitoring terpadu seluruh kegiatan, hasil kerja, dan status pekerjaan 5 tim kerja Biro 3 (Investasi, Kerja Sama, Komunikasi, Sistem Informasi, Pokja).'}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-center">
-          {/* Hapus Semua Rapat Button (SUPER_ADMIN / ADMIN only) */}
+          {/* Hapus Semua Kegiatan Button (SUPER_ADMIN / ADMIN only) */}
           {canDeleteAll && meetingsList.length > 0 && (
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(true)}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 font-semibold text-[12px] transition-all cursor-pointer shadow-2xs"
-              title="Hapus seluruh data rapat dari database (Hanya Administrator)"
+              title="Hapus seluruh data kegiatan dari database (Hanya Administrator)"
             >
               <Trash2 className="w-3.5 h-3.5 text-red-600" />
               <span>Hapus Semua</span>
@@ -591,7 +711,7 @@ export function SemuaRapatClient({
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#31889C] text-white font-semibold text-[12.5px] hover:bg-[#266F80] shadow-2xs hover:shadow-xs transition-all cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
-                <span>+ Jadwalkan Rapat</span>
+                <span>+ Catat Kegiatan Baru</span>
               </Link>
             </div>
           )}
@@ -870,6 +990,78 @@ export function SemuaRapatClient({
               )}
             </div>
 
+            {/* Dropdown: Jenis Rapat */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setOpenDropdown(openDropdown === 'JENIS' ? null : 'JENIS')}
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-all cursor-pointer border select-none",
+                  jenisParam
+                    ? "bg-[#F0F9FA] border-[#31889C] text-[#164E59] shadow-2xs font-bold"
+                    : openDropdown === 'JENIS'
+                      ? "bg-slate-100 border-slate-300 text-slate-900"
+                      : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                )}
+                title="Filter berdasarkan Jenis Rapat"
+              >
+                <span>{selectedJenisIcon}</span>
+                <span className="truncate max-w-[130px]">{selectedJenisLabel}</span>
+                <span
+                  className={cn(
+                    "text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5",
+                    jenisParam ? "bg-[#31889C] text-white" : "bg-slate-100 text-slate-600"
+                  )}
+                >
+                  {selectedJenisObj?.count ?? teamFilteredMeetings.length}
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "w-3 h-3 transition-transform text-slate-400",
+                    openDropdown === 'JENIS' && "rotate-180 text-[#31889C]"
+                  )}
+                />
+              </button>
+
+              {openDropdown === 'JENIS' && (
+                <div className="absolute right-0 sm:left-0 sm:right-auto mt-1.5 w-64 max-h-72 overflow-y-auto bg-white rounded-xl shadow-xl border border-slate-200/90 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-2.5 py-1.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase sticky top-0 bg-white border-b border-slate-100 mb-1">
+                    Jenis Rapat
+                  </div>
+                  {jenisFilters.map((jf) => {
+                    const isActive = jf.value === 'ALL'
+                      ? !jenisParam
+                      : (jenisParam || '').toLowerCase() === jf.value.toLowerCase();
+                    return (
+                      <button
+                        key={jf.value}
+                        type="button"
+                        onClick={() => {
+                          handleSelectJenis(jf.value);
+                          setOpenDropdown(null);
+                        }}
+                        className={cn(
+                          "flex items-center justify-between w-full px-2.5 py-2 rounded-lg text-[12px] text-left transition-colors cursor-pointer",
+                          isActive ? "bg-[#F0F9FA] text-[#164E59] font-bold" : "hover:bg-slate-50 text-slate-700 font-medium"
+                        )}
+                      >
+                        <span className="flex items-center gap-2 truncate">
+                          <span>{jf.icon}</span>
+                          <span className="truncate">{jf.label}</span>
+                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                          <span className="text-[10.5px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 font-semibold">
+                            {jf.count}
+                          </span>
+                          {isActive && <Check className="w-3.5 h-3.5 text-[#31889C]" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* Dropdown: Periode Waktu */}
             <div className="relative">
               <button
@@ -925,8 +1117,22 @@ export function SemuaRapatClient({
                       isTodayPresetActive ? "bg-[#F0F9FA] text-[#164E59] font-bold" : "hover:bg-slate-50 text-slate-700 font-medium"
                     )}
                   >
-                    <span>Hari Ini</span>
+                    <span>Harian (Hari Ini)</span>
                     {isTodayPresetActive && <Check className="w-3.5 h-3.5 text-[#31889C]" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handlePreset('THIS_WEEK');
+                      setOpenDropdown(null);
+                    }}
+                    className={cn(
+                      "flex items-center justify-between w-full px-2.5 py-2 rounded-lg text-[12px] text-left transition-colors cursor-pointer",
+                      isThisWeekPresetActive ? "bg-[#F0F9FA] text-[#164E59] font-bold" : "hover:bg-slate-50 text-slate-700 font-medium"
+                    )}
+                  >
+                    <span>Mingguan (Minggu Ini)</span>
+                    {isThisWeekPresetActive && <Check className="w-3.5 h-3.5 text-[#31889C]" />}
                   </button>
                   <button
                     type="button"
@@ -939,7 +1145,7 @@ export function SemuaRapatClient({
                       isThisMonthPresetActive ? "bg-[#F0F9FA] text-[#164E59] font-bold" : "hover:bg-slate-50 text-slate-700 font-medium"
                     )}
                   >
-                    <span>Bulan Ini</span>
+                    <span>Bulanan (Bulan Ini)</span>
                     {isThisMonthPresetActive && <Check className="w-3.5 h-3.5 text-[#31889C]" />}
                   </button>
                   <button
@@ -953,7 +1159,7 @@ export function SemuaRapatClient({
                       isThisYearPresetActive ? "bg-[#F0F9FA] text-[#164E59] font-bold" : "hover:bg-slate-50 text-slate-700 font-medium"
                     )}
                   >
-                    <span>Tahun Ini</span>
+                    <span>Tahunan (Tahun Ini)</span>
                     {isThisYearPresetActive && <Check className="w-3.5 h-3.5 text-[#31889C]" />}
                   </button>
                   <div className="my-1 border-t border-slate-100" />
@@ -1133,6 +1339,7 @@ export function SemuaRapatClient({
         filterDayOfWeek={dayParam}
         filterDate={dateParam}
         filterCategory={kategoriParam}
+        filterJenis={jenisParam}
         searchQuery={searchFilter}
         onSearchChange={setSearchFilter}
         hideHeader={true}

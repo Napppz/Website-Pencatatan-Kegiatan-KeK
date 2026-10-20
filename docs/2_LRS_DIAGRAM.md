@@ -1,16 +1,49 @@
-# DOKUMEN PERANCANGAN TAHAP 2: LOGICAL RECORD STRUCTURE (LRS)
-## Sistem Informasi Log & Risalah Rapat (SIM-RAPAT KEK RI)
+# PERANCANGAN BASIS DATA: LRS (SUB-BAB 3.2.4.b)
+## Sistem Informasi Log & Risalah Rapat (Log_Book_Rapat KEK RI)
 **Sekretariat Jenderal Dewan Nasional Kawasan Ekonomi Khusus Republik Indonesia**
 
-Dokumen ini memuat spesifikasi lengkap **Logical Record Structure (LRS)** yang ditransformasikan secara sistematis dari Entity Relationship Diagram (ERD), mencakup seluruh **14 tabel entitas aktif** pada basis data **Neon PostgreSQL**. Dokumen ini dirancang khusus untuk memenuhi standar penulisan laporan teknis, Bab III/IV Skripsi, maupun sidang Tugas Akhir.
+Dokumen ini memuat spesifikasi lengkap **Logical Record Structure (LRS)** yang ditransformasikan secara sistematis dari Entity Relationship Diagram (ERD), mencakup seluruh **14 tabel entitas aktif** pada basis data **Neon PostgreSQL**.
+
+> [!NOTE]
+> **Penempatan pada Laporan PKL (Pedoman PKL UBSI Tahun 2026 Halaman 30 – 31 No. 3):**  
+> Diagram LRS ini ditempatkan pada **BAB III PEMBAHASAN &rarr; 3.2. Pembuatan Program &rarr; 3.2.4. Database\* &rarr; b. Logical Record Structure (LRS)**.
 
 ---
 
-## 1. Kaidah Pemetaan ERD Menjadi LRS (Mapping Rules)
+## 1. File Diagram Draw.io Resmi
+
+* **File Asli Draw.io:** [`docs/LRS_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/LRS_Log_Book_Rapat.drawio)
+* **File Publik (Mirror):** [`public/LRS_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/LRS_Log_Book_Rapat.drawio)
+* **Tautan Unduh Langsung:** [http://localhost:3000/LRS_Log_Book_Rapat.drawio](http://localhost:3000/LRS_Log_Book_Rapat.drawio)
+* **Karakteristik LRS:** 
+  - **Tab 1:** LRS Log_Book_Rapat (8 Tabel Inti Terkoreksi) — Menggunakan arsitektur 3-kolom bebas persilangan garis (0 Crossings), notasi kardinalitas standar akademik BSI (`1` dan `N`), serta validasi penuh atas relasi Foreign Key.
+  - **Tab 2:** LRS Log_Book_Rapat (14 Entitas Lengkap 3NF) — Menampilkan seluruh skema ternormalisasi ketiga (3NF) yang sinkron langsung dengan basis data Neon PostgreSQL.
+
+---
+
+## 1.1. Matriks Hasil Koreksi Kritis LRS (Penyempurnaan Kaidah Relasional Akademik)
+
+Berdasarkan telaah kaidah integritas referensial dan evaluasi desain basis data, diagram LRS Log_Book_Rapat telah disempurnakan pada 4 aspek utama:
+
+| No | Komponen Relasi | Kondisi Awal (Keliru) | Koreksi Relasional LRS (Benar) | Landasan Kaidah Basis Data Relasional |
+|:---|:----------------|:---------------------|:-------------------------------|:--------------------------------------|
+| **1** | **`tindak_lanjut` &rarr; `peserta_rapat`** | Terdapat garis relasi 1 ke N dari `tindak_lanjut` ke `peserta_rapat`. | **Garis diputus.** Relasi `peserta_rapat` ditarik dari **`rapat` (1 : N)** melalui `id_rapat` dan dari **`pengguna` (1 : N)** melalui `id_pengguna`. | Di tabel `peserta_rapat` tidak terdapat FK `id_tindak_lanjut`. Peserta rapat adalah aparatur yang diundang menghadiri rapat, bukan subordinat dari butir arahan tindak lanjut. |
+| **2** | **`rapat` &rarr; `notifikasi`** | Terdapat garis relasi 1 ke N dari `rapat` ke `notifikasi`. | **Garis diputus.** Relasi `notifikasi` hanya berasal dari **`pengguna` (1 : N)** melalui `id_pengguna`. | Di tabel fisik `notifikasi` tidak terdapat FK `id_rapat` (hanya ada `id_pengguna`). Tautan rapat disimpan sebagai URL dinamis (`tautan`), sehingga secara struktural notifikasi adalah entitas inbox milik pengguna. |
+| **3** | **`tim_biro` &mdash; `pengguna`** | Tertulis kardinalitas terbalik: `tim_biro` (N) ke `pengguna` (1). | **Kardinalitas dibenahi:** **`tim_biro` bertindak sebagai 1** dan **`pengguna` bertindak sebagai N**. | Foreign Key `id_tim` berada di dalam tabel `pengguna`. Sesuai aturan LRS, 1 tim kerja menaungi banyak anggota pengguna (1 : N). |
+| **4** | **Integritas Seluruh Foreign Key (FK)** | Banyak FK di dalam tabel belum ditarik garis relasinya (misal `id_biro` di `pengguna`, `id_tim`/`id_pengguna` di `rapat`). | **Seluruh FK wajib memiliki garis relasi.** Redundansi FK transitif pada tabel anak dibersihkan agar LRS murni 3NF, dan setiap FK yang tersisa dihubungkan secara tegas dari tabel induknya. | Dalam aturan LRS, setiap atribut FK yang tertulis pada skema relasi wajib dapat ditelusuri (*traceable*) ke tabel asalnya tanpa ada FK yatim (*orphan FK*). |
+
+> [!TIP]
+> **Standar Notasi Kardinalitas Akademik:**
+> Seluruh label kardinalitas pada diagram telah diselaraskan dengan pedoman penulisan ilmiah UBSI, yaitu menggunakan label **`1`** dan **`N`** (serta **`1 : 1`** untuk relasi satu-ke-satu), meniadakan simbol teknis seperti `0..1` atau `*`.
+
+---
+
+
+## 2. Kaidah Pemetaan ERD Menjadi LRS (Mapping Rules)
 
 Transformasi dari Entity Relationship Diagram (ERD) konseptual menuju Logical Record Structure (LRS) logis dilakukan melalui 4 aturan baku pemodelan basis data relasional:
 
-### A. Aturan Relasi Satu-ke-Satu (1 : 1)
+### 1) Aturan Relasi Satu-ke-Satu (1 : 1)
 Ketika dua entitas berelasi 1:1, Primary Key entitas induk ditempatkan ke entitas anak sebagai **Foreign Key sekaligus Unique Key (`UK`)** guna menjamin kardinalitas tepat satu rekod:
 1. **`biro` (1) &mdash; (1) `penomoran_rapat_biro`**
    - Satu biro memiliki tepat satu nomor urut register surat rapat dinas.
@@ -19,7 +52,7 @@ Ketika dua entitas berelasi 1:1, Primary Key entitas induk ditempatkan ke entita
    - Satu pelaksanaan rapat menghasilkan tepat satu naskah risalah/notula resmi.
    - Kolom `id_rapat` dari tabel `rapat` masuk ke `notulen_rapat` dengan batasan `[FK, UK]`.
 
-### B. Aturan Relasi Satu-ke-Banyak (1 : N)
+### 2) Aturan Relasi Satu-ke-Banyak (1 : N)
 Primary Key pada entitas berderajat **1 (Parent / Induk)** ditempatkan sebagai Foreign Key pada entitas berderajat **N (Child / Anak)**:
 1. `biro(id_biro)` &rarr; disematkan ke `tim_biro(id_biro)` *(1 biro menaungi banyak tim kerja)*
 2. `biro(id_biro)` &rarr; disematkan ke `pengguna(id_biro)` *(1 biro memiliki banyak aparatur)*
@@ -43,12 +76,12 @@ Primary Key pada entitas berderajat **1 (Parent / Induk)** ditempatkan sebagai F
 20. `rapat(id_rapat)` &rarr; disematkan ke `riwayat_notulen(id_rapat)` *(audit trail revisi)*
 21. `tindak_lanjut(id_tindak_lanjut)` &rarr; disematkan ke `riwayat_tindak_lanjut(id_tindak_lanjut)` *(log progres pekerjaan)*
 
-### C. Aturan Relasi Banyak-ke-Banyak (M : N)
+### 3) Aturan Relasi Banyak-ke-Banyak (M : N)
 Pada perancangan konseptual ERD, satu agenda rapat dinas dapat melibatkan banyak biro, dan satu biro dapat terlibat dalam banyak agenda rapat dinas (*Rapat Gabungan Lintas Biro*).
 - Pada LRS, relasi M:N direalisasikan melalui tabel perantara (*associative / junction table*) bernama **`rapat_biro`**.
 - Tabel `rapat_biro` memegang **Composite Primary Key** yang terdiri atas gabungan `(id_rapat, id_biro)`, di mana keduanya masing-masing merupakan Foreign Key yang mengacu ke tabel `rapat` dan `biro`.
 
-### D. Aturan Relasi Rekursif / Unary (0..1 : N)
+### 4) Aturan Relasi Rekursif / Unary (0..1 : N)
 1. **Rapat Lanjutan (`rapat` &mdash; `rapat`)**:
    - Rapat koordinasi berkala dapat merujuk pada rapat edisi sebelumnya.
    - Kolom `id_rapat_sebelumnya` disematkan di dalam tabel `rapat` itu sendiri sebagai Foreign Key bertipe nullable (*self-referencing*).
@@ -57,7 +90,7 @@ Pada perancangan konseptual ERD, satu agenda rapat dinas dapat melibatkan banyak
 
 ---
 
-## 2. Struktur Rekod LRS Lengkap 14 Entitas Basis Data
+## 3. Struktur Rekod LRS Lengkap 14 Entitas Basis Data
 
 Berikut adalah representasi rekod logis dari 14 tabel basis data yang terbagi rapi dalam **5 Klaster Modul**:
 
@@ -165,10 +198,10 @@ KLASTER 3: NOTULENSI & RISALAH RAPAT (3 TABEL)
 9. notulen_rapat
    ├── *id_notulen : VARCHAR(50) <PK>
    ├── **id_rapat : VARCHAR(50) <FK, UK> ─── (Relasi 1:1 dari rapat)
-   ├── agenda_pembahasan : JSONB
-   ├── hasil_pembahasan : JSONB
-   ├── poin_keputusan : JSONB
-   ├── kesimpulan : JSONB
+   ├── agenda_pembahasan : TEXT
+   ├── hasil_pembahasan : TEXT
+   ├── poin_keputusan : TEXT
+   ├── kesimpulan : TEXT
    ├── dibuat_pada : TIMESTAMP
    └── diperbarui_pada : TIMESTAMP
 
@@ -242,7 +275,7 @@ KLASTER 5: KOMUNIKASI SISTEM (1 TABEL)
 
 ---
 
-## 3. Matriks Integritas Referensial Kunci Tamu (Foreign Key Map)
+## 4. Matriks Integritas Referensial Kunci Tamu (Foreign Key Map)
 
 Tabel berikut menunjukkan pemetaan hubungan kunci tamu secara menyeluruh yang siap disajikan dalam tabel skripsi:
 
@@ -278,8 +311,8 @@ Tabel berikut menunjukkan pemetaan hubungan kunci tamu secara menyeluruh yang si
 
 ---
 
-## 4. Teks Deskripsi (Caption) Laporan Skripsi / Tugas Akhir
+## 5. Teks Deskripsi (Caption) Laporan Skripsi / Tugas Akhir
 
-> **Gambar 3.x: Logical Record Structure (LRS) SIM-RAPAT KEK RI**
+> **Gambar 3.x: Logical Record Structure (LRS) Log_Book_Rapat KEK RI**
 > 
-> *Gambar di atas menampilkan Logical Record Structure (LRS) hasil transformasi terstruktur dari Entity Relationship Diagram (ERD) basis data SIM-RAPAT KEK RI yang telah mencapai bentuk normal ketiga (3NF). Seluruh 14 tabel diorganisasikan ke dalam 5 klaster fungsional (Organisasi, Pelaksanaan Rapat, Notulensi, Tindak Lanjut, dan Komunikasi Sistem). Hubungan Many-to-Many antara tabel rapat dan biro ditransformasikan menjadi entitas perantara bernama rapat_biro dengan Composite Primary Key (id_rapat, id_biro). Relasi One-to-Many diimplementasikan dengan menempatkan Primary Key dari entitas induk sebagai Foreign Key pada entitas anak. Sementara relasi One-to-One pada notulen_rapat dan penomoran_rapat_biro dikunci menggunakan Unique Constraint pada atribut Foreign Key guna menjamin konsistensi kardinalitas tepat satu.*
+> *Gambar di atas menampilkan Logical Record Structure (LRS) hasil transformasi terstruktur dari Entity Relationship Diagram (ERD) basis data Log_Book_Rapat KEK RI yang telah mencapai bentuk normal ketiga (3NF). Seluruh 14 tabel diorganisasikan ke dalam 5 klaster fungsional (Organisasi, Pelaksanaan Rapat, Notulensi, Tindak Lanjut, dan Komunikasi Sistem). Hubungan Many-to-Many antara tabel rapat dan biro ditransformasikan menjadi entitas perantara bernama rapat_biro dengan Composite Primary Key (id_rapat, id_biro). Relasi One-to-Many diimplementasikan dengan menempatkan Primary Key dari entitas induk sebagai Foreign Key pada entitas anak. Sementara relasi One-to-One pada notulen_rapat dan penomoran_rapat_biro dikunci menggunakan Unique Constraint pada atribut Foreign Key guna menjamin konsistensi kardinalitas tepat satu.*

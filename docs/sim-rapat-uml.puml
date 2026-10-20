@@ -1,4 +1,4 @@
-@startuml SIM_RAPAT_KEK_UML
+@startuml Log_Book_Rapat_KEK_UML
 !theme plain
 skinparam classAttributeIconSize 0
 skinparam monochrome false
@@ -10,7 +10,7 @@ skinparam class {
     BorderColor #215865
 }
 
-title SISTEM INFORMASI LOG & RISALAH RAPAT (SIM-RAPAT KEK RI)\nUML Class Diagram Lengkap (14 Entitas Basis Data)
+title SISTEM INFORMASI LOG & RISALAH RAPAT (Log_Book_Rapat KEK RI)\nUML Class Diagram Lengkap (14 Entitas Basis Data)
 
 enum PeranPengguna {
   SUPER_ADMIN

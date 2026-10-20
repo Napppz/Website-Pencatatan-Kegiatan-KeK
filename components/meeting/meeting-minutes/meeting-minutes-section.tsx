@@ -15,6 +15,10 @@ interface MeetingMinutesSectionProps {
   initialMinutes?: any;
   defaultMode?: 'preview' | 'edit';
   onViewHistoryClick?: () => void;
+  onApproveClick?: () => void;
+  isApproved?: boolean;
+  canApprove?: boolean;
+  isApproving?: boolean;
 }
 
 export function MeetingMinutesSection({
@@ -23,6 +27,10 @@ export function MeetingMinutesSection({
   initialMinutes: propMinutes,
   defaultMode = 'preview',
   onViewHistoryClick,
+  onApproveClick,
+  isApproved,
+  canApprove,
+  isApproving,
 }: MeetingMinutesSectionProps) {
   const { data: session } = useSession();
   const userRole = session?.user?.role || 'STAFF';
@@ -268,6 +276,10 @@ export function MeetingMinutesSection({
         onEditClick={canEditMinutes ? () => setMode('edit') : undefined}
         canEdit={canEditMinutes}
         onViewHistoryClick={onViewHistoryClick}
+        onApproveClick={onApproveClick}
+        isApproved={isApproved}
+        canApprove={canApprove}
+        isApproving={isApproving}
       />
     </div>
   );

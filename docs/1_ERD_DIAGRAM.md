@@ -1,18 +1,69 @@
-# DOKUMEN PERANCANGAN BASIS DATA: ENTITY RELATIONSHIP DIAGRAM (ERD)
-## Sistem Informasi Log & Risalah Rapat (SIM-RAPAT KEK RI)
+# PERANCANGAN BASIS DATA: ERD (SUB-BAB 3.2.4.a)
+## Sistem Informasi Log & Risalah Rapat (Log_Book_Rapat KEK RI)
 **Sekretariat Jenderal Dewan Nasional Kawasan Ekonomi Khusus Republik Indonesia**
 
 Dokumen ini memuat spesifikasi lengkap **Entity Relationship Diagram (ERD)** terstandarisasi untuk laporan tugas akhir / skripsi, mencakup seluruh **14 tabel entitas aktif** pada basis data **Neon PostgreSQL** yang terorganisasi dalam **5 Klaster Modul Fungsional**.
 
+> [!NOTE]
+> **Penempatan pada Laporan PKL (Pedoman PKL UBSI Tahun 2026 Halaman 30 – 31 No. 3):**  
+> Diagram ERD ini ditempatkan pada **BAB III PEMBAHASAN &rarr; 3.2. Pembuatan Program &rarr; 3.2.4. Database\* &rarr; a. Entity Relationship Diagram (ERD)**.
+
 ---
 
-## 1. Klasifikasi 5 Modul Entitas Basis Data
+## 1. File Diagram Draw.io Resmi
+
+* **File Asli Draw.io (Multi-Tab):** [`docs/ERD_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/ERD_Log_Book_Rapat.drawio)
+* **File Publik (Mirror):** [`public/ERD_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/ERD_Log_Book_Rapat.drawio)
+* **Tautan Unduh Langsung:** [http://localhost:3000/ERD_Log_Book_Rapat.drawio](http://localhost:3000/ERD_Log_Book_Rapat.drawio)
+
+> [!TIP]
+> **Struktur Lembar Tab Draw.io (`ERD_Log_Book_Rapat.drawio`):**
+> 1. `1. ERD Notasi Chen (8 Entitas Inti - Rekomendasi Sidang)` — **(Pilihan Utama Sidang)** Memodelkan 8 entitas operasional inti dengan tata letak perimeter luar bersih, 10 belah ketupat relasi kata kerja aktif hijau, atribut kunci bergaris bawah (`PK`), dan kardinalitas baku `1` serta `N` (serta `1:1`). Bebas total dari tabel swimlane atau atribut kolom di dalam kotak entitas!
+> 2. `2. ERD Notasi Chen (14 Entitas Basis Data Lengkap 3NF)` — Memodelkan seluruh 14 tabel basis data Neon PostgreSQL dalam Notasi Peter Chen murni (14 kotak persegi panjang polos, 19 belah ketupat relasi, dan 46 atribut elips). Dilengkapi entitas pendukung penomoran otomatis, naskah risalah, komentar, audit trail riwayat, lampiran berkas, dan relasi junction biro peserta rapat.
+
+---
+
+## 1.1. Matriks Penyelarasan Revisi ERD (Sesuai Koreksi Relasional)
+
+Untuk menjamin koherensi mutlak antara pemodelan konseptual (ERD) dan pemodelan logis (LRS), seluruh perbaikan yang diterapkan pada LRS juga diintegrasikan secara presisi pada ERD:
+
+| No | Elemen Relasi | Penyesuaian pada ERD Notasi Chen | Penyesuaian pada ERD Notasi Crow's Foot | Landasan Hubungan Entitas |
+|:---|:--------------|:---------------------------------|:----------------------------------------|:--------------------------|
+| **1** | **Peserta Rapat** | Belah ketupat **`mengundang`** menghubungkan `rapat` ($1$) $\rightarrow$ `peserta_rapat` ($N$). Belah ketupat **`menghadiri`** menghubungkan `pengguna` ($1$) $\rightarrow$ `peserta_rapat` ($N$). *Tidak ada relasi dari `tindak_lanjut`.* | Garis Crow's Foot ditarik dari `rapat` ($1$) ke `peserta_rapat` ($N$) dan dari `pengguna` ($1$) ke `peserta_rapat` ($N$). | Peserta rapat adalah entitas asosiasi antara agenda rapat dan aparatur pengguna yang diundang. |
+| **2** | **Notifikasi** | Belah ketupat **`menerima info`** menghubungkan `pengguna` ($1$) $\rightarrow$ `notifikasi` ($N$). *Tidak ada relasi dari `rapat`.* | Garis Crow's Foot ditarik hanya dari `pengguna` ($1$) ke `notifikasi` ($N$). | Notifikasi merupakan entitas inbox akun personal pegawai, bukan turunan struktural langsung tabel rapat. |
+| **3** | **Tim Kerja & Pengguna** | Belah ketupat **`beranggotakan`** menghubungkan `tim_biro` ($1$) $\rightarrow$ `pengguna` ($N$). | Garis Crow's Foot memiliki ujung satu garis pada `tim_biro` dan kaki tiga (*crow's foot*) pada `pengguna`. | Satu tim kerja teknis menaungi banyak anggota aparatur/staf pelaksana ($1 : N$). |
+| **4** | **Penugasan Tindak Lanjut** | Terdapat belah ketupat **`menetapkan`** dari `rapat` ($1$) $\rightarrow$ `tindak_lanjut` ($N$) dan belah ketupat **`mengerjakan PIC`** dari `pengguna` ($1$) $\rightarrow$ `tindak_lanjut` ($N$). | Garis Crow's Foot ditarik dari `rapat` ($1$) ke `tindak_lanjut` ($N$) dan dari `pengguna` ($1$) ke `tindak_lanjut` ($N$). | Menjamin atribut FK `id_pengguna` pada `tindak_lanjut` (sebagai PIC eksekutor) memiliki relasi konseptual yang valid. |
+| **5** | **Standar Notasi** | Notasi kardinalitas pada garis penghubung belah ketupat menggunakan label eksplisit **`1`** dan **`N`** (serta **`1:1`** untuk relasi naskah risalah `notulen_rapat`). | Menggunakan simbol baku Crow's Foot: `ERone` (satu) dan `ERmany` (banyak). | Menghindari ambiguitas dan memenuhi pedoman penulisan laporan PKL/TA UBSI. |
+
+---
+
+## 1.2. Narasi Penjelasan ERD Simpel kepada Dosen Penguji
+
+Saat mempresentasikan diagram ERD di hadapan Dosen Pembimbing maupun Penguji, gunakan narasi alur bisnis 3-tingkat berikut:
+
+1. **Tingkat 1: Struktur Organisasi & Akun (Input Layer)**
+   - *"Sistem diawali dari unit kerja **biro** yang membawahi banyak **tim_biro** ($1 : N$). Masing-masing tim kerja menaungi banyak aparatur/staf pada entitas **pengguna** ($1 : N$). Setiap pengguna terhubung dengan entitas **notifikasi** ($1 : N$) sebagai pusat inbox pembaruan agenda."*
+2. **Tingkat 2: Pelaksanaan Rapat Dinas (Process Layer)**
+   - *"Entitas sentral sistem adalah **rapat**. Rapat diselenggarakan oleh **biro** ($1 : N$) dan dipimpin oleh seorang aparatur pada entitas **pengguna** ($1 : N$)."*
+3. **Tingkat 3: Luaran Rapat & Penugasan (Output Layer)**
+   - *"Setiap pelaksanaan rapat menghasilkan tepat satu naskah risalah resmi pada entitas **notulen_rapat** ($1 : 1$). Rapat mengundang banyak aparatur pada **peserta_rapat** ($1 : N$), di mana para peserta dihadiri oleh aparatur pada entitas **pengguna** ($1 : N$). Terakhir, rapat menetapkan butir arahan **tindak_lanjut** ($1 : N$) yang dikerjakan oleh PIC pada entitas **pengguna** ($1 : N$)."*
+
+> [!NOTE]
+> **Kelebihan Format Simpel (Tab 1 & Tab 2):**
+> 1. Koridor tengah diagram bersih tanpa persilangan balon atribut (*zero line crossings*).
+> 2. Dosen dapat langsung memahami logika bisnis sistem dalam waktu kurang dari 30 detik.
+> 3. Gambar proporsional dan tidak buram saat di-ekspor ke dalam format dokumen Word laporan PKL/Skripsi.
+
+---
+
+
+## 2. Klasifikasi 5 Modul Entitas Basis Data
 
 Untuk mempermudah penjelasan pada sidang / penguji Tugas Akhir, seluruh entitas dikelompokkan ke dalam 5 klaster fungsional yang ternormalisasi (3NF):
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        KLASTER BASIS DATA SIM-RAPAT                    │
+│                        KLASTER BASIS DATA Log_Book_Rapat                    │
 ├──────────────────────────┬─────────────────────────────────────────────┤
 │ 1. Organisasi & Akun     │ biro, tim_biro, pengguna                    │
 │ 2. Pelaksanaan Rapat     │ rapat, peserta_rapat, penomoran_rapat_biro, │
@@ -26,7 +77,7 @@ Untuk mempermudah penjelasan pada sidang / penguji Tugas Akhir, seluruh entitas 
 
 ---
 
-## 2. Kamus Data Lengkap 14 Entitas Basis Data (Neon PostgreSQL)
+## 3. Kamus Data Lengkap 14 Entitas Basis Data (Neon PostgreSQL)
 
 ### KLASTER 1: ORGANISASI & PENGGUNA
 
@@ -210,7 +261,7 @@ Menyampaikan pengingat jadwal rapat, undangan, dan penugasan tindak lanjut kepad
 
 ---
 
-## 3. Diagram Relasi Entitas (ERD Notasi Chen / Crow's Foot)
+## 4. Diagram Relasi Entitas (ERD Notasi Chen / Crow's Foot)
 
 Diagram berikut memodelkan seluruh relasi antar entitas yang saling terhubung di database:
 
@@ -257,7 +308,7 @@ erDiagram
 
 ---
 
-## 4. Kaidah Normalisasi Basis Data (Derajat 3NF)
+## 5. Kaidah Normalisasi Basis Data (Derajat 3NF)
 
 Seluruh 14 tabel di atas telah memenuhi kriteria **Normal Form Ketiga (3NF)**:
 1. **1NF (First Normal Form)**: Setiap kolom memiliki nilai tunggal (*atomic value*), tidak terdapat grup nilai berulang, dan setiap tabel memiliki Primary Key unik.

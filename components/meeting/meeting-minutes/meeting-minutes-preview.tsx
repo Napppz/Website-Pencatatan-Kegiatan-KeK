@@ -44,6 +44,10 @@ interface MeetingMinutesPreviewProps {
   onEditClick?: () => void;
   canEdit?: boolean;
   onViewHistoryClick?: () => void;
+  onApproveClick?: () => void;
+  isApproved?: boolean;
+  canApprove?: boolean;
+  isApproving?: boolean;
 }
 
 /**
@@ -106,6 +110,10 @@ export function MeetingMinutesPreview({
   onEditClick,
   canEdit = false,
   onViewHistoryClick,
+  onApproveClick,
+  isApproved = false,
+  canApprove = false,
+  isApproving = false,
 }: MeetingMinutesPreviewProps) {
   const [viewMode, setViewMode] = useState<'paper' | 'raw_pdf'>('paper');
   const [iframeKey, setIframeKey] = useState(0);
@@ -253,7 +261,7 @@ export function MeetingMinutesPreview({
         </div>
 
         {/* ROW 2: View Controls (Left) & Actions (Right) */}
-        <div className="px-4 py-2.5 sm:px-5 bg-[#F8FAFC] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="px-4 py-2.5 sm:px-5 bg-[#F8FAFC] flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
           {/* Left: View Mode (Lembar A4 vs PDF Langsung) & Split Screen Toggle */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider hidden sm:inline">
@@ -288,12 +296,36 @@ export function MeetingMinutesPreview({
           </div>
 
           {/* Right: Actions Group (History Button + Edit Button + Export Group) */}
-          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto justify-end">
+            {canApprove && onApproveClick && (
+              isApproved ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[12px] font-bold shadow-2xs whitespace-nowrap">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Hasil Rapat Disetujui</span>
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  disabled={isApproving}
+                  onClick={onApproveClick}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[12px] transition-all shadow-xs cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                  title="Admin Tim & Pimpinan: Setujui hasil rapat dan tandai Selesai"
+                >
+                  {isApproving ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-100" />
+                  )}
+                  <span>Setujui Hasil Rapat</span>
+                </button>
+              )
+            )}
+
             {onViewHistoryClick && (
               <button
                 type="button"
                 onClick={onViewHistoryClick}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[12px] transition-all cursor-pointer shadow-2xs hover:border-[#31889C]/40"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[12px] transition-all cursor-pointer shadow-2xs hover:border-[#31889C]/40 whitespace-nowrap"
                 title={`Lihat riwayat perubahan ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Notula'}`}
               >
                 <History className="w-3.5 h-3.5 text-[#31889C]" />
@@ -305,7 +337,7 @@ export function MeetingMinutesPreview({
               <button
                 type="button"
                 onClick={onEditClick}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[12px] transition-all cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[12px] transition-all cursor-pointer shadow-2xs whitespace-nowrap"
                 title={`Edit isi ${docType === 'NOTA_DINAS' ? 'nota dinas' : 'notula'}`}
               >
                 <FileEdit className="w-3.5 h-3.5 text-[#31889C]" />
@@ -313,38 +345,42 @@ export function MeetingMinutesPreview({
               </button>
             )}
 
-            {canEdit && onEditClick && (onDownloadPdf || onDownloadDocx) && (
-              <div className="h-5 w-[1px] bg-slate-300 mx-1 hidden sm:block" />
+            {(canApprove || onViewHistoryClick || (canEdit && onEditClick)) && (onDownloadPdf || onDownloadDocx) && (
+              <div className="h-5 w-[1px] bg-slate-300 mx-0.5 hidden sm:block shrink-0" />
             )}
 
-            {/* Export Buttons: PDF & Word side-by-side */}
-            {onDownloadPdf && (
-              <button
-                type="button"
-                onClick={() => onDownloadPdf(docType === 'NOTA_DINAS' ? 'nota-dinas' : 'notula')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#31889C] hover:bg-[#266F80] text-white font-semibold text-[12px] transition-all shadow-xs cursor-pointer"
-                title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Risalah Rapat'} dalam format PDF`}
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Unduh PDF</span>
-              </button>
-            )}
-
-            {onDownloadDocx && (
-              <button
-                type="button"
-                disabled={isDownloadingDocx}
-                onClick={() => onDownloadDocx(docType === 'NOTA_DINAS' ? 'nota-dinas' : 'notula')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2B579A] hover:bg-[#1E3E6D] text-white font-semibold text-[12px] transition-all shadow-xs cursor-pointer disabled:opacity-50"
-                title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Risalah Rapat'} dalam format Word (.docx)`}
-              >
-                {isDownloadingDocx ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <FileText className="w-3.5 h-3.5" />
+            {/* Export Buttons: PDF & Word selalu berdampingan */}
+            {(onDownloadPdf || onDownloadDocx) && (
+              <div className="flex items-center gap-1.5 shrink-0">
+                {onDownloadPdf && (
+                  <button
+                    type="button"
+                    onClick={() => onDownloadPdf(docType === 'NOTA_DINAS' ? 'nota-dinas' : 'notula')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#31889C] hover:bg-[#266F80] text-white font-semibold text-[12px] transition-all shadow-xs cursor-pointer whitespace-nowrap"
+                    title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Risalah Rapat'} dalam format PDF`}
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Unduh PDF</span>
+                  </button>
                 )}
-                <span>Unduh Word (.docx)</span>
-              </button>
+
+                {onDownloadDocx && (
+                  <button
+                    type="button"
+                    disabled={isDownloadingDocx}
+                    onClick={() => onDownloadDocx(docType === 'NOTA_DINAS' ? 'nota-dinas' : 'notula')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2B579A] hover:bg-[#1E3E6D] text-white font-semibold text-[12px] transition-all shadow-xs cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                    title={`Unduh ${docType === 'NOTA_DINAS' ? 'Nota Dinas' : 'Risalah Rapat'} dalam format Word (.docx)`}
+                  >
+                    {isDownloadingDocx ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FileText className="w-3.5 h-3.5" />
+                    )}
+                    <span>Unduh Word (.docx)</span>
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>

@@ -132,8 +132,8 @@ export async function generateActionItemExcel(
   });
 
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'SIM-RAPAT KEK RI';
-  workbook.lastModifiedBy = 'SIM-RAPAT KEK RI';
+  workbook.creator = 'Log Book Notula Rapat KEK RI';
+  workbook.lastModifiedBy = 'Log Book Notula Rapat KEK RI';
   workbook.created = new Date();
   workbook.modified = new Date();
   workbook.properties.date1904 = false;
@@ -152,7 +152,7 @@ export async function generateActionItemExcel(
   });
 
   // Title rows
-  const titleRow1 = matrixSheet.addRow(['LAPORAN MATRIKS TINDAK LANJUT — SIM-RAPAT KEK RI']);
+  const titleRow1 = matrixSheet.addRow(['LAPORAN MATRIKS TINDAK LANJUT — LOG BOOK NOTULA RAPAT KEK RI']);
   titleRow1.height = 22;
   titleRow1.getCell(1).font = { bold: true, size: 13, color: { argb: 'FF1E3A8A' } };
   titleRow1.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };

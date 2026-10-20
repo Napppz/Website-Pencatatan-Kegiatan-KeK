@@ -1,10 +1,15 @@
 # DOKUMEN PERANCANGAN RESMI: UML DIAGRAM LENGKAP & BASIS DATA RELASIONAL
-## Sistem Informasi Log & Risalah Rapat (SIM-RAPAT KEK RI)
+## Sistem Informasi Log & Risalah Rapat (Log_Book_Rapat KEK RI)
 **Sekretariat Jenderal Dewan Nasional Kawasan Ekonomi Khusus Republik Indonesia**
 
 Dokumen ini memuat spesifikasi terstandarisasi **UML Class Diagram, Sequence Diagram, Activity Diagram, dan Basis Data Relasional** dalam **100% Bahasa Indonesia** untuk seluruh **14 entitas aktif** pada basis data **Neon PostgreSQL**. Dokumen ini dirancang sebagai rujukan utama Bab III dan Bab IV Laporan Tugas Akhir / Skripsi serta persiapan sidang sarjana.
 
+> [!NOTE]
+> **Dokumen Induk Laporan PKL Resmi (Format Pedoman PKL UBSI 2026 Hal 30 No. 3):**  
+> Struktur laporan PKL lengkap yang telah disesuaikan 100% dengan sistematika resmi **BAB I s.d BAB IV (Outline Pembuatan Project Aplikasi)** dapat diakses pada [`docs/LAPORAN_PKL_Log_Book_Rapat_OUTLINE_3.md`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/LAPORAN_PKL_Log_Book_Rapat_OUTLINE_3.md).
+
 ---
+
 
 ## 1. Pemetaan 14 Entitas Basis Data & Relasi 1 to Many (1 : N)
 
@@ -27,9 +32,18 @@ Dalam prinsip pemodelan basis data relasional akademik, ketika Entitas Induk (*P
 | 13 | **`riwayat_tindak_lanjut`** | **`id_riwayat`** | • **`id_tindak_lanjut`** [FK]<br>• **`id_pengguna`** [FK, Null] | • `tindak_lanjut`<br>• `pengguna` | **`1 : N`** &mdash; 1 `tindak_lanjut` memiliki rekam jejak progres pekerjaan.<br>**`1 : N`** &mdash; 1 `pengguna` memperbarui log berkala. |
 | 14 | **`notifikasi`** | **`id_notifikasi`** | **`id_pengguna`** [FK] | `pengguna` | **`1 : N`** &mdash; 1 `pengguna` menerima banyak pemberitahuan sistem. |
 
+* **Lokasi File Draw.io Resmi (Multi-Diagram Suite):**
+  - [`docs/ERD_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/ERD_Log_Book_Rapat.drawio) (Tab 1: Chen 14 Entitas, Tab 2: Crow's Foot Relasional)
+  - [`docs/LRS_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/LRS_Log_Book_Rapat.drawio) (Logical Record Structure 14 Entitas 3NF)
+  - [`docs/USE_CASE_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/USE_CASE_Log_Book_Rapat.drawio) (3 Aktor, 6 Modul, 27 Use Case Lengkap)
+  - [`docs/CLASS_DIAGRAM_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/CLASS_DIAGRAM_Log_Book_Rapat.drawio) (14 Kelas 3-Kompartemen, 5 Enum)
+  - [`docs/ACTIVITY_DIAGRAM_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/ACTIVITY_DIAGRAM_Log_Book_Rapat.drawio) (Tab 1 s.d Tab 3 Swimlane Table)
+  - [`docs/SEQUENCE_DIAGRAM_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/SEQUENCE_DIAGRAM_Log_Book_Rapat.drawio) (SD-01 s.d SD-03 Interaksi Kronologis)
+
+
 ---
 
-## 2. UML Class Diagram Lengkap (14 Kelas & 5 Enumerasi)
+## 2. UML Class Diagram Lengkap (Sub-Bab 3.2.2.c)
 
 Berikut adalah spesifikasi diagram kelas UML (*Unified Modeling Language*) yang mencakup seluruh atribut, tipe data, metode operasional, dan derajat relasi:
 
@@ -42,6 +56,7 @@ classDiagram
         <<enumeration>>
         SUPER_ADMIN
         ADMIN
+        PIMPINAN
         STAFF
     }
 
@@ -307,11 +322,15 @@ classDiagram
 
 ---
 
-## 3. UML Sequence Diagram (3 Alur Proses Bisnis Utama)
+## 3. UML Sequence Diagram (Sub-Bab 3.2.2.d)
+
+* **File Asli Draw.io (Multi-Tab):** [`docs/SEQUENCE_DIAGRAM_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/SEQUENCE_DIAGRAM_Log_Book_Rapat.drawio) &bull; [Pratinjau Browser](http://localhost:3000/sequence-diagram-preview.html)
+* **Dokumentasi Lengkap:** [`docs/5_SEQUENCE_DIAGRAM.md`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/5_SEQUENCE_DIAGRAM.md)
 
 Sequence Diagram memodelkan interaksi antar-objek secara kronologis dari waktu ke waktu (*lifeline*) saat suatu fungsionalitas dijalankan.
 
-### SD-01: Penjadwalan Rapat Baru & Penomoran Otomatis
+
+### 1) SD-01: Penjadwalan Rapat Baru & Penomoran Otomatis
 Memodelkan bagaimana Admin Biro menjadwalkan rapat dinas baru, mendapatkan nomor registrasi urut dari database, menyimpan data peserta, dan menyebarkan notifikasi sistem:
 
 ```mermaid
@@ -350,7 +369,7 @@ sequenceDiagram
 
 ---
 
-### SD-02: Penyusunan Risalah & Notulensi Rapat Resmi
+### 2) SD-02: Penyusunan Risalah & Notulensi Rapat Resmi
 Memodelkan Notulis yang mencatat dinamika rapat dinas, menyimpan naskah risalah ke tabel `notulen_rapat`, dan mencatat riwayat versi perubahan ke tabel `riwayat_notulen`:
 
 ```mermaid
@@ -386,7 +405,7 @@ sequenceDiagram
 
 ---
 
-### SD-03: Penugasan & Pembaruan Status Progres Tindak Lanjut
+### 3) SD-03: Penugasan & Pembaruan Status Progres Tindak Lanjut
 Memodelkan pegawai / PIC yang memperbarui status progres pekerjaan tindak lanjut dan tersimpan pada tabel `riwayat_tindak_lanjut`:
 
 ```mermaid

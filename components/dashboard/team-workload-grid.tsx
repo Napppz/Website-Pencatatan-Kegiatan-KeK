@@ -14,6 +14,7 @@ import {
   Users,
   Sparkles,
   ArrowUpRight,
+  Cpu,
 } from 'lucide-react';
 import { TeamWorkloadMetric } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -24,7 +25,7 @@ interface TeamWorkloadGridProps {
 }
 
 export function TeamWorkloadGrid({ teams, onTeamClick }: TeamWorkloadGridProps) {
-  const CANONICAL_CODES = ['INV', 'KS', 'KOM'];
+  const CANONICAL_CODES = ['INV', 'KS', 'KOM', 'SI', 'POKJA'];
   const displayTeams = (teams || [])
     .filter((t) => CANONICAL_CODES.includes(t.code.toUpperCase()))
     .sort(
@@ -45,6 +46,10 @@ export function TeamWorkloadGrid({ teams, onTeamClick }: TeamWorkloadGridProps) 
         return <Network className="w-5 h-5 text-[#2E7D32]" />;
       case 'KOM':
         return <Radio className="w-5 h-5 text-[#D97706]" />;
+      case 'SI':
+        return <Cpu className="w-5 h-5 text-[#8B5CF6]" />;
+      case 'POKJA':
+        return <Users className="w-5 h-5 text-[#4F46E5]" />;
       default:
         return <Layers className="w-5 h-5 text-[#31889C]" />;
     }
@@ -82,6 +87,26 @@ export function TeamWorkloadGrid({ teams, onTeamClick }: TeamWorkloadGridProps) 
           barColor: 'bg-amber-500',
           lightBg: 'bg-amber-50/50',
         };
+      case 'SI':
+        return {
+          gradient: 'from-purple-500/10 via-purple-500/5 to-transparent',
+          borderHover: 'hover:border-purple-600',
+          cardGlow: 'hover:shadow-[0_8px_30px_rgb(139,92,246,0.12)]',
+          badgeBg: 'bg-purple-50 text-purple-800 border-purple-200',
+          accentText: 'text-purple-700',
+          barColor: 'bg-purple-600',
+          lightBg: 'bg-purple-50/50',
+        };
+      case 'POKJA':
+        return {
+          gradient: 'from-indigo-500/10 via-indigo-500/5 to-transparent',
+          borderHover: 'hover:border-indigo-600',
+          cardGlow: 'hover:shadow-[0_8px_30px_rgb(79,70,229,0.12)]',
+          badgeBg: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+          accentText: 'text-indigo-700',
+          barColor: 'bg-indigo-600',
+          lightBg: 'bg-indigo-50/50',
+        };
       default:
         return {
           gradient: 'from-slate-500/10 via-slate-500/5 to-transparent',
@@ -103,28 +128,28 @@ export function TeamWorkloadGrid({ teams, onTeamClick }: TeamWorkloadGridProps) 
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#E8F5F7] text-[#215865] border border-[#BCE3EB]">
               <Sparkles className="w-3 h-3 text-[#31889C]" />
-              3 TIM KERJA SEKRETARIAT KEK
+              5 TIM KERJA BIRO 3 (IKK)
             </span>
             <span className="text-[11px] font-semibold text-slate-400">
-              • Tim Investasi, Kerja Sama &amp; Komunikasi
+              • Investasi, Kerja Sama, Komunikasi, Sistem Informasi &amp; Pokja
             </span>
           </div>
           <h2 className="text-lg md:text-xl font-bold text-slate-900 mt-1">
-            Status Kinerja &amp; Beban Kerja per Tim
+            Monitoring Aktivitas &amp; Status Pekerjaan per Tim
           </h2>
           <p className="text-[13px] text-slate-500">
-            Pemantauan langsung jumlah rapat dan status tiap pekerjaan tindak lanjut 3 Tim Kerja (Super Admin)
+            Pemantauan langsung jumlah kegiatan dan status tiap pekerjaan 5 Tim Kerja Biro 3
           </p>
         </div>
 
         <div className="text-[12px] text-slate-500 flex items-center gap-1 self-start sm:self-auto bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
           <span>💡</span>
-          <span className="font-medium">Klik kartu tim untuk melihat rincian pekerjaan &amp; rapat</span>
+          <span className="font-medium">Klik kartu tim untuk melihat rincian kegiatan &amp; hasil</span>
         </div>
       </div>
 
-      {/* 3 Interactive Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* 5 Interactive Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {displayTeams.map((team) => {
           const colors = getTeamColors(team.code);
           return (

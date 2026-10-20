@@ -530,7 +530,7 @@ function HistoryItem({ entry }: HistoryItemProps) {
     ? catConfig.createdLabel
     : catConfig.updatedLabel;
 
-  const userName = entry.user?.name || 'Sistem SIM-RAPAT';
+  const userName = entry.user?.name || 'Sistem Log Book Rapat';
   const userRole = entry.user?.role;
   const hasDetails = entry.oldValue !== null || entry.newValue !== null;
 
@@ -1135,25 +1135,7 @@ export function MinutesHistorySection({
             </span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setFilterCategory('status')}
-            className={`inline-flex items-center gap-1.5 text-[12px] font-bold px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
-              filterCategory === 'status'
-                ? 'bg-violet-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-violet-700'
-            }`}
-          >
-            <FileCheck className="w-3.5 h-3.5" />
-            <span>Status Rapat</span>
-            <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                filterCategory === 'status' ? 'bg-violet-700 text-white' : 'bg-slate-200/80 text-slate-700'
-              }`}
-            >
-              {counts.status}
-            </span>
-          </button>
+
         </div>
       </div>
 

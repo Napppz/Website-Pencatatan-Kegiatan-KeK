@@ -23,8 +23,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Log & Notula Rapat | Sekretariat Dewan Nasional Kawasan Ekonomi Khusus",
-  description: "Sistem Pengelolaan Agenda Sidang, Risalah Notula & Tindak Lanjut Keputusan Rapat Sekretariat Dewan Nasional Kawasan Ekonomi Khusus.",
+  title: "Aktivitas Biro 3 | Sekretariat Dewan Nasional Kawasan Ekonomi Khusus",
+  description: "Sistem Monitoring Aktivitas, Pencatatan Kegiatan & Status Pekerjaan Biro Investasi, Kerja Sama, dan Komunikasi (Biro 3) Dewan Nasional KEK.",
 };
 
 export default async function RootLayout({

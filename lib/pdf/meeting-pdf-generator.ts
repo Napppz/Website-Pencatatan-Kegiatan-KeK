@@ -156,7 +156,7 @@ export async function generateMeetingPdf(meeting: MeetingPdfData): Promise<Buffe
           Title: `Notula - ${meeting.meetingNumber || (meeting as any).code || 'KEK/ND/2026'}`,
           Author: 'Sekretariat Jenderal Dewan Nasional KEK RI',
           Subject: `Notula Rapat ${meeting.title}`,
-          Creator: 'SIM-RAPAT KEK RI',
+          Creator: 'Log Book Notula Rapat KEK RI',
         },
       });
 
@@ -624,7 +624,7 @@ export async function generateNotaDinasPdf(meeting: MeetingPdfData): Promise<Buf
           Title: `Nota Dinas - ${notaData.documentNumber}`,
           Author: 'Sekretariat Jenderal Dewan Nasional KEK RI',
           Subject: `Nota Dinas ${notaData.subject}`,
-          Creator: 'SIM-RAPAT KEK RI',
+          Creator: 'Log Book Notula Rapat KEK RI',
         },
       });
 

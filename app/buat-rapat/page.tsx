@@ -111,6 +111,20 @@ export const TIM_OPTIONS = [
     shortName: 'Komunikasi',
     description: 'Komunikasi publik, hubungan media, dokumentasi, dan diseminasi kebijakan KEK',
   },
+  {
+    id: 'TIM-004',
+    code: 'SI',
+    name: 'Tim Sistem Informasi',
+    shortName: 'Sistem Informasi',
+    description: 'Pengembangan sistem informasi, tata kelola data digital, dan integrasi TI KEK',
+  },
+  {
+    id: 'TIM-005',
+    code: 'POKJA',
+    name: 'Pokja (Kelompok Kerja)',
+    shortName: 'Pokja',
+    description: 'Kelompok kerja lintas sektor, task force akselerasi, dan koordinasi terfokus',
+  },
 ];
 
 function formatFileSize(bytes: number) {
@@ -207,11 +221,20 @@ export default function BuatRapatPage() {
     [selectedTeamId]
   );
 
-  // Status Rapat: Otomatis 'Belum Dimulai' saat pembuatan rapat baru
+  // Status Pekerjaan: Otomatis 'Belum Dimulai' saat pembuatan kegiatan baru
   const [statusRapat, setStatusRapat] = useState<string>('Belum Dimulai');
 
   // Optional: Tautkan rapat sebelumnya
   const [previousMeetingId, setPreviousMeetingId] = useState<string>('');
+
+  // Hasil Kegiatan, Link Google Drive, Catatan, Nd Konsum, Rilis, Rencana Aksi (Catatan Mentor)
+  const [driveLink, setDriveLink] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
+  const [actionPlan, setActionPlan] = useState<string>('Rutin');
+  const [ndConsumptionNumber, setNdConsumptionNumber] = useState<string>('');
+  const [ndConsumptionStatus, setNdConsumptionStatus] = useState<string>('Diproses');
+  const [releaseUrl, setReleaseUrl] = useState<string>('');
+  const [releaseTitle, setReleaseTitle] = useState<string>('');
 
   // Auxiliary data
   const [availableUsers, setAvailableUsers] = useState<AvailableUser[]>([]);
@@ -419,11 +442,18 @@ export default function BuatRapatPage() {
         attendees: attendees.trim() || undefined,
         participantUserIds: selectedUserIds,
         previousMeetingId: previousMeetingId || undefined,
+        driveLink: driveLink.trim() || undefined,
+        notes: notes.trim() || undefined,
+        actionPlan: actionPlan || 'Rutin',
+        ndConsumptionNumber: ndConsumptionNumber.trim() || undefined,
+        ndConsumptionStatus: ndConsumptionNumber.trim() ? ndConsumptionStatus : undefined,
+        releaseUrl: releaseUrl.trim() || undefined,
+        releaseTitle: releaseTitle.trim() || undefined,
       });
 
       if (res.success && res.data) {
         toast.success(
-          `Rapat "${title}" (${res.data.meetingNumber}) berhasil dijadwalkan!`
+          `Kegiatan "${title}" (${res.data.meetingNumber}) berhasil disimpan!`
         );
         router.refresh();
         router.push(`/semua-rapat/${res.data.id}`);
@@ -1165,6 +1195,146 @@ export default function BuatRapatPage() {
           </div>
         </div>
 
+        {/* ========================================================================= */}
+        {/* BAGIAN IV: HASIL KEGIATAN, OUTPUT & RENCANA AKSI (Catatan Mentor)          */}
+        {/* ========================================================================= */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden border-t-4 border-t-emerald-600">
+          <div className="px-6 py-4.5 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+                <FileCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-900">
+                  Bagian IV: Hasil Kegiatan, Output Kerja &amp; Tindak Lanjut
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Tautan Google Drive, Catatan ringkas hasil kegiatan, Rencana aksi, Nota Dinas Konsumsi, dan Rilis Berita
+                </p>
+              </div>
+            </div>
+            <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 shadow-2xs">
+              Output &amp; Arsip
+            </span>
+          </div>
+
+          <div className="p-6 sm:p-7 space-y-6">
+            {/* 11. Rencana Aksi & Link Google Drive */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="font-bold text-slate-800 mb-2 flex items-center gap-2 text-sm">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center font-bold shadow-2xs">11</span>
+                  <span>Rencana Aksi</span>
+                </label>
+                <select
+                  value={actionPlan}
+                  onChange={(e) => setActionPlan(e.target.value)}
+                  className="w-full px-4 h-[44px] rounded-xl border border-slate-300 bg-white text-slate-800 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs cursor-pointer"
+                >
+                  <option value="Rutin">Rutin (Tugas &amp; Agenda Rutin Berkala)</option>
+                  <option value="Non-Rutin">Non-Rutin (Penugasan Khusus / Prioritas)</option>
+                  <option value="Insidental">Insidental (Mendadak / Darurat)</option>
+                </select>
+                <p className="text-xs text-slate-400 mt-1.5">
+                  Klasifikasi rencana aksi apakah kegiatan ini bersifat rutin, non-rutin, atau insidental.
+                </p>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-800 mb-2 flex items-center gap-2 text-sm">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center font-bold shadow-2xs">12</span>
+                  <span>Link Hasil Kegiatan (Google Drive)</span>
+                </label>
+                <input
+                  type="url"
+                  value={driveLink}
+                  onChange={(e) => setDriveLink(e.target.value)}
+                  placeholder="https://drive.google.com/drive/folders/..."
+                  className="w-full px-4 h-[44px] rounded-xl border border-slate-300 bg-white text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs"
+                />
+                <p className="text-xs text-slate-400 mt-1.5">
+                  Tautan Google Drive berisi dokumentasi foto, materi presentasi, atau berkas hasil pekerjaan.
+                </p>
+              </div>
+            </div>
+
+            {/* 13. Catatan Hasil Kegiatan */}
+            <div>
+              <label className="font-bold text-slate-800 mb-2 flex items-center gap-2 text-sm">
+                <span className="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center font-bold shadow-2xs">13</span>
+                <span>Catatan Hasil Kegiatan / Ringkasan Pekerjaan</span>
+              </label>
+              <textarea
+                rows={3}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Tuliskan catatan hasil penting, poin kesepakatan, kendala lapangan, atau capaian pekerjaan..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 shadow-2xs leading-relaxed"
+              />
+              <p className="text-xs text-slate-400 mt-1.5">
+                Kolom catatan hasil untuk evaluasi langsung oleh Pimpinan dan rekan tim kerja.
+              </p>
+            </div>
+
+            {/* 14. Pembuatan Nd Konsum & 15. Rilis Berita */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-3 border-t border-slate-100">
+              {/* Nd Konsum */}
+              <div className="space-y-2 p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <label className="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs flex items-center justify-center font-bold shadow-2xs">14</span>
+                  <span>Pembuatan Nd Konsumsi (Opsional)</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={ndConsumptionNumber}
+                    onChange={(e) => setNdConsumptionNumber(e.target.value)}
+                    placeholder="Nomor Nd Konsum (mis. 042/ND/IKK)"
+                    className="w-full px-3 h-[38px] rounded-lg border border-slate-300 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600"
+                  />
+                  <select
+                    value={ndConsumptionStatus}
+                    onChange={(e) => setNdConsumptionStatus(e.target.value)}
+                    className="w-full px-3 h-[38px] rounded-lg border border-slate-300 bg-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 cursor-pointer"
+                  >
+                    <option value="Diproses">Status: Diproses</option>
+                    <option value="Disetujui">Status: Disetujui</option>
+                    <option value="Selesai">Status: Selesai</option>
+                  </select>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Isi jika kegiatan memerlukan pengajuan Nota Dinas Konsumsi untuk jamuan rapat.
+                </p>
+              </div>
+
+              {/* Rilis Berita */}
+              <div className="space-y-2 p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <label className="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold shadow-2xs">15</span>
+                  <span>Upload / Tautan Rilis Berita (Opsional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={releaseTitle}
+                  onChange={(e) => setReleaseTitle(e.target.value)}
+                  placeholder="Judul Rilis Berita / Siaran Pers..."
+                  className="w-full px-3 h-[38px] rounded-lg border border-slate-300 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                />
+                <input
+                  type="url"
+                  value={releaseUrl}
+                  onChange={(e) => setReleaseUrl(e.target.value)}
+                  placeholder="https://kek.go.id/berita/... atau link portal berita"
+                  className="w-full px-3 h-[38px] rounded-lg border border-slate-300 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                />
+                <p className="text-[11px] text-slate-400">
+                  Tautan berita publikasi atau siaran pers terkait kegiatan yang telah dirilis ke publik.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         {/* ========================================================================= */}
         {/* SUBMIT BUTTON BAR                                                         */}
@@ -1197,12 +1367,12 @@ export default function BuatRapatPage() {
               {isSubmitted ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Menyimpan Rapat...</span>
+                  <span>Menyimpan Kegiatan...</span>
                 </>
               ) : (
                 <>
                   <CheckCircle className="w-4 h-4" />
-                  <span>Jadwalkan &amp; Simpan Rapat</span>
+                  <span>Simpan Catatan Kegiatan</span>
                 </>
               )}
             </button>

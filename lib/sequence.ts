@@ -22,13 +22,18 @@ const TEAM_CODE_MAP: Record<string, string> = {
   'TIM-001': 'INV',
   'TIM-003': 'KS',
   'TIM-002': 'KOM',
+  'TIM-004': 'SI',
+  'TIM-005': 'POKJA',
   'INVESTASI': 'INV',
   'KERJA SAMA': 'KS',
   'KERJASAMA': 'KS',
   'KOMUNIKASI': 'KOM',
+  'SISTEM INFORMASI': 'SI',
+  'POKJA': 'POKJA',
   'INV': 'INV',
   'KS': 'KS',
   'KOM': 'KOM',
+  'SI': 'SI',
 };
 
 function resolveTeamPrefix(teamCode?: string | null): string {

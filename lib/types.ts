@@ -189,6 +189,13 @@ export interface Meeting {
   materialDocUrl?: string | null;
   materialDocName?: string | null;
   materialDocSize?: number | null;
+  driveLink?: string | null;
+  notes?: string | null;
+  actionPlan?: string | null;
+  ndConsumptionNumber?: string | null;
+  ndConsumptionStatus?: string | null;
+  releaseUrl?: string | null;
+  releaseTitle?: string | null;
 }
 
 export function getMeetingCategoryInfo(
@@ -433,6 +440,26 @@ export const IKK_TEAMS = [
     iconName: 'Radio',
     badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
     colorHex: '#D97706',
+  },
+  {
+    id: 'TIM-004',
+    code: 'SI',
+    name: 'Sistem Informasi',
+    fullName: 'Tim Sistem Informasi',
+    description: 'Pengembangan teknologi informasi, otomatisasi pencatatan aktivitas, dan digitalisasi data Biro 3.',
+    iconName: 'Cpu',
+    badgeClass: 'bg-cyan-50 text-cyan-800 border-cyan-200',
+    colorHex: '#0891B2',
+  },
+  {
+    id: 'TIM-005',
+    code: 'POKJA',
+    name: 'Pokja',
+    fullName: 'Pokja (Kelompok Kerja)',
+    description: 'Gugus tugas penyelesaian isu-isu strategis, debottlenecking, dan penugasan khusus lintas kewenangan KEK.',
+    iconName: 'Layers',
+    badgeClass: 'bg-purple-50 text-purple-800 border-purple-200',
+    colorHex: '#7C3AED',
   },
 ] as const;
 

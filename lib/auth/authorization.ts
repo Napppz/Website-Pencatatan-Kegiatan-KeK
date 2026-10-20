@@ -7,6 +7,7 @@ export type AppPermission =
   | 'create:meeting'
   | 'edit:meeting'
   | 'delete:meeting'
+  | 'approve:meeting'
   | 'manage:participants'
   | 'create:minutes'
   | 'edit:minutes'
@@ -24,6 +25,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, AppPermission[]> = {
     'create:meeting',
     'edit:meeting',
     'delete:meeting',
+    'approve:meeting',
     'manage:participants',
     'create:minutes',
     'edit:minutes',
@@ -40,6 +42,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, AppPermission[]> = {
     'create:meeting',
     'edit:meeting',
     'delete:meeting',
+    'approve:meeting',
     'manage:participants',
     'create:minutes',
     'edit:minutes',
@@ -47,11 +50,14 @@ export const ROLE_PERMISSIONS: Record<UserRole, AppPermission[]> = {
     'create:action_item',
     'edit:action_item',
     'delete:action_item',
+    'manage:users',
   ],
   PIMPINAN: [
     'view:dashboard',
     'view:meeting',
     'view:minutes',
+    'approve:meeting',
+    'manage:participants',
   ],
   STAFF: [
     'view:dashboard',

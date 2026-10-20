@@ -80,7 +80,7 @@ export function Header({
           title="Buka Pencarian Cepat (Ctrl + K)"
         >
           <Search className="w-4 h-4 absolute left-3.5 text-[#1E6B7B] group-hover:scale-105 transition-transform" />
-          <span className="truncate pr-2">Cari nomor rapat, agenda, biro...</span>
+          <span className="truncate pr-2">Cari kegiatan, nomor, hasil, tim...</span>
           <kbd className="hidden sm:inline-flex items-center gap-0.5 px-2 py-0.5 text-[10.5px] font-mono font-semibold text-slate-500 bg-white border border-slate-200 rounded-md shadow-2xs shrink-0 group-hover:border-[#1E6B7B]/40 group-hover:text-[#1E6B7B] transition-colors">
             <span className="text-[9px]">Ctrl</span> K
           </kbd>
@@ -106,7 +106,7 @@ export function Header({
           {notifDropdownOpen && (
             <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 p-3 z-50 text-[13px]">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <span className="font-bold text-slate-900">Notifikasi Rapat</span>
+                <span className="font-bold text-slate-900">Notifikasi Kegiatan</span>
                 {unreadCount > 0 ? (
                   <span className="text-[11px] font-semibold text-[#31889C] bg-[#E8F5F7] px-2 py-0.5 rounded-full">
                     {unreadCount} Baru
@@ -120,7 +120,7 @@ export function Header({
               <div className="divide-y divide-slate-100 mt-2">
                 <div className="py-2">
                   <p className="font-semibold text-slate-800 text-[12px]">Pusat Notifikasi Aktif</p>
-                  <p className="text-slate-500 text-[11px]">Pantau pembaruan risalah rapat dan tenggat tindak lanjut.</p>
+                  <p className="text-slate-500 text-[11px]">Pantau pembaruan kegiatan dan status pekerjaan Biro 3.</p>
                 </div>
               </div>
               <div className="pt-2 border-t border-slate-100 mt-2 text-center">

@@ -1,28 +1,34 @@
-# DOKUMEN PERANCANGAN TAHAP 3: UML USE CASE DIAGRAM
-## Sistem Informasi Log & Notula Rapat (SIM-RAPAT KEK RI)
+# PERANCANGAN UML USE CASE DIAGRAM (SUB-BAB 3.2.2.a)
+## Sistem Informasi Log & Notula Rapat (Log_Book_Rapat KEK RI)
 **Sekretariat Jenderal Dewan Nasional Kawasan Ekonomi Khusus Republik Indonesia**
 
-Dokumen ini memuat perancangan resmi **UML Use Case Diagram** untuk Website Log & Notula Rapat KEK, mencakup identifikasi Aktor, Batasan Sistem (*System Boundary*), Relasi Asosiasi, `«include»`, `«extend»`, serta Generalisasi Aktor. Diagram dirancang sesuai kaidah akademik pemodelan perangkat lunak dan **siap dibuka / diimpor langsung ke Draw.io (diagrams.net)**.
+Dokumen ini memuat perancangan resmi **UML Use Case Diagram** untuk Website Log & Notula Rapat KEK, mencakup identifikasi Aktor, Batasan Sistem (*System Boundary*), Relasi Asosiasi, `«include»`, `«extend»`, serta Generalisasi Aktor.
+
+> [!NOTE]
+> **Penempatan pada Laporan PKL (Pedoman PKL UBSI Tahun 2026 Halaman 30 – 31 No. 3):**  
+> Diagram ini ditempatkan pada **BAB III PEMBAHASAN &rarr; 3.2. Pembuatan Program &rarr; 3.2.2. Design Program &rarr; a. Use Case Diagram**.
 
 ---
 
-## 1. File Draw.io Siap Pakai
 
-File diagram Draw.io resmi telah disediakan di repository:
-* **Lokasi File Lokal:** [`docs/USE_CASE_SIM_RAPAT.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/USE_CASE_SIM_RAPAT.drawio)
-* **Tautan Unduh Web:** [http://localhost:3000/USE_CASE_SIM_RAPAT.drawio](http://localhost:3000/USE_CASE_SIM_RAPAT.drawio)
 
-### Cara Membuka di Draw.io (diagrams.net):
-1. **Opsi 1 (Buka File Langsung):**
-   - Buka peramban ke [app.diagrams.net](https://app.diagrams.net/).
-   - Klik menu **File** &rarr; **Open From** &rarr; **Device** (atau drag-and-drop file `USE_CASE_SIM_RAPAT.drawio` ke kanvas).
-2. **Opsi 2 (Salin Kode XML):**
-   - Buka file `USE_CASE_SIM_RAPAT.drawio` di text editor.
-   - Di Draw.io, pilih menu **Arrange** &rarr; **Insert** &rarr; **Advanced** &rarr; **XML**.
-   - Tempel (*paste*) kode XML dan klik **Insert**.
-3. **Opsi 3 (Impor Mermaid):**
-   - Di Draw.io, pilih **Arrange** &rarr; **Insert** &rarr; **Advanced** &rarr; **Mermaid**.
-   - Tempel kode Mermaid pada Bagian 3 di bawah ini dan klik **Insert**.
+## 1. File Draw.io Siap Pakai (Multi-Tab)
+
+File diagram Draw.io resmi telah disediakan di repository dalam arsitektur **Multi-Tab**:
+* **Lokasi File Lokal:** [`docs/USE_CASE_Log_Book_Rapat.drawio`](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/USE_CASE_Log_Book_Rapat.drawio)
+* **Tautan Unduh Web:** [http://localhost:3000/USE_CASE_Log_Book_Rapat.drawio](http://localhost:3000/USE_CASE_Log_Book_Rapat.drawio)
+* **Preview Interaktif:** [http://localhost:3000/uml-viewer.html](http://localhost:3000/uml-viewer.html)
+
+### Struktur Tab pada Berkas Draw.io:
+1. **Tab 1: `1. Use Case Standar (Format Contoh)`**
+   - Format klasik sesuai contoh standar perancangan UML (seperti contoh referensi diagram ATM / perbankan).
+   - Menampilkan batas sistem vertikal `«subsystem» Log_Book_Rapat KEK RI` dengan susunan **12 kasus penggunaan (*use case*) vertikal**.
+   - Aktor operasional di sisi kiri: **Staf Pelaksana** & **Admin Biro / Tim**.
+   - Aktor pengawas di sisi kanan: **Super Admin** (Pimpinan Sekjen).
+   - Garis asosiasi lurus, bersih, tanpa persilangan garis (*zero line crossing*), sangat mudah dipahami oleh dosen penguji dan reviewer.
+2. **Tab 2: `2. Use Case Komprehensif (27 UC & 6 Modul)`**
+   - Format rinci berbasis 6 modul fungsional sistem.
+   - Mencakup relasi `«include»`, `«extend»`, dan hierarki generalisasi aktor untuk dokumentasi akademik tingkat lanjut.
 
 ---
 
@@ -30,21 +36,72 @@ File diagram Draw.io resmi telah disediakan di repository:
 
 Sistem membedakan pengguna ke dalam 3 tingkatan peran (*role*) hierarki berbasis prinsip **Generalisasi Aktor (*Actor Inheritance*)**:
 
-| No | Nama Aktor | Deskripsi Peran & Tanggung Jawab | Hak Akses Utama |
-|:---|:-----------|:--------------------------------|:----------------|
-| 1  | **Staf Pelaksana** *(Pegawai / PIC)* | Pegawai internal Sekretariat Dewan Nasional KEK yang menghadiri rapat dinas atau ditugaskan sebagai Penanggung Jawab (PIC) tindak lanjut. | • Login & kelola profil akun.<br>• Melihat dashboard ringkasan & kalender rapat.<br>• Melihat riwayat daftar & detail rapat.<br>• Mengunduh materi & mencetak notula.<br>• Memantau matriks tindak lanjut tim.<br>• Memperbarui progres pekerjaan (*Belum Dimulai, Dalam Proses, Selesai*). |
-| 2  | **Admin Biro / Tim** *(Pengelola Rapat)* | Pengelola administrasi persuratan dan notulis pada Biro/Tim Kerja KEK (contoh: Tim Investasi, Tim Kerja Sama, Tim Komunikasi). Mewarisi seluruh hak akses **Staf Pelaksana**. | • **Mewarisi seluruh use case Staf Pelaksana**.<br>• Membuat agenda rapat baru dengan penomoran urut otomatis.<br>• Menentukan klasifikasi naskah masuk (Disposisi Sekjen/Undangan Internal).<br>• Mengelola peserta, pimpinan, dan notulis rapat.<br>• Mengubah & membatalkan agenda rapat.<br>• Mencatat & memvalidasi notula rapat resmi.<br>• Mengunggah lampiran berkas materi.<br>• Membuat butir tindak lanjut & menetapkan PIC serta tenggat waktu. |
-| 3  | **Super Admin** *(Pimpinan / Admin Sistem)* | Administrator utama Sekretariat Jenderal Dewan Nasional KEK yang berwenang atas pengawasan menyeluruh dan manajemen sistem. Mewarisi seluruh hak akses **Admin Biro/Tim**. | • **Mewarisi seluruh use case Admin Biro/Tim & Staf**.<br>• Monitoring kinerja & beban kerja 3 Tim Kerja KEK (Investasi, Kerja Sama, Komunikasi).<br>• Melakukan filter periode monitoring (*Semua Waktu, Hari Ini, Minggu Ini, Bulan Ini*).<br>• Navigasi langsung ke rincian rapat tim kerja.<br>• Mengelola data pengguna, penetapan peran (*role*), dan reset sandi.<br>• Mengelola master Biro dan 3 Tim Kerja KEK.<br>• Mengelola pengaturan dan konfigurasi global sistem. |
-
-> [!NOTE]
-> **Kaidah Generalisasi Aktor:**
-> `Admin Biro / Tim` memiliki relasi generalisasi (*is-a*) ke `Staf Pelaksana`, dan `Super Admin` memiliki relasi generalisasi ke `Admin Biro / Tim`. Dengan demikian, garis asosiasi pada diagram dibuat efisien tanpa pengulangan garis yang membingungkan.
+| No | Nama Aktor | Posisi Diagram (Tab 1) | Deskripsi Peran & Tanggung Jawab | Hak Akses Utama |
+|:---|:-----------|:-----------------------|:--------------------------------|:----------------|
+| 1  | **Staf Pelaksana** *(Pegawai / PIC)* | Kiri Atas | Pegawai internal Sekretariat Dewan Nasional KEK yang menghadiri rapat dinas atau ditugaskan sebagai Penanggung Jawab (PIC) tindak lanjut. | • Login & autentikasi sistem.<br>• Melihat daftar & detail agenda rapat.<br>• Melakukan presensi kehadiran rapat.<br>• Mengunduh materi & risalah notula.<br>• Memperbarui progres butir tindak lanjut. |
+| 2  | **Admin Biro / Tim** *(Pengelola Rapat)* | Kiri Bawah | Pengelola administrasi persuratan dan notulis pada Biro/Tim Kerja KEK (Tim Investasi, Kerja Sama, Komunikasi). Mewarisi seluruh hak akses **Staf Pelaksana**. | • Menjadwalkan agenda rapat baru.<br>• Mengelola daftar undangan & peserta rapat.<br>• Pencatatan & penyusunan notula risalah resmi.<br>• Mengelola butir tindak lanjut, penetapan PIC & deadline.<br>• Mengunggah berkas dokumen lampiran rapat. |
+| 3  | **Super Admin** *(Pimpinan / Admin Sistem)* | Kanan Tengah | Administrator utama Sekretariat Jenderal Dewan Nasional KEK yang berwenang atas pengawasan menyeluruh dan tata kelola sistem. Mewarisi seluruh hak akses **Admin Biro/Tim**. | • Monitoring kinerja 3 Tim Kerja KEK (Investasi, Kerja Sama, Komunikasi).<br>• Validasi dan pengesahan notula rapat.<br>• Manajemen data pengguna & penetapan peran (*role*).<br>• Manajemen master Biro dan 3 Tim Kerja KEK.<br>• Pengawasan menyeluruh atas seluruh agenda dan log rapat. |
 
 ---
 
 ## 3. Visualisasi Mermaid Use Case Diagram
 
-Diagram di bawah ini menggambarkan arsitektur fungsional Use Case yang selaras dengan file Draw.io:
+### 3.1. Format Standar (Sesuai Contoh Referensi Gambar - Tab 1)
+
+```mermaid
+flowchart LR
+    %% Aktor Kiri
+    subgraph AKTOR_KIRI["Aktor Operasional"]
+        Staff["👤 Staf Pelaksana<br/>(Pegawai / PIC)"]
+        Admin["👤 Admin Biro / Tim<br/>(Pengelola Rapat)"]
+    end
+
+    %% Batasan Sistem Vertikal
+    subgraph SYSTEM["«subsystem» Log_Book_Rapat KEK RI"]
+        UC01(["Login & Autentikasi Sistem"])
+        UC02(["Lihat Agenda & Detail Rapat"])
+        UC03(["Presensi Kehadiran Peserta"])
+        UC04(["Unduh Notula & Materi Rapat"])
+        UC05(["Update Progres Tindak Lanjut"])
+        UC06(["Jadwalkan Agenda Rapat Baru"])
+        UC07(["Kelola Undangan & Peserta"])
+        UC08(["Pencatatan Notula Risalah"])
+        UC09(["Kelola Butir Tindak Lanjut & PIC"])
+        UC10(["Unggah Dokumen Lampiran Rapat"])
+        UC11(["Monitoring Kinerja 3 Tim Kerja"])
+        UC12(["Kelola Pengguna & Hak Akses"])
+    end
+
+    %% Aktor Kanan
+    subgraph AKTOR_KANAN["Aktor Pengawas"]
+        SuperAdmin["👤 Super Admin<br/>(Pimpinan Sekjen)"]
+    end
+
+    %% Asosiasi Staf Pelaksana (Atas)
+    Staff --- UC01
+    Staff --- UC02
+    Staff --- UC03
+    Staff --- UC04
+    Staff --- UC05
+
+    %% Asosiasi Admin Biro / Tim (Bawah)
+    Admin --- UC06
+    Admin --- UC07
+    Admin --- UC08
+    Admin --- UC09
+    Admin --- UC10
+
+    %% Asosiasi Super Admin (Kanan)
+    SuperAdmin --- UC01
+    SuperAdmin --- UC02
+    SuperAdmin --- UC04
+    SuperAdmin --- UC08
+    SuperAdmin --- UC09
+    SuperAdmin --- UC11
+    SuperAdmin --- UC12
+```
+
+### 3.2. Format Komprehensif Berjenjang (Tab 2)
 
 ```mermaid
 flowchart LR
@@ -60,7 +117,7 @@ flowchart LR
     SuperAdmin -->|generalizes| Admin
 
     %% Batasan Sistem
-    subgraph SYSTEM["Sistem Informasi Log & Notula Rapat (SIM-RAPAT KEK RI)"]
+    subgraph SYSTEM["Sistem Informasi Log & Notula Rapat (Log_Book_Rapat KEK RI)"]
         
         %% Modul 1
         subgraph MOD1["1. Modul Autentikasi & Akun"]
@@ -158,16 +215,16 @@ flowchart LR
 
 ## 4. Tabel Spesifikasi Rinci Use Case (Katalog Fungsionalitas)
 
-Berikut adalah rincian lengkap 27 Use Case yang mencakup seluruh alur kerja sistem SIM-RAPAT KEK:
+Berikut adalah rincian lengkap 27 Use Case yang mencakup seluruh alur kerja sistem Log_Book_Rapat KEK:
 
-### A. Modul Autentikasi & Akun
+### 1) Modul Autentikasi & Akun
 | ID | Nama Use Case | Aktor Utama | Tipe Relasi | Deskripsi Singkat | Pre-Kondisi | Post-Kondisi |
 |:---|:--------------|:------------|:------------|:------------------|:------------|:-------------|
 | **UC-01** | Login & Logout Sistem | Staf, Admin, Super Admin | Dasar | Pengguna memverifikasi kredensial email dinas dan password untuk masuk ke sistem. | Akun pengguna berstatus aktif di basis data. | Sesi pengguna terbentuk dan diarahkan ke Dashboard. |
 | **UC-02** | Kelola Profil Pengguna | Staf, Admin, Super Admin | Dasar | Pengguna melihat dan memperbarui informasi identitas profil pribadinya. | Pengguna telah login ke sistem. | Data profil tersimpan di database. |
 | **UC-03** | Ganti Kata Sandi | Staf, Admin, Super Admin | `«extend»` ke UC-02 | Pengguna memperbarui kata sandi akun secara mandiri untuk keamanan. | Pengguna berada di halaman profil pengguna. | Kata sandi terenkripsi baru berhasil disimpan. |
 
-### B. Modul Dashboard & Monitoring Kinerja
+### 2) Modul Dashboard & Monitoring Kinerja
 | ID | Nama Use Case | Aktor Utama | Tipe Relasi | Deskripsi Singkat | Pre-Kondisi | Post-Kondisi |
 |:---|:--------------|:------------|:------------|:------------------|:------------|:-------------|
 | **UC-04** | Lihat Dashboard Ringkasan & Kalender | Staf, Admin, Super Admin | Dasar | Menampilkan kartu metrik eksekutif, agenda rapat mendatang, tren bulanan, dan kalender. | Pengguna telah berhasil login. | Data agregasi statistik ditampilkan di layar. |
@@ -175,7 +232,7 @@ Berikut adalah rincian lengkap 27 Use Case yang mencakup seluruh alur kerja sist
 | **UC-06** | Filter Periode Kinerja Tim | Super Admin | `«extend»` ke UC-05 | Menyaring indikator kinerja tim berdasarkan pilihan waktu (*Semua Waktu, Hari Ini, Minggu Ini, Bulan Ini*). | Modal monitoring kinerja tim terbuka. | Angka KPI dan daftar rapat/pekerjaan terfilter secara reaktif. |
 | **UC-07** | Lihat Detail Rapat Tim Langsung | Super Admin | `«extend»` ke UC-05 | Membuka rincian notula rapat langsung dari kartu atau baris pekerjaan tim. | Modal monitoring kinerja tim terbuka. | Halaman rincian rapat (`/semua-rapat/[id]`) terbuka. |
 
-### C. Modul Manajemen Agenda Rapat
+### 3) Modul Manajemen Agenda Rapat
 | ID | Nama Use Case | Aktor Utama | Tipe Relasi | Deskripsi Singkat | Pre-Kondisi | Post-Kondisi |
 |:---|:--------------|:------------|:------------|:------------------|:------------|:-------------|
 | **UC-08** | Lihat Daftar & Detail Rapat | Staf, Admin, Super Admin | Dasar | Menampilkan daftar seluruh agenda rapat dinas beserta rincian informasi dan statusnya. | Pengguna memiliki sesi login aktif. | Informasi rapat tersaji lengkap. |
@@ -188,7 +245,7 @@ Berikut adalah rincian lengkap 27 Use Case yang mencakup seluruh alur kerja sist
 | **UC-15** | Kelola Peserta & Pimpinan Rapat | Admin, Super Admin | `«include»` oleh UC-10 | Menentukan ketua sidang, notulis, biro pemrakarsa, dan daftar pegawai yang diundang. | Data rapat sedang dibuat atau diedit. | Daftar peserta tersimpan di tabel `peserta_rapat`. |
 | **UC-16** | Presensi Kehadiran Peserta | Admin, Super Admin | `«include»` oleh UC-15 | Mencatat status kehadiran peserta rapat (*Hadir, Tidak Hadir, Izin, Diundang*). | Rapat telah terselenggara. | Status kehadiran peserta terbarui. |
 
-### D. Modul Notula & Dokumen Risalah Rapat
+### 4) Modul Notula & Dokumen Risalah Rapat
 | ID | Nama Use Case | Aktor Utama | Tipe Relasi | Deskripsi Singkat | Pre-Kondisi | Post-Kondisi |
 |:---|:--------------|:------------|:------------|:------------------|:------------|:-------------|
 | **UC-17** | Catat & Susun Notula Rapat | Admin (Notulis), Super Admin | Dasar | Menginput poin-poin pembahasan rapat, arahan pimpinan, keputusan, dan kesimpulan. | Rapat telah dibuat dan berlangsung. | Notula tersimpan di tabel `notulen_rapat`. |
@@ -196,7 +253,7 @@ Berikut adalah rincian lengkap 27 Use Case yang mencakup seluruh alur kerja sist
 | **UC-19** | Cetak / Export Dokumen Resmi | Staf, Admin, Super Admin | `«extend»` ke UC-08 | Mengenerate naskah Notula resmi atau Nota Dinas berstandar tata naskah KEK dalam format cetak/PDF. | Rapat memiliki notula yang tersusun. | Naskah cetak siap unduh atau print. |
 | **UC-20** | Validasi & Finalisasi Notula | Admin, Super Admin | Dasar | Mengubah status notula menjadi Final/Disetujui setelah diverifikasi pimpinan. | Notula berstatus draf atau tinjauan. | Notula berstatus final dan terkunci dari perubahan. |
 
-### E. Modul Matriks Tindak Lanjut (Action Items)
+### 5) Modul Matriks Tindak Lanjut (Action Items)
 | ID | Nama Use Case | Aktor Utama | Tipe Relasi | Deskripsi Singkat | Pre-Kondisi | Post-Kondisi |
 |:---|:--------------|:------------|:------------|:------------------|:------------|:-------------|
 | **UC-21** | Lihat Matriks Tindak Lanjut | Staf, Admin, Super Admin | Dasar | Menampilkan tabel matriks seluruh butir instruksi rapat dengan status, prioritas, dan PIC. | Pengguna telah login ke sistem. | Matriks tindak lanjut tampil terstruktur. |
@@ -204,7 +261,7 @@ Berikut adalah rincian lengkap 27 Use Case yang mencakup seluruh alur kerja sist
 | **UC-23** | Tetapkan Tim, PIC & Tenggat Waktu | Admin, Super Admin | `«include»` oleh UC-22 | Mengalokasikan tanggung jawab kepada Tim Kerja (INV/KS/KOM), pegawai (PIC), dan tanggal batas waktu. | Butir tindak lanjut dibuat. | PIC dan due date terasosiasi ke record. |
 | **UC-24** | Perbarui Status Tindak Lanjut | Staf (PIC), Admin, Super Admin | Dasar | Memperbarui perkembangan pelaksanaan pekerjaan (*Belum Dimulai, Dalam Proses, Selesai*). | PIC memiliki butir penugasan aktif. | Status dan persentase progres pekerjaan terbarui. |
 
-### F. Modul Administrasi Sistem
+### 6) Modul Administrasi Sistem
 | ID | Nama Use Case | Aktor Utama | Tipe Relasi | Deskripsi Singkat | Pre-Kondisi | Post-Kondisi |
 |:---|:--------------|:------------|:------------|:------------------|:------------|:-------------|
 | **UC-25** | Kelola Data Pengguna & Hak Akses | Super Admin | Dasar | Menambah, menyunting data pegawai, menetapkan biro/tim, mengatur peran (*role*), dan menonaktifkan akun. | Pengguna berstatus Super Admin. | Data akun pengguna terbarui di database. |
@@ -227,4 +284,4 @@ Berikut adalah rincian lengkap 27 Use Case yang mencakup seluruh alur kerja sist
 
 ---
 
-*Dokumen ini merupakan bagian dari rangkaian dokumentasi resmi rekayasa perangkat lunak SIM-RAPAT KEK RI ([Tahap 1: ERD](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/1_ERD_DIAGRAM.md) &bull; [Tahap 2: LRS](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/2_LRS_DIAGRAM.md) &bull; [Tahap 3: Use Case](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/3_USE_CASE_DIAGRAM.md)).*
+*Dokumen ini merupakan bagian dari rangkaian dokumentasi resmi rekayasa perangkat lunak Log_Book_Rapat KEK RI ([Tahap 1: ERD](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/1_ERD_DIAGRAM.md) &bull; [Tahap 2: LRS](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/2_LRS_DIAGRAM.md) &bull; [Tahap 3: Use Case](file:///c:/Users/nappz/Documents/Project%20Website/Projek%20Log%20Rapat/docs/3_USE_CASE_DIAGRAM.md)).*

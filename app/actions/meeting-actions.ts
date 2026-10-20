@@ -39,6 +39,13 @@ export interface CreateMeetingInput {
   documentSubCategory?: string | null;
   sourceOrigin?: string | null;
   postponeReason?: string | null;
+  driveLink?: string | null;
+  notes?: string | null;
+  actionPlan?: string | null;
+  ndConsumptionNumber?: string | null;
+  ndConsumptionStatus?: string | null;
+  releaseUrl?: string | null;
+  releaseTitle?: string | null;
 }
 
 function safeRevalidate(paths: string[]) {
@@ -227,6 +234,13 @@ export async function createMeetingAction(input: CreateMeetingInput) {
           documentSubCategory: input.documentSubCategory || null,
           sourceOrigin: input.sourceOrigin || null,
           postponeReason: input.postponeReason || null,
+          driveLink: input.driveLink || null,
+          notes: input.notes || null,
+          actionPlan: input.actionPlan || 'Rutin',
+          ndConsumptionNumber: input.ndConsumptionNumber || null,
+          ndConsumptionStatus: input.ndConsumptionStatus || null,
+          releaseUrl: input.releaseUrl || null,
+          releaseTitle: input.releaseTitle || null,
         },
       });
 
@@ -404,9 +418,9 @@ export async function updateMeetingStatusAction(
   explicitProgressStatus?: string | null
 ) {
   try {
-    // Authorization Check: SUPER_ADMIN, ADMIN, and STAFF can update status
+    // Authorization Check: SUPER_ADMIN, ADMIN, PIMPINAN, and STAFF can update status
     const currentUser = await requireAuth();
-    const allowedRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'STAFF'];
+    const allowedRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'PIMPINAN', 'STAFF'];
     if (!allowedRoles.includes(currentUser.role)) {
       return {
         success: false,
@@ -414,7 +428,9 @@ export async function updateMeetingStatusAction(
       };
     }
     const isPrivileged =
-      currentUser.role === 'SUPER_ADMIN' || currentUser.role === 'ADMIN';
+      currentUser.role === 'SUPER_ADMIN' ||
+      currentUser.role === 'ADMIN' ||
+      currentUser.role === 'PIMPINAN';
 
     const existing = await prisma.meeting.findUnique({
       where: { id: meetingId },
@@ -521,6 +537,91 @@ export async function updateMeetingStatusAction(
   } catch (error: any) {
     console.error('Error updating meeting status:', error);
     return { success: false, error: error?.message || 'Gagal memperbarui status rapat' };
+  }
+}
+
+/**
+ * Server action to approve meeting results and mark the meeting as Selesai
+ * Accessible by SUPER_ADMIN, ADMIN (Admin Tim), and PIMPINAN
+ */
+export async function approveMeetingAction(meetingId: string) {
+  try {
+    const currentUser = await requireAuth();
+    const allowedRoles: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'PIMPINAN'];
+    if (!allowedRoles.includes(currentUser.role)) {
+      return {
+        success: false,
+        error: 'Forbidden: Hanya Admin Tim dan Pimpinan yang dapat menyetujui hasil rapat.',
+      };
+    }
+
+    const existing = await prisma.meeting.findUnique({
+      where: { id: meetingId },
+      include: { primaryBiro: true, participants: true },
+    });
+    if (!existing) {
+      return { success: false, error: 'Rapat tidak ditemukan.' };
+    }
+
+    const updated = await prisma.meeting.update({
+      where: { id: meetingId },
+      data: {
+        status: MeetingStatus.APPROVED,
+        progressStatus: 'Selesai',
+      },
+      include: { primaryBiro: true },
+    });
+
+    // Notify participants & organizers about the approval
+    try {
+      const targetUserIds = new Set<string>();
+      if (existing.secretaryId && existing.secretaryId !== currentUser.id) {
+        targetUserIds.add(existing.secretaryId);
+      }
+      if (existing.chairpersonId && existing.chairpersonId !== currentUser.id) {
+        targetUserIds.add(existing.chairpersonId);
+      }
+      for (const p of existing.participants) {
+        if (p.userId && p.userId !== currentUser.id) {
+          targetUserIds.add(p.userId);
+        }
+      }
+
+      for (const uid of targetUserIds) {
+        const nextNotifId = await getNextNotificationId();
+        await prisma.notification.create({
+          data: {
+            id: nextNotifId,
+            userId: uid,
+            title: `Hasil Rapat Disetujui: [${existing.meetingNumber}] ${existing.title}`,
+            message: `Hasil dan risalah rapat telah disetujui resmi oleh ${currentUser.name || 'Pimpinan'}. Status rapat kini telah SELESAI.`,
+            type: 'meeting',
+            link: `/semua-rapat/${existing.id}`,
+            isRead: false,
+          },
+        });
+      }
+    } catch (notifErr) {
+      console.warn('Failed to dispatch approval notifications:', notifErr);
+    }
+
+    safeRevalidate([
+      '/',
+      '/semua-rapat',
+      `/semua-rapat/${meetingId}`,
+      `/rapat/${meetingId}`,
+      '/laporan',
+      `/biro/${updated.primaryBiro.code.toLowerCase()}`,
+    ]);
+
+    return {
+      success: true,
+      data: updated,
+      message: `Hasil rapat "${existing.title}" berhasil disetujui dan status rapat kini telah SELESAI.`,
+    };
+  } catch (error: any) {
+    console.error('Error approving meeting:', error);
+    return { success: false, error: error?.message || 'Gagal menyetujui hasil rapat' };
   }
 }
 

@@ -77,9 +77,9 @@ export function Sidebar({
   const dashboardLabel = 'Dashboard';
 
   const rapatSubItems = [
-    { name: 'Daftar Rapat', href: '/semua-rapat' },
+    { name: 'Arsip Kegiatan', href: '/semua-rapat' },
     ...(isSuperAdmin || isAdmin || userRole === 'STAFF'
-      ? [{ name: '+ Buat Rapat Baru', href: '/buat-rapat' }]
+      ? [{ name: '+ Catat Kegiatan Baru', href: '/buat-rapat' }]
       : []),
   ];
 
@@ -129,10 +129,10 @@ export function Sidebar({
               {!collapsed && (
                 <div className="flex flex-col min-w-0 text-left">
                   <span className="font-extrabold text-[12.5px] text-white tracking-wide leading-tight">
-                    LOG &amp; NOTULA RAPAT
+                    AKTIVITAS BIRO 3
                   </span>
                   <span className="text-[10px] text-teal-100 font-medium leading-[1.25] mt-0.5 line-clamp-2">
-                    Sekretariat Dewan Nasional Kawasan Ekonomi Khusus
+                    Biro Investasi, Kerja Sama &amp; Komunikasi
                   </span>
                 </div>
               )}
@@ -173,7 +173,7 @@ export function Sidebar({
                 {!collapsed && <span className="truncate">{dashboardLabel}</span>}
               </Link>
 
-              {/* Rapat (Collapsible) */}
+              {/* Arsip Kegiatan (Collapsible) */}
               <div>
                 <button
                   type="button"
@@ -184,14 +184,14 @@ export function Sidebar({
                       ? "text-[#31889C] font-semibold bg-[#F0F9FA]/60"
                       : ""
                   )}
-                  title="Rapat"
+                  title="Arsip Kegiatan"
                 >
                   <div className="flex items-center gap-3">
                     <Users className={cn(
                       "w-5 h-5 shrink-0",
                       pathname.startsWith('/semua-rapat') || pathname === '/buat-rapat' ? "text-[#31889C]" : "text-slate-400"
                     )} />
-                    {!collapsed && <span>Rapat</span>}
+                    {!collapsed && <span>Arsip Kegiatan</span>}
                   </div>
                   {!collapsed && (
                     <ChevronDown
@@ -227,7 +227,7 @@ export function Sidebar({
                 )}
               </div>
 
-              {/* Tindak Lanjut */}
+              {/* Status Pekerjaan */}
               <Link
                 href="/tindak-lanjut"
                 onClick={handleLinkClick}
@@ -237,13 +237,13 @@ export function Sidebar({
                     ? "bg-[#F0F9FA] text-[#31889C] font-bold border-l-4 border-[#31889C] shadow-xs"
                     : "text-slate-600 hover:bg-[#F0F9FA] hover:text-[#31889C]"
                 )}
-                title="Tindak Lanjut"
+                title="Status Pekerjaan"
               >
                 <CheckSquare className={cn(
                   "w-5 h-5 shrink-0",
                   pathname.startsWith('/tindak-lanjut') ? "text-[#31889C]" : "text-slate-400"
                 )} />
-                {!collapsed && <span>Tindak Lanjut</span>}
+                {!collapsed && <span>Status Pekerjaan</span>}
               </Link>
 
               {/* Kalender (SUPER_ADMIN, ADMIN, PIMPINAN, STAFF) */}
@@ -277,7 +277,7 @@ export function Sidebar({
                       "w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:bg-[#F0F9FA] hover:text-[#31889C] transition-all font-medium text-[14px] cursor-pointer",
                       pathname.startsWith('/biro') ? "text-[#31889C] font-semibold bg-[#F0F9FA]/60" : ""
                     )}
-                    title="Tim Kerja KEK"
+                    title="Tim Kerja Biro 3"
                   >
                     <div className="flex items-center gap-3">
                       <Layers className={cn(
@@ -302,9 +302,11 @@ export function Sidebar({
                         { code: 'INV', name: 'Tim Investasi', href: '/semua-rapat?tim=INV' },
                         { code: 'KS', name: 'Tim Kerja Sama', href: '/semua-rapat?tim=KS' },
                         { code: 'KOM', name: 'Tim Komunikasi', href: '/semua-rapat?tim=KOM' },
+                        { code: 'SI', name: 'Tim Sistem Informasi', href: '/semua-rapat?tim=SI' },
+                        { code: 'POKJA', name: 'Pokja', href: '/semua-rapat?tim=POKJA' },
                       ]
                         .filter((tim) => {
-                          // Untuk role Staf, hanya tampilkan tim yang sesuai dengan tim mereka
+                          // Untuk role Staf, hanya tampilkan tim yang sesuai dengan tim mereka jika ada spesifik tim
                           if (userRole === 'STAFF' && session?.user?.teamCode) {
                             return tim.code.toUpperCase() === session.user.teamCode.toUpperCase();
                           }
@@ -376,8 +378,8 @@ export function Sidebar({
                 )}
               </Link>
 
-              {/* Manajemen Pengguna (SUPER_ADMIN ONLY) */}
-              {isSuperAdmin && (
+              {/* Manajemen Pengguna (SUPER_ADMIN & ADMIN) */}
+              {(isSuperAdmin || isAdmin) && (
                 <Link
                   href="/pengguna"
                   onClick={handleLinkClick}
@@ -387,13 +389,13 @@ export function Sidebar({
                       ? "bg-[#F0F9FA] text-[#31889C] font-bold border-l-4 border-[#31889C] shadow-xs"
                       : "text-slate-600 hover:bg-[#F0F9FA] hover:text-[#31889C]"
                   )}
-                  title="Manajemen Pengguna"
+                  title={isAdmin ? "Manajemen Anggota Tim" : "Manajemen Pengguna"}
                 >
                   <UserCog className={cn(
                     "w-5 h-5 shrink-0",
                     pathname.startsWith('/pengguna') ? "text-[#31889C]" : "text-slate-400"
                   )} />
-                  {!collapsed && <span>Pengguna</span>}
+                  {!collapsed && <span>{isAdmin ? "Anggota Tim" : "Pengguna"}</span>}
                 </Link>
               )}
 

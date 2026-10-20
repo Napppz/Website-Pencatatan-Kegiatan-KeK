@@ -23,13 +23,25 @@ function safeRevalidate(paths: string[]) {
 }
 
 /**
- * Server Action: Get all users with Biro information (SUPER_ADMIN only)
+ * Server Action: Get all users with Biro information (SUPER_ADMIN or ADMIN)
+ * ADMIN is strictly scoped to users in their own team/biro, excluding SUPER_ADMIN.
  */
 export async function getUsersAction() {
   try {
-    await requireRole('SUPER_ADMIN');
+    const currentUser = await requireRole(['SUPER_ADMIN', 'ADMIN']);
+    const isGlobalAdmin = currentUser.role === 'SUPER_ADMIN';
+
+    const whereCondition: any = {};
+    if (!isGlobalAdmin) {
+      whereCondition.biroId = currentUser.biroId;
+      if (currentUser.teamId) {
+        whereCondition.teamId = currentUser.teamId;
+      }
+      whereCondition.role = { not: 'SUPER_ADMIN' };
+    }
 
     const users = await prisma.user.findMany({
+      where: whereCondition,
       select: {
         id: true,
         name: true,
@@ -67,11 +79,13 @@ export async function getUsersAction() {
 }
 
 /**
- * Server Action: Create User with hashed password (SUPER_ADMIN only)
+ * Server Action: Create User with hashed password (SUPER_ADMIN or ADMIN)
+ * ADMIN can only create users in their own team/biro with role STAFF or ADMIN.
  */
 export async function createUserAction(input: CreateUserInput) {
   try {
-    await requireRole('SUPER_ADMIN');
+    const currentUser = await requireRole(['SUPER_ADMIN', 'ADMIN']);
+    const isGlobalAdmin = currentUser.role === 'SUPER_ADMIN';
 
     const parsed = createUserSchema.safeParse(input);
     if (!parsed.success) {
@@ -79,7 +93,21 @@ export async function createUserAction(input: CreateUserInput) {
       return { success: false, error: `Validasi gagal: ${errorMsg}` };
     }
 
-    const { name, email, password, role, teamId, isActive } = parsed.data;
+    let { name, email, password, role, teamId, isActive } = parsed.data;
+
+    // RBAC & Team Scoping restrictions for ADMIN
+    if (!isGlobalAdmin) {
+      if (role === 'SUPER_ADMIN' || role === 'PIMPINAN') {
+        return {
+          success: false,
+          error: 'Administrator Tim hanya memiliki izin menambahkan anggota berposisi Staf atau Administrator.',
+        };
+      }
+      // Force assignment to admin's team
+      if (currentUser.teamId) {
+        teamId = currentUser.teamId;
+      }
+    }
 
     // Check unique email
     const existing = await prisma.user.findUnique({
@@ -89,9 +117,9 @@ export async function createUserAction(input: CreateUserInput) {
       return { success: false, error: 'Email tersebut sudah terdaftar di sistem.' };
     }
 
-    // Resolve biroId from team if teamId is provided, or default to BIRO-IKK
-    let biroId = parsed.data.biroId || 'BIRO-IKK';
-    if (teamId) {
+    // Resolve biroId: if ADMIN, force to currentUser.biroId
+    let biroId = isGlobalAdmin ? (parsed.data.biroId || 'BIRO-IKK') : currentUser.biroId;
+    if (isGlobalAdmin && teamId) {
       const team = await prisma.biroTeam.findUnique({ where: { id: teamId } });
       if (team) {
         biroId = team.biroId;
@@ -145,11 +173,13 @@ export async function createUserAction(input: CreateUserInput) {
 }
 
 /**
- * Server Action: Update User (SUPER_ADMIN only)
+ * Server Action: Update User (SUPER_ADMIN or ADMIN)
+ * ADMIN can only update members in their team/biro and cannot touch SUPER_ADMIN.
  */
 export async function updateUserAction(input: UpdateUserInput) {
   try {
-    await requireRole('SUPER_ADMIN');
+    const currentUser = await requireRole(['SUPER_ADMIN', 'ADMIN']);
+    const isGlobalAdmin = currentUser.role === 'SUPER_ADMIN';
 
     const parsed = updateUserSchema.safeParse(input);
     if (!parsed.success) {
@@ -157,13 +187,35 @@ export async function updateUserAction(input: UpdateUserInput) {
       return { success: false, error: `Validasi gagal: ${errorMsg}` };
     }
 
-    const { id, name, email, password, role, teamId, isActive } = parsed.data;
+    let { id, name, email, password, role, teamId, isActive } = parsed.data;
 
     const existing = await prisma.user.findUnique({
       where: { id },
     });
     if (!existing) {
       return { success: false, error: 'Pengguna tidak ditemukan.' };
+    }
+
+    // RBAC & Team Scoping restrictions for ADMIN
+    if (!isGlobalAdmin) {
+      if (existing.role === 'SUPER_ADMIN') {
+        return { success: false, error: 'Anda tidak memiliki hak akses untuk mengubah akun Super Administrator.' };
+      }
+      if (role === 'SUPER_ADMIN' || role === 'PIMPINAN') {
+        return {
+          success: false,
+          error: 'Administrator Tim tidak diizinkan menaikkan peran ke Super Administrator atau Pimpinan.',
+        };
+      }
+      if (existing.biroId !== currentUser.biroId) {
+        return { success: false, error: 'Anda tidak memiliki izin mengubah data pengguna dari biro lain.' };
+      }
+      if (currentUser.teamId && existing.teamId !== currentUser.teamId) {
+        return { success: false, error: 'Anda tidak memiliki izin mengubah data anggota di luar tim kerja Anda.' };
+      }
+      if (currentUser.teamId) {
+        teamId = currentUser.teamId;
+      }
     }
 
     // Check email uniqueness if email changed
@@ -176,8 +228,11 @@ export async function updateUserAction(input: UpdateUserInput) {
       }
     }
 
-    let biroId = parsed.data.biroId || existing.biroId || 'BIRO-IKK';
-    if (teamId) {
+    let biroId = isGlobalAdmin
+      ? (parsed.data.biroId || existing.biroId || 'BIRO-IKK')
+      : currentUser.biroId;
+
+    if (isGlobalAdmin && teamId) {
       const team = await prisma.biroTeam.findUnique({ where: { id: teamId } });
       if (team) {
         biroId = team.biroId;
@@ -234,11 +289,12 @@ export async function updateUserAction(input: UpdateUserInput) {
 }
 
 /**
- * Server Action: Toggle user active status (SUPER_ADMIN only)
+ * Server Action: Toggle user active status (SUPER_ADMIN or ADMIN)
  */
 export async function toggleUserStatusAction(userId: string) {
   try {
-    const currentUser = await requireRole('SUPER_ADMIN');
+    const currentUser = await requireRole(['SUPER_ADMIN', 'ADMIN']);
+    const isGlobalAdmin = currentUser.role === 'SUPER_ADMIN';
 
     if (currentUser.id === userId) {
       return { success: false, error: 'Anda tidak dapat menonaktifkan akun Anda sendiri.' };
@@ -249,6 +305,19 @@ export async function toggleUserStatusAction(userId: string) {
     });
     if (!existing) {
       return { success: false, error: 'Pengguna tidak ditemukan.' };
+    }
+
+    // Security check for ADMIN
+    if (!isGlobalAdmin) {
+      if (existing.role === 'SUPER_ADMIN') {
+        return { success: false, error: 'Anda tidak memiliki hak akses mengubah status akun Super Administrator.' };
+      }
+      if (existing.biroId !== currentUser.biroId) {
+        return { success: false, error: 'Anda tidak memiliki izin mengubah status pengguna dari biro lain.' };
+      }
+      if (currentUser.teamId && existing.teamId !== currentUser.teamId) {
+        return { success: false, error: 'Anda tidak memiliki izin mengubah status anggota tim lain.' };
+      }
     }
 
     const updated = await prisma.user.update({
@@ -275,11 +344,12 @@ export async function toggleUserStatusAction(userId: string) {
 }
 
 /**
- * Server Action: Delete User (SUPER_ADMIN only)
+ * Server Action: Delete User (SUPER_ADMIN or ADMIN)
  */
 export async function deleteUserAction(userId: string) {
   try {
-    const currentUser = await requireRole('SUPER_ADMIN');
+    const currentUser = await requireRole(['SUPER_ADMIN', 'ADMIN']);
+    const isGlobalAdmin = currentUser.role === 'SUPER_ADMIN';
 
     if (!userId) {
       return { success: false, error: 'ID pengguna tidak valid.' };
@@ -291,11 +361,24 @@ export async function deleteUserAction(userId: string) {
 
     const targetUser = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, role: true, biroId: true, teamId: true },
     });
 
     if (!targetUser) {
       return { success: false, error: 'Pengguna tidak ditemukan.' };
+    }
+
+    // Security check for ADMIN
+    if (!isGlobalAdmin) {
+      if (targetUser.role === 'SUPER_ADMIN') {
+        return { success: false, error: 'Anda tidak memiliki izin menghapus akun Super Administrator.' };
+      }
+      if (targetUser.biroId !== currentUser.biroId) {
+        return { success: false, error: 'Anda tidak memiliki izin menghapus pengguna dari biro lain.' };
+      }
+      if (currentUser.teamId && targetUser.teamId !== currentUser.teamId) {
+        return { success: false, error: 'Anda tidak memiliki izin menghapus anggota tim lain.' };
+      }
     }
 
     // Safely dissociate references in an atomic transaction before deletion

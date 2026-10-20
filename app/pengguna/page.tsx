@@ -12,8 +12,8 @@ export const revalidate = 0;
 export default async function PenggunaPage() {
   const currentUser = await getCurrentUser();
 
-  // Strict SUPER_ADMIN check (Section 29)
-  if (!currentUser || currentUser.role !== 'SUPER_ADMIN') {
+  // Allow SUPER_ADMIN and ADMIN (Section 29)
+  if (!currentUser || (currentUser.role !== 'SUPER_ADMIN' && currentUser.role !== 'ADMIN')) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-2xl border border-red-200 p-8 text-center shadow-sm space-y-4">
@@ -25,7 +25,7 @@ export default async function PenggunaPage() {
               Akses Dibatasi
             </h2>
             <p className="text-[13px] text-slate-500 mt-2 leading-relaxed">
-              Anda tidak memiliki akses ke halaman Manajemen Pengguna ini. Halaman ini hanya dapat diakses oleh peran <strong>Super Administrator</strong>.
+              Anda tidak memiliki akses ke halaman ini. Halaman ini hanya dapat diakses oleh peran <strong>Super Administrator</strong> atau <strong>Administrator Tim</strong>.
             </p>
           </div>
           <div className="pt-2">
@@ -42,10 +42,23 @@ export default async function PenggunaPage() {
     );
   }
 
-  // Fetch users & 3 canonical teams for SUPER_ADMIN
+  const isTeamAdmin = currentUser.role === 'ADMIN';
+
+  // Scoped user query: ADMIN only sees users in their biro & team, excluding SUPER_ADMIN
+  const userWhere: any = {};
+  if (isTeamAdmin) {
+    userWhere.biroId = currentUser.biroId;
+    if (currentUser.teamId) {
+      userWhere.teamId = currentUser.teamId;
+    }
+    userWhere.role = { not: 'SUPER_ADMIN' };
+  }
+
+  // Fetch users & 3 canonical teams
   const [users, dbTeams] = await withDbRetry(async () =>
     Promise.all([
       prisma.user.findMany({
+        where: userWhere,
         select: {
           id: true,
           name: true,
@@ -99,6 +112,11 @@ export default async function PenggunaPage() {
       initialUsers={users}
       availableTeams={sortedTeams}
       currentUserId={currentUser.id}
+      currentUserRole={currentUser.role}
+      currentUserTeamId={currentUser.teamId || undefined}
+      currentUserTeamName={currentUser.teamName || undefined}
+      currentUserTeamCode={currentUser.teamCode || undefined}
+      currentUserBiroCode={currentUser.biroCode || undefined}
     />
   );
 }

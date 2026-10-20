@@ -7,8 +7,6 @@ import {
   Filter,
   ArrowRight,
   MapPin,
-  Eye,
-  FileDown,
   TrendingUp,
   Ship,
   Scale,
@@ -23,6 +21,7 @@ import {
   Play,
   ChevronDown,
   Check,
+  CheckCircle2,
 } from 'lucide-react';
 import { Meeting, BiroCode, MeetingStatus, getMeetingCategoryInfo } from '@/lib/types';
 import { MOCK_MEETINGS } from '@/lib/mock-data';
@@ -30,7 +29,7 @@ import { MeetingStatusBadge, MeetingProgressBadge } from './meeting-status-badge
 import { ActionItemProgress } from '../action-items/action-item-progress';
 import { AgendaSeriesModal } from './agenda-series-modal';
 import { useSession } from 'next-auth/react';
-import { deleteMeetingAction, updateMeetingStatusAction } from '@/app/actions/meeting-actions';
+import { deleteMeetingAction, updateMeetingStatusAction, approveMeetingAction } from '@/app/actions/meeting-actions';
 import { toast, confirmModal } from '@/components/providers/toast-provider';
 import { parseMonthFilterIndex, parseDayFilterIndex, parseMeetingDate, cn } from '@/lib/utils';
 import {
@@ -49,6 +48,7 @@ interface MeetingTableProps {
   filterDayOfWeek?: string | number | null;
   filterDate?: string | null;
   filterCategory?: string | null;
+  filterJenis?: string | null;
   searchQuery?: string;
   onSearchChange?: (val: string) => void;
   hideHeader?: boolean;
@@ -63,6 +63,7 @@ export function MeetingTable({
   onViewAllMeetings,
   filterBiro,
   filterStatus,
+  filterJenis,
   filterMonth,
   filterYear,
   filterDayOfWeek,
@@ -123,7 +124,8 @@ export function MeetingTable({
   const { data: session } = useSession();
   const userRole = session?.user?.role || 'STAFF';
   const canDeleteMeeting = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
-  const canUpdateStatus = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
+  const canUpdateStatus = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'PIMPINAN' || userRole === 'STAFF';
+  const canApprove = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'PIMPINAN';
 
   const countBelumDimulai = useMemo(
     () => meetings.filter((m) => normalizeProgressStatus(m.progressStatus || mapStatusToProgress(m.status)) === 'Belum Dimulai').length,
@@ -138,33 +140,70 @@ export function MeetingTable({
     [meetings]
   );
 
-  const handleQuickUpdateStatus = async (meetingId: string, newProg: 'Belum Dimulai' | 'Dalam Proses' | 'Selesai') => {
+  const handleStartMeeting = async (meeting: any) => {
     try {
-      setUpdatingStatusId(meetingId);
-      const res = await updateMeetingStatusAction(meetingId, newProg);
+      setUpdatingStatusId(meeting.id);
+      const res = await updateMeetingStatusAction(meeting.id, 'Dalam Proses');
       if (res.success) {
         setMeetings((prev) =>
           prev.map((item) =>
-            item.id === meetingId
+            item.id === meeting.id
               ? {
                   ...item,
-                  progressStatus: newProg,
-                  status: mapProgressToStatus(newProg),
+                  progressStatus: 'Dalam Proses',
+                  status: 'REVIEW' as MeetingStatus,
                 }
               : item
           )
         );
-        toast.success(`Status rapat berhasil diperbarui ke "${newProg}".`);
-        router.refresh();
+        toast.success(`Rapat ${meeting.code || meeting.meetingNumber || ''} resmi dimulai (Dalam Proses).`);
+        router.push(`/semua-rapat/${meeting.id}?tab=minutes`);
       } else {
-        toast.error(res.error || 'Gagal memperbarui status rapat.');
+        toast.error(res.error || 'Gagal memulai rapat.');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Gagal memperbarui status rapat.');
+      toast.error(err?.message || 'Gagal memulai rapat.');
     } finally {
       setUpdatingStatusId(null);
     }
   };
+
+  const handleApproveMeeting = async (meeting: any) => {
+    const confirmed = await confirmModal({
+      title: `Setujui & Selesaikan Rapat?`,
+      message: `Apakah Anda ingin menyetujui hasil risalah rapat "${meeting.title}"? Status rapat akan otomatis diubah menjadi SELESAI.`,
+      confirmText: 'Ya, Setujui & Selesaikan',
+      variant: 'primary',
+    });
+    if (!confirmed) return;
+
+    try {
+      setUpdatingStatusId(meeting.id);
+      const res = await approveMeetingAction(meeting.id);
+      if (res.success) {
+        setMeetings((prev) =>
+          prev.map((item) =>
+            item.id === meeting.id
+              ? {
+                  ...item,
+                  progressStatus: 'Selesai',
+                  status: 'APPROVED' as MeetingStatus,
+                }
+              : item
+          )
+        );
+        toast.success(`Hasil rapat berhasil disetujui. Status rapat kini SELESAI.`);
+        router.refresh();
+      } else {
+        toast.error(res.error || 'Gagal menyetujui hasil rapat.');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Gagal menyetujui hasil rapat.');
+    } finally {
+      setUpdatingStatusId(null);
+    }
+  };
+
 
   // Group meetings into series to compute total sessions & session index
   const meetingSeriesMap = useMemo(() => {
@@ -369,6 +408,24 @@ export function MeetingTable({
         tagClass: 'bg-amber-600 text-white',
       };
     }
+    if (upperCode.startsWith('SI-') || upperTeam === 'SI' || nameLower.includes('sistem informasi')) {
+      return {
+        teamName: 'Tim Sistem Informasi',
+        code: 'SI',
+        badgeClass: 'bg-purple-50 text-purple-800 border-purple-200/90',
+        pillClass: 'bg-purple-50 text-purple-800 border-purple-200 group-hover/link:border-purple-400 group-hover/link:bg-purple-100/60',
+        tagClass: 'bg-purple-600 text-white',
+      };
+    }
+    if (upperCode.startsWith('POKJA-') || upperTeam === 'POKJA' || nameLower.includes('pokja')) {
+      return {
+        teamName: 'Pokja',
+        code: 'POKJA',
+        badgeClass: 'bg-indigo-50 text-indigo-800 border-indigo-200/90',
+        pillClass: 'bg-indigo-50 text-indigo-800 border-indigo-200 group-hover/link:border-indigo-400 group-hover/link:bg-indigo-100/60',
+        tagClass: 'bg-indigo-600 text-white',
+      };
+    }
     return {
       teamName: primaryTeamName || 'Tim Investasi',
       code: primaryTeamCode || 'INV',
@@ -418,14 +475,16 @@ export function MeetingTable({
     return list.filter((m) => {
       if (filterBiro) {
         const target = String(filterBiro).toUpperCase();
-        if (target === 'INV' || target === 'KS' || target === 'KOM') {
+        if (target === 'INV' || target === 'KS' || target === 'KOM' || target === 'SI' || target === 'POKJA') {
           const matchTeam =
             m.code.toUpperCase().startsWith(`${target}-`) ||
             m.primaryTeamCode?.toUpperCase() === target ||
             m.primaryTeamId?.toUpperCase().includes(target) ||
             (target === 'INV' && (m.primaryTeamName?.toLowerCase().includes('investasi') || m.primaryTeamCode === 'TIM-001' || m.primaryTeamId === 'TIM-001')) ||
-            (target === 'KS' && (m.primaryTeamName?.toLowerCase().includes('kerja sama') || m.primaryTeamCode === 'TIM-003' || m.primaryTeamId === 'TIM-003')) ||
-            (target === 'KOM' && (m.primaryTeamName?.toLowerCase().includes('komunikasi') || m.primaryTeamCode === 'TIM-002' || m.primaryTeamId === 'TIM-002'));
+            (target === 'KS' && (m.primaryTeamName?.toLowerCase().includes('kerja sama') || m.primaryTeamName?.toLowerCase().includes('kerjasama') || m.primaryTeamCode === 'TIM-003' || m.primaryTeamId === 'TIM-003')) ||
+            (target === 'KOM' && (m.primaryTeamName?.toLowerCase().includes('komunikasi') || m.primaryTeamCode === 'TIM-002' || m.primaryTeamId === 'TIM-002')) ||
+            (target === 'SI' && (m.primaryTeamName?.toLowerCase().includes('sistem informasi') || m.primaryTeamCode === 'TIM-004' || m.primaryTeamId === 'TIM-004')) ||
+            (target === 'POKJA' && (m.primaryTeamName?.toLowerCase().includes('pokja') || m.primaryTeamCode === 'TIM-005' || m.primaryTeamId === 'TIM-005'));
           if (!matchTeam) {
             return false;
           }
@@ -489,6 +548,17 @@ export function MeetingTable({
         }
       }
 
+      // Check jenis rapat filter
+      if (filterJenis && filterJenis !== 'ALL') {
+        const target = String(filterJenis).toLowerCase().trim();
+        const mKind = (m.meetingKind || '').toLowerCase().trim();
+        if (target === 'none' || target === 'tanpa jenis') {
+          if (mKind !== '') return false;
+        } else {
+          if (mKind !== target) return false;
+        }
+      }
+
       // Check date/month/day/year filters
       if (monthIdx !== null || dayOfWeekIdx !== null || targetYear !== null || targetDate !== null) {
         const parsed = parseMeetingDate(m.date);
@@ -519,7 +589,7 @@ export function MeetingTable({
         (m.agendaSummary && m.agendaSummary.toLowerCase().includes(q))
       );
     });
-  }, [meetings, deletedMeetingIds, effectiveSearch, filterBiro, filterStatus, progressTabFilter, filterMonth, filterYear, filterDayOfWeek, filterDate, filterCategory]);
+  }, [meetings, deletedMeetingIds, effectiveSearch, filterBiro, filterStatus, filterJenis, progressTabFilter, filterMonth, filterYear, filterDayOfWeek, filterDate, filterCategory]);
 
   const handleResetFilter = () => {
     setEffectiveSearch('');
@@ -529,7 +599,7 @@ export function MeetingTable({
   // Reset page when filters change
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [effectiveSearch, filterBiro, filterStatus, progressTabFilter, filterMonth, filterYear, filterDayOfWeek, filterDate, filterCategory]);
+  }, [effectiveSearch, filterBiro, filterStatus, filterJenis, progressTabFilter, filterMonth, filterYear, filterDayOfWeek, filterDate, filterCategory]);
 
   const itemsPerPage = pageSize;
   const totalPages = Math.max(1, Math.ceil(filteredMeetings.length / itemsPerPage));
@@ -562,13 +632,13 @@ export function MeetingTable({
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#31889C]"></span>
               <h2 className="font-bold text-[18px] text-slate-900">
-                {onViewAllMeetings ? 'Agenda & Risalah Rapat Terkini' : 'Semua Risalah Rapat KEK'}
+                {onViewAllMeetings ? 'Kegiatan & Aktivitas Biro 3 Terkini' : 'Semua Kegiatan & Aktivitas Biro 3'}
               </h2>
             </div>
             <p className="text-[12.5px] text-slate-500 mt-0.5">
               {onViewAllMeetings
-                ? 'Ringkasan rapat koordinasi terbaru. Untuk mencari data lama atau arsip penuh, klik Buka Semua Arsip.'
-                : 'Daftar lengkap agenda dan risalah pertemuan, diurutkan dari yang paling baru.'}
+                ? 'Ringkasan aktivitas dan kegiatan terbaru 5 tim kerja Biro 3. Untuk mencari data lama atau arsip penuh, klik Buka Semua Arsip Kegiatan.'
+                : 'Daftar lengkap kegiatan, hasil kerja, dan status pekerjaan 5 tim kerja Biro 3.'}
             </p>
           </div>
 
@@ -791,7 +861,7 @@ export function MeetingTable({
                 onClick={onViewAllMeetings}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#31889C] text-white hover:bg-[#266F80] transition-all text-[12.5px] font-semibold shadow-xs cursor-pointer shrink-0"
               >
-                <span>Buka Semua Arsip Rapat</span>
+                <span>Buka Semua Arsip Kegiatan</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -804,12 +874,12 @@ export function MeetingTable({
         <table className="w-full text-left text-slate-800">
           <thead className="bg-[#F8FAFC] border-b border-slate-200 text-[11px] font-bold text-slate-700 uppercase tracking-wider">
             <tr>
-              <th className="py-3 px-4">Nomor &amp; Tanggal</th>
-              <th className="py-3 px-4">Agenda Rapat</th>
-              <th className="py-3 px-4">Tim Kerja Pelaksana</th>
-              <th className="py-3 px-4" title="Status Pemantauan Rapat: Belum Dimulai -> Dalam Proses -> Selesai">Status Rapat</th>
-              <th className="py-3 px-4">Tindak Lanjut</th>
-              <th className="py-3 px-4 text-right">Aksi</th>
+              <th className="py-3 px-3 sm:px-3.5 whitespace-nowrap">Nomor &amp; Tanggal</th>
+              <th className="py-3 px-3 sm:px-3.5">Nama Kegiatan &amp; Hasil</th>
+              <th className="py-3 px-3 sm:px-3.5 whitespace-nowrap">Tim Pelaksana</th>
+              <th className="py-3 px-3 sm:px-3.5 whitespace-nowrap" title="Status Pemantauan Pekerjaan: Belum Dimulai -> Dalam Proses -> Selesai">Status Pekerjaan</th>
+              <th className="py-3 px-3 sm:px-3.5 whitespace-nowrap">Catatan &amp; Output</th>
+              <th className="py-3 px-3 sm:px-3.5 text-right sticky right-0 bg-[#F8FAFC] z-20 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] border-l border-slate-200/50 whitespace-nowrap">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 text-[13px]">
@@ -817,26 +887,26 @@ export function MeetingTable({
               // Loading Skeleton State
               Array.from({ length: 4 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
-                  <td className="py-4 px-4">
+                  <td className="py-3.5 px-3 sm:px-3.5">
                     <div className="h-4 bg-slate-100 rounded w-20 mb-2"></div>
                     <div className="h-3 bg-slate-100 rounded w-16"></div>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-3.5 px-3 sm:px-3.5">
                     <div className="h-4 bg-slate-100 rounded w-3/4 mb-2"></div>
                     <div className="h-3 bg-slate-100 rounded w-1/2"></div>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-3.5 px-3 sm:px-3.5">
                     <div className="h-6 bg-slate-100 rounded-md w-28"></div>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-3.5 px-3 sm:px-3.5">
                     <div className="h-5 bg-slate-100 rounded-full w-20"></div>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-3.5 px-3 sm:px-3.5">
                     <div className="h-3 bg-slate-100 rounded w-28 mb-1.5"></div>
                     <div className="h-2 bg-slate-100 rounded-full w-32"></div>
                   </td>
-                  <td className="py-4 px-4 text-right">
-                    <div className="h-7 bg-slate-100 rounded-lg w-16 ml-auto"></div>
+                  <td className="py-3.5 px-3 sm:px-3.5 text-right sticky right-0 bg-white z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] border-l border-slate-200/50">
+                    <div className="h-7 bg-slate-100 rounded-lg w-24 ml-auto"></div>
                   </td>
                 </tr>
               ))
@@ -890,7 +960,7 @@ export function MeetingTable({
                     className="hover:bg-[#F0F9FA] transition-colors group"
                   >
                     {/* Nomor & Tanggal */}
-                    <td className="py-3.5 px-4 align-top whitespace-nowrap">
+                    <td className="py-3 px-3 sm:px-3.5 align-top whitespace-nowrap">
                       {(() => {
                         const teamInfo = getTeamBadgeInfo(meeting.code, meeting.primaryTeamCode, meeting.primaryTeamName);
                         return (
@@ -917,8 +987,8 @@ export function MeetingTable({
                       })()}
                     </td>
 
-                    {/* Agenda Rapat & Lokasi */}
-                    <td className="py-3.5 px-4 align-top max-w-md">
+                    {/* Nama Kegiatan & Hasil */}
+                    <td className="py-3 px-3 sm:px-3.5 align-top max-w-[240px] md:max-w-[300px] lg:max-w-[360px] xl:max-w-md">
                       {(() => {
                         const seriesInfo = meetingSeriesMap.get(meeting.id);
                         return (
@@ -926,12 +996,12 @@ export function MeetingTable({
                             <Link
                               href={`/semua-rapat/${meeting.id}`}
                               className="text-left font-bold text-[14px] text-slate-900 hover:text-[#31889C] hover:underline transition-colors line-clamp-2 cursor-pointer group-hover:text-[#31889C]"
-                              title="Buka rincian lengkap rapat ini"
+                              title="Buka rincian lengkap kegiatan ini"
                             >
                               {meeting.title}
                             </Link>
 
-                            {/* Kategori Rapat */}
+                            {/* Kategori, Jenis, & Rencana Aksi */}
                             {(() => {
                               const catInfo = getMeetingCategoryInfo(meeting.documentCategory, meeting.documentSubCategory);
                               const isPostponed = meeting.documentCategory === 'SURAT_DITUNDA' || meeting.documentCategory === 'TUNDA_RAPAT';
@@ -944,6 +1014,16 @@ export function MeetingTable({
                                   {meeting.meetingKind && (
                                     <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
                                       {meeting.meetingKind}
+                                    </span>
+                                  )}
+                                  {meeting.actionPlan && (
+                                    <span className={cn(
+                                      "inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold border",
+                                      meeting.actionPlan.toLowerCase().includes('non')
+                                        ? "bg-purple-50 text-purple-700 border-purple-200"
+                                        : "bg-teal-50 text-teal-800 border-teal-200"
+                                    )}>
+                                      Rencana Aksi: {meeting.actionPlan}
                                     </span>
                                   )}
                                   {isPostponed && meeting.postponeReason && (
@@ -960,6 +1040,41 @@ export function MeetingTable({
                               );
                             })()}
 
+                            {/* Link Hasil & Tautan Pendukung (Google Drive, Nd Konsum, Rilis Berita) */}
+                            <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                              {meeting.driveLink && (
+                                <a
+                                  href={meeting.driveLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors shadow-2xs"
+                                  title="Buka Dokumen/Folder Hasil di Google Drive"
+                                >
+                                  <ExternalLink className="w-3 h-3 text-blue-600" />
+                                  <span>Google Drive</span>
+                                </a>
+                              )}
+                              {meeting.releaseUrl && (
+                                <a
+                                  href={meeting.releaseUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors shadow-2xs"
+                                  title={meeting.releaseTitle || "Buka Tautan Rilis Berita"}
+                                >
+                                  <ExternalLink className="w-3 h-3 text-emerald-600" />
+                                  <span>Rilis Berita</span>
+                                </a>
+                              )}
+                              {meeting.ndConsumptionNumber && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-medium bg-amber-50 text-amber-800 border border-amber-200" title={`Status Nd Konsum: ${meeting.ndConsumptionStatus || 'Diproses'}`}>
+                                  <span>Nd Konsum: <strong>{meeting.ndConsumptionNumber}</strong></span>
+                                </span>
+                              )}
+                            </div>
+
                             <div className="flex items-center gap-2 flex-wrap text-slate-500">
                               <div className="flex items-center gap-1 text-[12px]">
                                 <MapPin className="w-3.5 h-3.5 text-[#31889C] shrink-0" />
@@ -974,26 +1089,12 @@ export function MeetingTable({
                                     setIsSeriesModalOpen(true);
                                   }}
                                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-[#E8F5F7] text-[#215865] border border-[#BCE3EB] hover:bg-[#BCE3EB] transition-colors cursor-pointer"
-                                  title="Klik untuk membuka linimasa rangkaian rapat agenda ini"
+                                  title="Klik untuk membuka linimasa rangkaian sesi agenda ini"
                                 >
                                   <Layers className="w-3 h-3 text-[#31889C]" />
-                                  <span>Rapat Ke-{seriesInfo.index} dari {seriesInfo.total} Sesi</span>
+                                  <span>Kegiatan Ke-{seriesInfo.index} dari {seriesInfo.total} Sesi</span>
                                 </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSeriesModalMeetingId(meeting.id);
-                                    setIsSeriesModalOpen(true);
-                                  }}
-                                  className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-[#31889C] transition-colors cursor-pointer opacity-70 hover:opacity-100"
-                                  title="Periksa rangkaian atau hubungan agenda rapat ini"
-                                >
-                                  <Layers className="w-3 h-3 text-[#31889C]" />
-                                  <span>Rangkaian Rapat</span>
-                                </button>
-                              )}
+                              ) : null}
                             </div>
                           </div>
                         );
@@ -1001,7 +1102,7 @@ export function MeetingTable({
                     </td>
 
                     {/* Tim Kerja Pelaksana */}
-                    <td className="py-3.5 px-4 align-top whitespace-nowrap">
+                    <td className="py-3 px-3 sm:px-3.5 align-top whitespace-nowrap">
                       {(() => {
                         const teamInfo = getTeamBadgeInfo(meeting.code, meeting.primaryTeamCode, meeting.primaryTeamName);
                         return (
@@ -1020,86 +1121,106 @@ export function MeetingTable({
                       })()}
                     </td>
 
-                    {/* Status Rapat (Belum Dimulai, Dalam Proses, Selesai) */}
-                    <td className="py-3.5 px-4 align-top whitespace-nowrap">
-                      <div className="flex flex-col items-start gap-1.5">
-                        <MeetingProgressBadge
-                          progressStatus={meeting.progressStatus}
-                          status={meeting.status}
-                          isNew={meeting.isNew}
-                          showSubtitle
-                        />
+                    {/* Status Pekerjaan (Belum Dimulai, Dalam Proses, Selesai) */}
+                    <td className="py-3 px-3 sm:px-3.5 align-top whitespace-nowrap">
+                      <MeetingProgressBadge
+                        progressStatus={meeting.progressStatus}
+                        status={meeting.status}
+                        isNew={meeting.isNew}
+                      />
+                    </td>
 
-                        {/* Quick 1-Click Status Updater for Atasan & Staff */}
-                        {canUpdateStatus && (() => {
-                          const curProg = normalizeProgressStatus(meeting.progressStatus || mapStatusToProgress(meeting.status));
-                          return (
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <span className="text-[10px] text-slate-400 font-medium mr-0.5">Ubah:</span>
-                              {(['Belum Dimulai', 'Dalam Proses', 'Selesai'] as const).map((st) => {
-                                const isSelected = curProg === st;
-                                return (
-                                  <button
-                                    key={st}
-                                    type="button"
-                                    disabled={isSelected || updatingStatusId === meeting.id}
-                                    onClick={() => handleQuickUpdateStatus(meeting.id, st)}
-                                    className={cn(
-                                      "px-1.5 py-0.5 rounded text-[10px] font-bold transition-all border select-none",
-                                      isSelected
-                                        ? st === 'Belum Dimulai'
-                                          ? "bg-sky-100 text-sky-800 border-sky-300 shadow-2xs font-extrabold cursor-default"
-                                          : st === 'Dalam Proses'
-                                          ? "bg-amber-100 text-amber-900 border-amber-300 shadow-2xs font-extrabold cursor-default"
-                                          : "bg-emerald-100 text-emerald-900 border-emerald-300 shadow-2xs font-extrabold cursor-default"
-                                        : "bg-white text-slate-500 border-slate-200 hover:text-slate-800 hover:bg-slate-50 cursor-pointer"
-                                    )}
-                                    title={`Klik untuk ubah status rapat menjadi ${st}`}
-                                  >
-                                    {updatingStatusId === meeting.id ? (
-                                      <Loader2 className="w-2.5 h-2.5 animate-spin inline" />
-                                    ) : (
-                                      st
-                                    )}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          );
-                        })()}
+                    {/* Catatan & Output */}
+                    <td className="py-3 px-3 sm:px-3.5 align-top">
+                      <div className="flex flex-col gap-1.5 min-w-[140px] max-w-[220px]">
+                        {meeting.notes ? (
+                          <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-[11.5px] text-slate-700 line-clamp-3" title={meeting.notes}>
+                            <span className="font-bold text-[10px] text-slate-500 uppercase block mb-0.5">Catatan Hasil:</span>
+                            {meeting.notes}
+                          </div>
+                        ) : null}
+                        {meeting.actionItems && meeting.actionItems.total > 0 ? (
+                          <ActionItemProgress data={meeting.actionItems} />
+                        ) : null}
+                        {!meeting.notes && (!meeting.actionItems || meeting.actionItems.total === 0) ? (
+                          <span className="text-slate-400 italic text-[11px]">- Belum ada catatan -</span>
+                        ) : null}
                       </div>
                     </td>
 
-                    {/* Tindak Lanjut Progress */}
-                    <td className="py-3.5 px-4 align-top">
-                      <ActionItemProgress data={meeting.actionItems} />
-                    </td>
-
                     {/* Aksi */}
-                    <td className="py-3.5 px-4 align-top text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1">
-                        <Link
-                          href={`/semua-rapat/${meeting.id}`}
-                          className="p-1.5 rounded-lg text-[#31889C] hover:bg-[#F0F9FA] transition-colors cursor-pointer"
-                          title="Lihat Detail & Risalah Rapat"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
-                        <button
-                          type="button"
-                          disabled={downloadingId === meeting.id}
-                          onClick={() => handleDownloadPdf(meeting.id, meeting.code)}
-                          className="p-1.5 rounded-lg text-[#31889C] hover:bg-[#F0F9FA] transition-colors cursor-pointer disabled:opacity-50"
-                          title="Unduh Risalah Rapat (PDF)"
-                        >
-                          <FileDown className="w-4 h-4" />
-                        </button>
+                    <td className="py-3 px-3 sm:px-3.5 align-top text-right whitespace-nowrap sticky right-0 bg-white group-hover:bg-[#F0F9FA] z-10 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] border-l border-slate-200/40 transition-colors">
+                      <div className="flex items-center justify-end gap-1.5">
+                        {/* Dynamic Quick Action: Mulai Kegiatan / Setujui Hasil Kegiatan */}
+                        {(() => {
+                          const curProg = normalizeProgressStatus(
+                            meeting.progressStatus || mapStatusToProgress(meeting.status)
+                          );
+                          const isBelumDimulai = curProg === 'Belum Dimulai';
+                          const isDalamProses = curProg === 'Dalam Proses';
+                          const isSelesai = curProg === 'Selesai';
+                          const isUpdatingThis = updatingStatusId === meeting.id;
+
+                          if (isBelumDimulai && canUpdateStatus) {
+                            return (
+                              <button
+                                type="button"
+                                disabled={isUpdatingThis}
+                                onClick={() => handleStartMeeting(meeting)}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#31889C] hover:bg-[#266F80] text-white text-[11px] font-bold shadow-xs cursor-pointer transition-all disabled:opacity-50 whitespace-nowrap shrink-0"
+                                title="Klik untuk Mulai Kegiatan (Otomatis ubah status ke Dalam Proses)"
+                              >
+                                {isUpdatingThis ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <Play className="w-3 h-3 fill-current" />
+                                )}
+                                <span>Mulai Kegiatan</span>
+                              </button>
+                            );
+                          }
+
+                          if (isDalamProses && canApprove) {
+                            return (
+                              <button
+                                type="button"
+                                disabled={isUpdatingThis}
+                                onClick={() => handleApproveMeeting(meeting)}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-xs cursor-pointer transition-all disabled:opacity-50 whitespace-nowrap shrink-0"
+                                title="Admin & Pimpinan: Setujui hasil kegiatan (Otomatis ubah status ke Selesai)"
+                              >
+                                {isUpdatingThis ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <CheckCircle2 className="w-3 h-3" />
+                                )}
+                                <span>Setujui Hasil</span>
+                              </button>
+                            );
+                          }
+
+                          if (isSelesai) {
+                            return (
+                              <span
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10.5px] font-bold whitespace-nowrap shrink-0"
+                                title="Kegiatan telah disahkan dan berstatus Selesai"
+                              >
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                <span>Selesai</span>
+                              </span>
+                            );
+                          }
+
+                          return null;
+                        })()}
+
+
                         {canDeleteMeeting && (
                           <button
                             type="button"
                             disabled={deletingRowId === meeting.id}
                             onClick={() => handleDeleteSingleMeeting(meeting)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 shrink-0"
                             title={`Hapus Rapat ${meeting.code}`}
                           >
                             {deletingRowId === meeting.id ? (

@@ -706,8 +706,8 @@ export function MeetingMinutesEditor({
               hasChangesRef.current = true;
             }}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${docType === 'NOTULA'
-                ? 'bg-white text-slate-900 shadow-xs font-bold border border-slate-200/80'
-                : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-white text-slate-900 shadow-xs font-bold border border-slate-200/80'
+              : 'text-slate-600 hover:text-slate-900'
               }`}
           >
             <FileText className="w-4 h-4 text-[#31889C]" />
@@ -720,8 +720,8 @@ export function MeetingMinutesEditor({
               hasChangesRef.current = true;
             }}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${docType === 'NOTA_DINAS'
-                ? 'bg-[#31889C] text-white shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-[#31889C] text-white shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
               }`}
           >
             <FileEdit className="w-4 h-4" />
@@ -1008,10 +1008,10 @@ export function MeetingMinutesEditor({
             />
           </div>
 
-          {/* Section 5: Kesimpulan (Seksi 4) */}
+          {/* Section 5: Kesimpulan */}
           <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-3">
             <h4 className="font-bold text-[14px] text-slate-900 uppercase tracking-wide border-b border-slate-100 pb-2">
-              5. Kesimpulan (Dicetak sebagai Seksi 4)
+              5. Kesimpulan
             </h4>
             <TiptapEditor
               content={conclusion}
@@ -1020,10 +1020,10 @@ export function MeetingMinutesEditor({
             />
           </div>
 
-          {/* Section 6: Tindak Lanjut (Seksi 5) */}
+          {/* Section 6: Tindak Lanjut */}
           <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-3">
             <h4 className="font-bold text-[14px] text-slate-900 uppercase tracking-wide border-b border-slate-100 pb-2">
-              6. Tindak Lanjut (Dicetak sebagai Seksi 5)
+              6. Tindak Lanjut
             </h4>
             <TiptapEditor
               content={decisions}
@@ -1130,11 +1130,10 @@ export function MeetingMinutesEditor({
                       setNdSignatureMode('placeholder');
                       hasChangesRef.current = true;
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all cursor-pointer ${
-                      ndSignatureMode === 'placeholder'
+                    className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all cursor-pointer ${ndSignatureMode === 'placeholder'
                         ? 'bg-white text-[#215865] shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     ✨ Rumus (${'{ttd_pengirim}'})
                   </button>
@@ -1147,11 +1146,10 @@ export function MeetingMinutesEditor({
                       }
                       hasChangesRef.current = true;
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all cursor-pointer ${
-                      ndSignatureMode === 'image'
+                    className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all cursor-pointer ${ndSignatureMode === 'image'
                         ? 'bg-white text-[#215865] shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     🖊️ Berkas Gambar / TTE
                   </button>
@@ -1440,8 +1438,8 @@ export function MeetingMinutesEditor({
                   type="button"
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${activeTab === tab.id
-                      ? 'bg-[#31889C] text-white shadow-xs'
-                      : 'bg-slate-100 hover:bg-[#F0F9FA] hover:text-[#31889C] text-slate-700'
+                    ? 'bg-[#31889C] text-white shadow-xs'
+                    : 'bg-slate-100 hover:bg-[#F0F9FA] hover:text-[#31889C] text-slate-700'
                     }`}
                 >
                   {tab.label}

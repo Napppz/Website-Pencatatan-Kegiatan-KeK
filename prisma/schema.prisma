@@ -78,6 +78,7 @@ model User {
 
   biro                Biro                 @relation(fields: [biroId], references: [id], onDelete: Restrict)
   team                BiroTeam?            @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  userTeams           UserTeam[]
   chairedMeetings     Meeting[]            @relation("ChairpersonMeetings")
   secretaryMeetings   Meeting[]            @relation("SecretaryMeetings")
   meetingParticipants MeetingParticipant[]
@@ -124,6 +125,13 @@ model Meeting {
   documentSubCategory String?       @map("sub_kategori_naskah")
   sourceOrigin        String?       @map("asal_naskah_masuk")
   postponeReason      String?       @map("alasan_penundaan")
+  driveLink           String?       @map("link_google_drive")
+  notes               String?       @map("catatan_hasil")
+  actionPlan          String?       @default("Rutin") @map("rencana_aksi")
+  ndConsumptionNumber String?       @map("nomor_nd_konsum")
+  ndConsumptionStatus String?       @map("status_nd_konsum")
+  releaseUrl          String?       @map("tautan_rilis")
+  releaseTitle        String?       @map("judul_rilis")
   createdAt           DateTime      @default(now()) @map("dibuat_pada")
   updatedAt           DateTime      @updatedAt @map("diperbarui_pada")
 
@@ -353,10 +361,27 @@ model BiroTeam {
   primaryMeetings Meeting[]    @relation("PrimaryTeamMeetings")
   actionItems     ActionItem[] @relation("TeamActionItems")
   users           User[]
+  userTeams       UserTeam[]
 
   @@unique([biroId, code])
   @@index([biroId])
   @@map("tim_biro")
+}
+
+model UserTeam {
+  id        String   @id @default(uuid()) @map("id_user_tim")
+  userId    String   @map("id_pengguna")
+  teamId    String   @map("id_tim")
+  role      String?  @default("ANGGOTA") @map("peran_tim")
+  createdAt DateTime @default(now()) @map("dibuat_pada")
+
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team BiroTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+  @@map("pengguna_tim")
 }
 
 

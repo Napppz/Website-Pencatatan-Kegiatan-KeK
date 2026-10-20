@@ -185,10 +185,10 @@ export function BureauDistribution({
               <span>Klasifikasi Dokumen</span>
             </span>
             <h2 className="font-bold text-[18px] text-slate-900 mt-0.5">
-              Rapat per Kategori
+              Kegiatan per Kategori
             </h2>
             <p className="text-[12px] text-slate-500 mt-0.5">
-              Distribusi agenda sidang per kategori naskah
+              Distribusi aktivitas &amp; kegiatan per kategori naskah
             </p>
           </div>
 
@@ -217,7 +217,7 @@ export function BureauDistribution({
               }}
               className="p-2 -mx-2 rounded-xl hover:bg-[#F0F9FA] border border-transparent hover:border-[#BCE3EB] transition-all cursor-pointer group"
               onClick={() => handleItemClick(cat.key)}
-              title={`Klik untuk memfilter daftar rapat berdasarkan kategori ${cat.label}`}
+              title={`Klik untuk memfilter arsip kegiatan berdasarkan kategori ${cat.label}`}
             >
               {/* Row Header: Category Name + Count */}
               <div className="flex items-center justify-between text-[12px] mb-1.5 gap-2">
@@ -236,7 +236,7 @@ export function BureauDistribution({
                     ) : (
                       0
                     )}{' '}
-                    Rapat
+                    Kegiatan
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#31889C] group-hover:translate-x-0.5 transition-all" />
                 </div>

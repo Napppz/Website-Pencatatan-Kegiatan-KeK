@@ -572,7 +572,7 @@ export function ActionItemFormDialog({
                   }
                 }}
                 userBiroCode={effectiveLockedBiroCode}
-                userTeamCode={effectiveLockedTeamCode}
+                userTeamCode={effectiveLockedTeamCode || undefined}
                 isLocked={isMeetingLocked}
                 disabled={isMeetingLocked}
                 isLoading={isLoadingOptions}

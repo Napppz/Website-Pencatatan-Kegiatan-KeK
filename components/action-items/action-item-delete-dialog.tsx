@@ -62,7 +62,7 @@ export function ActionItemDeleteDialog({
                 Hapus Tindak Lanjut?
               </h3>
               <p className="text-[13px] text-slate-500 mt-1.5 leading-relaxed">
-                Tindak lanjut ini akan dihapus secara permanen dari basis data sistem SIM-RAPAT KEK RI.
+                Tindak lanjut ini akan dihapus secara permanen dari basis data sistem Log Book Notula Rapat KEK RI.
               </p>
               {actionItemTitle && (
                 <div className="mt-3 p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-[12px] font-medium text-slate-700 italic line-clamp-2">

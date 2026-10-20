@@ -12,9 +12,9 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
         bufferPages: true,
         info: {
           Title: `Laporan Berkala - ${data.period.label}`,
-          Author: 'SIM-RAPAT KEK RI',
+          Author: 'Log Book Notula Rapat KEK RI',
           Subject: 'Laporan Berkala Aktivitas Rapat & Tindak Lanjut',
-          Creator: 'SIM-RAPAT KEK RI',
+          Creator: 'Log Book Notula Rapat KEK RI',
         },
       });
 
@@ -42,7 +42,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
           .fontSize(8)
           .fillColor('#64748B')
           .text(
-            'SIM-RAPAT KEK RI • LAPORAN BERKALA',
+            'LOG BOOK NOTULA RAPAT KEK RI • LAPORAN BERKALA',
             leftMargin,
             24,
             { width: printableWidth, align: 'left' }
@@ -89,7 +89,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
         .fontSize(7.5)
         .fillColor('#64748B')
         .text(
-          'Sistem Informasi Manajemen Rapat & Tindak Lanjut (SIM-RAPAT KEK RI)',
+          'Sistem Informasi Log Book Notula Rapat Dewan Nasional KEK RI',
           headerTextX,
           61,
           { width: headerTextWidth }
@@ -569,7 +569,7 @@ export async function generateReportPdf(data: ReportSummaryResult): Promise<Buff
           .fontSize(7.5)
           .fillColor('#64748B')
           .text(
-            `SIM-RAPAT KEK RI • Dokumen Laporan Berkala • Dicetak pada ${new Date().toLocaleDateString('id-ID')}`,
+            `Log Book Notula Rapat KEK RI • Dokumen Laporan Berkala • Dicetak pada ${new Date().toLocaleDateString('id-ID')}`,
             leftMargin,
             812,
             { width: printableWidth / 2, align: 'left' }

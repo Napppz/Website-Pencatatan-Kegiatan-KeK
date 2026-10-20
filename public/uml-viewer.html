@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIM-RAPAT KEK RI | Spesifikasi UML &amp; Database 14 Entitas Resmi</title>
+  <title>Log_Book_Rapat KEK RI | Spesifikasi UML &amp; Database 14 Entitas Resmi</title>
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -96,16 +96,16 @@
         <div class="text-sm font-semibold mt-0.5">Buka &amp; Ekspor di app.diagrams.net untuk Bab III &amp; Lampiran Sidang Skripsi</div>
       </div>
       <div class="flex flex-wrap gap-2">
-        <a href="/USE_CASE_SIM_RAPAT.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
+        <a href="/USE_CASE_Log_Book_Rapat.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
           📥 Use Case (.drawio)
         </a>
-        <a href="/ACTIVITY_DIAGRAM_SIM_RAPAT.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
+        <a href="/ACTIVITY_DIAGRAM_Log_Book_Rapat.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
           📥 Activity 5 Tab (.drawio)
         </a>
-        <a href="/LRS_SIM_RAPAT.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
+        <a href="/LRS_Log_Book_Rapat.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
           📥 LRS 14 Tabel (.drawio)
         </a>
-        <a href="/ERD_SIM_RAPAT.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
+        <a href="/ERD_Log_Book_Rapat.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#215865] hover:bg-slate-100 shadow-xs flex items-center gap-1">
           📥 ERD (.drawio)
         </a>
       </div>
@@ -122,7 +122,7 @@
             </p>
           </div>
           <div class="flex items-center gap-2">
-            <a href="/USE_CASE_SIM_RAPAT.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#31889C] text-white hover:bg-[#266F80] transition-all">
+            <a href="/USE_CASE_Log_Book_Rapat.drawio" download class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#31889C] text-white hover:bg-[#266F80] transition-all">
               Unduh File Draw.io (.drawio)
             </a>
           </div>
@@ -147,79 +147,145 @@
           </div>
         </div>
 
-        <!-- Mermaid Use Case -->
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 overflow-x-auto flex justify-center">
-          <pre class="mermaid" id="mermaid-usecase">
+        <!-- Sub-tabs untuk Format Diagram -->
+        <div class="flex items-center gap-2 mb-4">
+          <button onclick="toggleUsecaseView('standar')" id="btn-uc-standar" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#31889C] text-white transition-all shadow-xs">
+            Format Klasik (Sesuai Referensi Gambar)
+          </button>
+          <button onclick="toggleUsecaseView('komprehensif')" id="btn-uc-komprehensif" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+            Format Komprehensif (27 Use Case &amp; 6 Modul)
+          </button>
+        </div>
+
+        <!-- View 1: Format Standar Contoh (Tab 1 Draw.io) -->
+        <div id="view-uc-standar" class="bg-slate-50 rounded-xl p-4 border border-slate-200 overflow-x-auto flex flex-col items-center">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">
+            Diagram Utama: 3 Aktor Berimbang &amp; 12 Kasus Penggunaan Vertikal Sesuai Standar UML Subsystem
+          </div>
+          <pre class="mermaid" id="mermaid-usecase-standar">
 flowchart LR
-    subgraph AKTOR["Aktor Sistem (Generalisasi)"]
-        Staff["👤 Staf Pelaksana"]
-        Admin["👤 Admin Biro / Tim"]
-        SuperAdmin["👤 Super Admin"]
+    subgraph AKTOR_KIRI["Aktor Operasional"]
+        Staff["👤 Staf Pelaksana<br/>(Pegawai / PIC)"]
+        Admin["👤 Admin Biro / Tim<br/>(Pengelola Rapat)"]
     end
 
-    Admin -->|generalizes| Staff
-    SuperAdmin -->|generalizes| Admin
+    subgraph SYSTEM["«subsystem» Log_Book_Rapat KEK RI"]
+        UC01(["Login & Autentikasi Sistem"])
+        UC02(["Lihat Agenda & Detail Rapat"])
+        UC03(["Presensi Kehadiran Peserta"])
+        UC04(["Unduh Notula & Materi Rapat"])
+        UC05(["Update Progres Tindak Lanjut"])
+        UC06(["Jadwalkan Agenda Rapat Baru"])
+        UC07(["Kelola Undangan & Peserta"])
+        UC08(["Pencatatan Notula Risalah"])
+        UC09(["Kelola Butir Tindak Lanjut & PIC"])
+        UC10(["Unggah Dokumen Lampiran Rapat"])
+        UC11(["Monitoring Kinerja 3 Tim Kerja"])
+        UC12(["Kelola Pengguna & Hak Akses"])
+    end
 
-    subgraph SYSTEM["Sistem Informasi Log & Notula Rapat (SIM-RAPAT KEK RI)"]
-        subgraph MOD1["1. Autentikasi & Akun"]
-            UC01(["UC-01: Login & Logout"])
-            UC02(["UC-02: Kelola Profil"])
-            UC03(["UC-03: Ganti Sandi"])
-        end
-
-        subgraph MOD2["2. Dashboard & Monitoring"]
-            UC04(["UC-04: Lihat Dashboard"])
-            UC05(["UC-05: Monitoring 3 Tim KEK"])
-            UC06(["UC-06: Filter Periode Tim"])
-        end
-
-        subgraph MOD3["3. Manajemen Rapat"]
-            UC08(["UC-08: Lihat Rapat"])
-            UC10(["UC-10: Jadwalkan Rapat"])
-            UC13(["UC-13: Nomor Urut Otomatis"])
-            UC15(["UC-15: Kelola Peserta"])
-        end
-
-        subgraph MOD4["4. Risalah & Notulensi"]
-            UC17(["UC-17: Susun Notula"])
-            UC18(["UC-18: Unggah Dokumen"])
-            UC19(["UC-19: Ekspor Naskah PDF"])
-        end
-
-        subgraph MOD5["5. Tindak Lanjut"]
-            UC21(["UC-21: Matriks Tindak Lanjut"])
-            UC22(["UC-22: Buat Butir Arahan"])
-            UC24(["UC-24: Update Progres PIC"])
-        end
-
-        subgraph MOD6["6. Administrasi"]
-            UC25(["UC-25: Kelola User & Hak Akses"])
-            UC26(["UC-26: Kelola Master Biro & Tim"])
-        end
+    subgraph AKTOR_KANAN["Aktor Pengawas"]
+        SuperAdmin["👤 Super Admin<br/>(Pimpinan Sekjen)"]
     end
 
     Staff --- UC01
     Staff --- UC02
+    Staff --- UC03
     Staff --- UC04
-    Staff --- UC08
-    Staff --- UC18
-    Staff --- UC21
-    Staff --- UC24
+    Staff --- UC05
 
+    Admin --- UC06
+    Admin --- UC07
+    Admin --- UC08
+    Admin --- UC09
     Admin --- UC10
-    Admin --- UC17
-    Admin --- UC22
 
-    SuperAdmin --- UC05
-    SuperAdmin --- UC25
-    SuperAdmin --- UC26
+    SuperAdmin --- UC01
+    SuperAdmin --- UC02
+    SuperAdmin --- UC04
+    SuperAdmin --- UC08
+    SuperAdmin --- UC09
+    SuperAdmin --- UC11
+    SuperAdmin --- UC12
+          </pre>
+        </div>
 
-    UC10 -.->|include| UC13
-    UC10 -.->|include| UC15
-    UC17 -.->|include| UC22
-    UC03 -.->|extend| UC02
-    UC06 -.->|extend| UC05
-    UC19 -.->|extend| UC08
+        <!-- View 2: Format Komprehensif (Tab 2 Draw.io) -->
+        <div id="view-uc-komprehensif" class="hidden bg-slate-50 rounded-xl p-4 border border-slate-200 overflow-x-auto flex flex-col items-center">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">
+            Diagram Lengkap: 27 Kasus Penggunaan dengan Relasi «include», «extend», dan Generalisasi Aktor
+          </div>
+          <pre class="mermaid" id="mermaid-usecase-komprehensif">
+flowchart LR
+    subgraph AKTOR["Aktor Sistem (Generalisasi)"]
+        StaffK["👤 Staf Pelaksana"]
+        AdminK["👤 Admin Biro / Tim"]
+        SuperAdminK["👤 Super Admin"]
+    end
+
+    AdminK -->|generalizes| StaffK
+    SuperAdminK -->|generalizes| AdminK
+
+    subgraph SYSTEM_K["Sistem Informasi Log & Notula Rapat (Log_Book_Rapat KEK RI)"]
+        subgraph MOD1["1. Autentikasi & Akun"]
+            MUC01(["UC-01: Login & Logout"])
+            MUC02(["UC-02: Kelola Profil"])
+            MUC03(["UC-03: Ganti Sandi"])
+        end
+
+        subgraph MOD2["2. Dashboard & Monitoring"]
+            MUC04(["UC-04: Lihat Dashboard"])
+            MUC05(["UC-05: Monitoring 3 Tim KEK"])
+            MUC06(["UC-06: Filter Periode Tim"])
+        end
+
+        subgraph MOD3["3. Manajemen Rapat"]
+            MUC08(["UC-08: Lihat Rapat"])
+            MUC10(["UC-10: Jadwalkan Rapat"])
+            MUC13(["UC-13: Nomor Urut Otomatis"])
+            MUC15(["UC-15: Kelola Peserta"])
+        end
+
+        subgraph MOD4["4. Risalah & Notulensi"]
+            MUC17(["UC-17: Susun Notula"])
+            MUC18(["UC-18: Unggah Dokumen"])
+            MUC19(["UC-19: Ekspor Naskah PDF"])
+        end
+
+        subgraph MOD5["5. Tindak Lanjut"]
+            MUC21(["UC-21: Matriks Tindak Lanjut"])
+            MUC22(["UC-22: Buat Butir Arahan"])
+            MUC24(["UC-24: Update Progres PIC"])
+        end
+
+        subgraph MOD6["6. Administrasi"]
+            MUC25(["UC-25: Kelola User & Hak Akses"])
+            MUC26(["UC-26: Kelola Master Biro & Tim"])
+        end
+    end
+
+    StaffK --- MUC01
+    StaffK --- MUC02
+    StaffK --- MUC04
+    StaffK --- MUC08
+    StaffK --- MUC18
+    StaffK --- MUC21
+    StaffK --- MUC24
+
+    AdminK --- MUC10
+    AdminK --- MUC17
+    AdminK --- MUC22
+
+    SuperAdminK --- MUC05
+    SuperAdminK --- MUC25
+    SuperAdminK --- MUC26
+
+    MUC10 -.->|include| MUC13
+    MUC10 -.->|include| MUC15
+    MUC17 -.->|include| MUC22
+    MUC03 -.->|extend| MUC02
+    MUC06 -.->|extend| MUC05
+    MUC19 -.->|extend| MUC08
           </pre>
         </div>
       </div>
@@ -874,7 +940,7 @@ erDiagram
 
         <div class="bg-slate-900 text-slate-100 p-6 rounded-xl font-mono text-xs overflow-x-auto border border-slate-800 max-h-[600px]">
           <pre id="plantuml-code">
-@startuml SIM_RAPAT_KEK_UML
+@startuml Log_Book_Rapat_KEK_UML
 !theme plain
 skinparam classAttributeIconSize 0
 skinparam monochrome false
@@ -886,7 +952,7 @@ skinparam class {
     BorderColor #215865
 }
 
-title SISTEM INFORMASI LOG & RISALAH RAPAT (SIM-RAPAT KEK RI)\nUML Class Diagram Lengkap (14 Entitas Basis Data)
+title SISTEM INFORMASI LOG & RISALAH RAPAT (Log_Book_Rapat KEK RI)\nUML Class Diagram Lengkap (14 Entitas Basis Data)
 
 enum PeranPengguna {
   SUPER_ADMIN
@@ -1179,6 +1245,25 @@ TindakLanjut "1" *-- "0..*" RiwayatTindakLanjut : id_tindak_lanjut (1:N)
       if (activeTabBtn) {
         activeTabBtn.classList.remove('border-transparent', 'text-slate-500', 'font-medium');
         activeTabBtn.classList.add('border-[#31889C]', 'text-[#31889C]', 'font-bold');
+      }
+    }
+
+    function toggleUsecaseView(view) {
+      const vStandar = document.getElementById('view-uc-standar');
+      const vKomp = document.getElementById('view-uc-komprehensif');
+      const btnStandar = document.getElementById('btn-uc-standar');
+      const btnKomp = document.getElementById('btn-uc-komprehensif');
+
+      if (view === 'standar') {
+        vStandar.classList.remove('hidden');
+        vKomp.classList.add('hidden');
+        btnStandar.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#31889C] text-white transition-all shadow-xs';
+        btnKomp.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+      } else {
+        vStandar.classList.add('hidden');
+        vKomp.classList.remove('hidden');
+        btnKomp.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#31889C] text-white transition-all shadow-xs';
+        btnStandar.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
       }
     }
 

@@ -45,7 +45,7 @@ export function WelcomeBanner({
     ? `Staf Tim ${userTeamName}`
     : roleConfig.label;
 
-  const biroInfo = 'Sekretariat Dewan Nasional KEK';
+  const biroInfo = 'Biro Investasi, Kerja Sama & Komunikasi (Biro 3)';
 
   const todayFormatted = new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -77,7 +77,7 @@ export function WelcomeBanner({
       const match = disposition.match(/filename="?([^"]+)"?/);
       const filename = match
         ? match[1]
-        : `Laporan-Eksekutif-Dewan-KEK-${new Date().toISOString().slice(0, 10)}.pdf`;
+        : `Laporan-Aktivitas-Biro3-${new Date().toISOString().slice(0, 10)}.pdf`;
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -144,12 +144,12 @@ export function WelcomeBanner({
 
           {/* Dynamic Personalized Heading */}
           <h1 className="text-[24px] md:text-[28px] text-slate-900 font-bold tracking-tight">
-            Selamat Datang, {userName}
+            Aktivitas Biro 3 — Selamat Datang, {userName}
           </h1>
 
           {/* Simple, Clear Subtext */}
           <p className="text-[13.5px] text-slate-600 max-w-2xl leading-relaxed">
-            Portal Manajemen Agenda, Notula Resmi &amp; Pengendalian Tindak Lanjut Rapat Sekretariat Dewan Nasional Kawasan Ekonomi Khusus. Pantau pelaksanaan agenda sidang dan hasil rapat secara tertib, transparan, dan terintegrasi.
+            Sistem Monitoring Aktivitas, Kegiatan, Output Kerja &amp; Status Pekerjaan Biro 3 (Biro Investasi, Kerja Sama, dan Komunikasi) Dewan Nasional Kawasan Ekonomi Khusus. Pantau capaian 5 tim kerja secara transparan, tertib, dan terintegrasi.
           </p>
         </div>
 
@@ -177,7 +177,7 @@ export function WelcomeBanner({
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#31889C] text-white hover:bg-[#266F80] transition-all duration-150 shadow-xs font-semibold text-[12.5px] cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
-              <span>+ Jadwalkan Rapat Baru</span>
+              <span>+ Catat Kegiatan Baru</span>
             </button>
           )}
         </div>

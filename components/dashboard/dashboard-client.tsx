@@ -53,8 +53,10 @@ function isMatchTeam(m: Meeting, code: string): boolean {
   if (m.primaryTeamCode?.toUpperCase() === c) return true;
   if (m.primaryTeamId?.toUpperCase().includes(c)) return true;
   if (c === 'INV' && (m.primaryTeamName?.toLowerCase().includes('investasi') || m.primaryTeamCode === 'TIM-001' || m.primaryTeamId === 'TIM-001')) return true;
-  if (c === 'KS' && (m.primaryTeamName?.toLowerCase().includes('kerja sama') || m.primaryTeamCode === 'TIM-003' || m.primaryTeamId === 'TIM-003')) return true;
+  if (c === 'KS' && (m.primaryTeamName?.toLowerCase().includes('kerja sama') || m.primaryTeamName?.toLowerCase().includes('kerjasama') || m.primaryTeamCode === 'TIM-003' || m.primaryTeamId === 'TIM-003')) return true;
   if (c === 'KOM' && (m.primaryTeamName?.toLowerCase().includes('komunikasi') || m.primaryTeamCode === 'TIM-002' || m.primaryTeamId === 'TIM-002')) return true;
+  if (c === 'SI' && (m.primaryTeamName?.toLowerCase().includes('sistem informasi') || m.primaryTeamCode === 'TIM-004' || m.primaryTeamId === 'TIM-004')) return true;
+  if (c === 'POKJA' && (m.primaryTeamName?.toLowerCase().includes('pokja') || m.primaryTeamCode === 'TIM-005' || m.primaryTeamId === 'TIM-005')) return true;
   return false;
 }
 
@@ -112,7 +114,7 @@ export function DashboardClient({
     };
   }, [initialTeamWorkload]);
 
-  const CANONICAL_CODES = ['INV', 'KS', 'KOM'];
+  const CANONICAL_CODES = ['INV', 'KS', 'KOM', 'SI', 'POKJA'];
   const sanitizedTeamWorkload = useMemo(() => {
     return (teamWorkload || [])
       .filter((t) => CANONICAL_CODES.includes(t.code.toUpperCase()))

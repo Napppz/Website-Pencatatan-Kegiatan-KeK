@@ -462,8 +462,8 @@ ${e.points.map(p => `              <mxPoint x="${p.x}" y="${p.y}" />`).join('\n'
 }
 
 const xmlOutput = generatePerfectLrs();
-const docsPath = path.join(__dirname, '..', 'docs', 'LRS_SIM_RAPAT.drawio');
-const publicPath = path.join(__dirname, '..', 'public', 'LRS_SIM_RAPAT.drawio');
+const docsPath = path.join(__dirname, '..', 'docs', 'LRS_Log_Book_Rapat.drawio');
+const publicPath = path.join(__dirname, '..', 'public', 'LRS_Log_Book_Rapat.drawio');
 
 fs.writeFileSync(docsPath, xmlOutput, 'utf8');
 fs.writeFileSync(publicPath, xmlOutput, 'utf8');

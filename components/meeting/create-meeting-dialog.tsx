@@ -68,6 +68,8 @@ const TIM_OPTIONS = [
   { id: 'TIM-001', code: 'INV', name: 'Tim Investasi' },
   { id: 'TIM-003', code: 'KS', name: 'Tim Kerja Sama' },
   { id: 'TIM-002', code: 'KOM', name: 'Tim Komunikasi' },
+  { id: 'TIM-004', code: 'SI', name: 'Tim Sistem Informasi' },
+  { id: 'TIM-005', code: 'POKJA', name: 'Pokja (Kelompok Kerja)' },
 ];
 
 export function CreateMeetingDialog({ isOpen, onClose }: CreateMeetingDialogProps) {

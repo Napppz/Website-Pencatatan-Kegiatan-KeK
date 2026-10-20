@@ -320,8 +320,8 @@ function generateChenErdXml() {
 }
 
 const xmlOutput = generateChenErdXml();
-const docsPath = path.join(__dirname, '..', 'docs', 'ERD_SIM_RAPAT.drawio');
-const publicPath = path.join(__dirname, '..', 'public', 'ERD_SIM_RAPAT.drawio');
+const docsPath = path.join(__dirname, '..', 'docs', 'ERD_Log_Book_Rapat.drawio');
+const publicPath = path.join(__dirname, '..', 'public', 'ERD_Log_Book_Rapat.drawio');
 
 fs.writeFileSync(docsPath, xmlOutput, 'utf8');
 fs.writeFileSync(publicPath, xmlOutput, 'utf8');

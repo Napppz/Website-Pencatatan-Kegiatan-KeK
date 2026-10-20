@@ -16,8 +16,8 @@ export async function generateReportExcel(
   data: ReportSummaryResult
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'SIM-RAPAT KEK RI';
-  workbook.lastModifiedBy = 'SIM-RAPAT KEK RI';
+  workbook.creator = 'Log Book Notula Rapat KEK RI';
+  workbook.lastModifiedBy = 'Log Book Notula Rapat KEK RI';
   workbook.created = new Date();
   workbook.modified = new Date();
 

@@ -42,6 +42,7 @@ import {
   Inbox,
   Tag,
   Play,
+  FileCheck,
 } from 'lucide-react';
 
 import { MeetingStatusBadge, MeetingProgressBadge } from '@/components/meeting/meeting-status-badge';
@@ -77,6 +78,7 @@ import {
 import { AttendanceStatus } from '@prisma/client';
 import {
   updateMeetingStatusAction,
+  approveMeetingAction,
   deleteMeetingAction,
   updateParticipantAttendanceAction,
   addParticipantToMeetingAction,
@@ -193,7 +195,7 @@ export function MeetingDetailView({
   const canEditMeeting = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
   const canDeleteMeeting = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
   const canManageParticipants =
-    userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
+    userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF' || userRole === 'PIMPINAN';
   const canEditMinutes = canManageParticipants;
   const canCreateActionItem =
     userRole === 'SUPER_ADMIN' ||
@@ -201,7 +203,7 @@ export function MeetingDetailView({
     userRole === 'STAFF';
 
   // Biro ownership check for status updates & staff permissions
-  const isPrivileged = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'STAFF';
+  const isPrivileged = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'PIMPINAN' || userRole === 'STAFF';
   const isMeetingBiro =
     isPrivileged ||
     (session?.user?.biroId && session.user.biroId === meeting.primaryBiroId) ||
@@ -210,6 +212,7 @@ export function MeetingDetailView({
       session.user.biroCode.toUpperCase() === meeting.primaryBiro.code.toUpperCase());
 
   const canChangeStatus = isPrivileged;
+  const canApprove = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'PIMPINAN';
 
   const initialResolvedTab: TabType = initialTab === 'history'
     ? 'minutes'
@@ -221,8 +224,8 @@ export function MeetingDetailView({
     initialTab === 'history'
       ? 'history'
       : initialTab === 'materials'
-      ? 'materials'
-      : 'document';
+        ? 'materials'
+        : 'document';
 
   const [activeTab, setActiveTab] = useState<TabType>(initialResolvedTab);
   const [minutesSubTab, setMinutesSubTab] = useState<MinutesSubTab>(initialMinutesSubTab);
@@ -643,12 +646,48 @@ export function MeetingDetailView({
         setProgressStatus('Dalam Proses');
         (meeting as any).progressStatus = 'Dalam Proses';
         toast.success(`Rapat "${meeting.title}" resmi dimulai. Status kini "Dalam Proses".`);
+        setActiveTab('minutes');
+        setMinutesSubTab('document');
+        if (typeof window !== 'undefined') {
+          const url = new URL(window.location.href);
+          url.searchParams.set('tab', 'minutes');
+          window.history.replaceState(null, '', url.toString());
+        }
         router.refresh();
       } else {
         toast.error(res.error || 'Gagal memulai rapat');
       }
     } catch (err: any) {
       toast.error(`Terjadi kesalahan: ${err?.message || 'Gagal memulai rapat'}`);
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleApproveMeeting = async () => {
+    const confirmed = await confirmModal({
+      title: `Setujui & Selesaikan Rapat?`,
+      message: `Apakah Anda ingin menyetujui hasil dan risalah rapat "${meeting.title}"? Setelah disetujui, status rapat akan resmi diubah menjadi "SELESAI".`,
+      confirmText: 'Ya, Setujui & Selesaikan',
+      variant: 'primary',
+    });
+    if (!confirmed) return;
+
+    try {
+      setIsUpdatingStatus(true);
+      const res = await approveMeetingAction(meeting.id);
+      if (res.success) {
+        setStatus('APPROVED');
+        setProgressStatus('Selesai');
+        (meeting as any).status = 'APPROVED';
+        (meeting as any).progressStatus = 'Selesai';
+        toast.success(`Hasil rapat "${meeting.title}" resmi disetujui. Status rapat kini "Selesai".`);
+        router.refresh();
+      } else {
+        toast.error(res.error || 'Gagal menyetujui hasil rapat');
+      }
+    } catch (err: any) {
+      toast.error(`Terjadi kesalahan: ${err?.message || 'Gagal menyetujui hasil rapat'}`);
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -848,17 +887,17 @@ export function MeetingDetailView({
   const agendaPlainText = extractPlainText(meeting.minutes?.agenda);
   const agendaItems = agendaPlainText
     ? agendaPlainText
-        .split('\n')
-        .map((s: string) => s.trim().replace(/^[-*•\d.]+\s*/, ''))
-        .filter((s: string) => s.length > 0)
+      .split('\n')
+      .map((s: string) => s.trim().replace(/^[-*•\d.]+\s*/, ''))
+      .filter((s: string) => s.length > 0)
     : [];
 
   const decisionsPlainText = extractPlainText(meeting.minutes?.decisions);
   const decisionItems = decisionsPlainText
     ? decisionsPlainText
-        .split('\n')
-        .map((s: string) => s.trim().replace(/^[-*•\d.]+\s*/, ''))
-        .filter((s: string) => s.length > 0)
+      .split('\n')
+      .map((s: string) => s.trim().replace(/^[-*•\d.]+\s*/, ''))
+      .filter((s: string) => s.length > 0)
     : [];
 
   // Unadded users for modal
@@ -879,6 +918,50 @@ export function MeetingDetailView({
         </Link>
 
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Tombol Mulai Rapat (Otomatis ubah status ke Dalam Proses) */}
+          {currentProgress === 'Belum Dimulai' && (
+            <button
+              type="button"
+              disabled={isUpdatingStatus}
+              onClick={handleStartMeeting}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#31889C] hover:bg-[#266F80] text-white text-[12px] font-bold transition-all shadow-xs cursor-pointer group disabled:opacity-50"
+              title="Mulai Rapat (Ubah status otomatis ke Dalam Proses)"
+            >
+              {isUpdatingStatus ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Play className="w-3.5 h-3.5 fill-current text-white group-hover:scale-110 transition-transform" />
+              )}
+              <span>Mulai Rapat</span>
+            </button>
+          )}
+
+          {/* Tombol Setujui Hasil Rapat (Admin & Pimpinan: Otomatis ubah status ke Selesai) */}
+          {currentProgress === 'Dalam Proses' && canApprove && (
+            <button
+              type="button"
+              disabled={isUpdatingStatus}
+              onClick={handleApproveMeeting}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[12px] font-bold transition-all shadow-xs cursor-pointer group disabled:opacity-50"
+              title="Admin & Pimpinan: Setujui hasil rapat dan tandai Selesai"
+            >
+              {isUpdatingStatus ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-100 group-hover:scale-110 transition-transform" />
+              )}
+              <span>Setujui Hasil Rapat</span>
+            </button>
+          )}
+
+          {/* Status Selesai / Disetujui Badge */}
+          {currentProgress === 'Selesai' && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[12px] font-bold shadow-2xs">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Hasil Rapat Disetujui (Selesai)</span>
+            </div>
+          )}
+
           {/* Google Calendar Button */}
           <button
             type="button"
@@ -1179,7 +1262,7 @@ export function MeetingDetailView({
 
         <div>
           <span className="text-[12px] font-bold text-[#31889C] uppercase tracking-wider block">
-            Agenda Pembahasan Sidang
+            Agenda Pembahasan Rapat
           </span>
           <h1 className="text-[24px] font-bold text-slate-900 mt-1 leading-snug">
             {meeting.title}
@@ -1264,29 +1347,13 @@ export function MeetingDetailView({
             </div>
           </div>
 
-          {/* Notulen */}
-          <div className="flex items-start gap-2.5">
-            <FileText className="w-4 h-4 text-[#31889C] shrink-0 mt-0.5" />
-            <div>
-              <p className="text-[11px] text-slate-400 font-semibold uppercase">Notulen</p>
-              <p className="font-bold text-slate-800">
-                {(meeting.minutes?.conclusion as any)?.signerName ||
-                  (meeting.minutes?.decisions as any)?.signerName ||
-                  (meeting.minutes?.discussion as any)?.signerName ||
-                  (meeting.minutes?.agenda as any)?.signerName ||
-                  (meeting.secretary ? meeting.secretary.name : 'Tim Notulensi Dewan KEK')}
-              </p>
-              {meeting.secretary?.biro && (
-                <p className="text-[11px] text-slate-500">{meeting.secretary.biro.shortName}</p>
-              )}
-            </div>
-          </div>
+
 
           {/* Peserta Total */}
           <div className="flex items-start gap-2.5">
             <Users className="w-4 h-4 text-[#31889C] shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] text-slate-400 font-semibold uppercase">Total Peserta Terdaftar</p>
+              <p className="text-[11px] text-slate-400 font-semibold uppercase">Total Tamu Undangan</p>
               <p className="font-bold text-slate-800">
                 {totalCount} Pejabat / Perwakilan
               </p>
@@ -1527,10 +1594,10 @@ export function MeetingDetailView({
                     {status === 'FINAL'
                       ? 'Naskah Disahkan'
                       : status === 'APPROVED'
-                      ? 'Telah Divalidasi'
-                      : status === 'REVIEW'
-                      ? 'Tahap Telaah'
-                      : 'Draf Penyusunan'}
+                        ? 'Telah Divalidasi'
+                        : status === 'REVIEW'
+                          ? 'Tahap Telaah'
+                          : 'Draf Penyusunan'}
                   </span>
                   <span className="font-semibold text-[#1E6B7B] group-hover:underline flex items-center gap-0.5">
                     Buka <ChevronRight className="w-3 h-3 inline" />
@@ -1601,6 +1668,111 @@ export function MeetingDetailView({
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Panel Output & Hasil Kegiatan Biro 3 (Catatan Mentor) */}
+          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4 border-l-4 border-l-emerald-600">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+                  <FileCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-[16px] font-bold text-slate-900">Hasil Kegiatan &amp; Output Kerja Biro 3</h3>
+                  <p className="text-[12px] text-slate-500">
+                    Dokumentasi Google Drive, Catatan Ringkas Capaian, Rencana Aksi, Nd Konsum &amp; Rilis Berita
+                  </p>
+                </div>
+              </div>
+
+              {meeting.actionPlan && (
+                <span className={cn(
+                  "px-3 py-1 rounded-full text-xs font-bold border",
+                  meeting.actionPlan.toLowerCase().includes('non')
+                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                    : "bg-teal-50 text-teal-800 border-teal-200"
+                )}>
+                  Rencana Aksi: {meeting.actionPlan}
+                </span>
+              )}
+            </div>
+
+            {/* Grid Tautan Google Drive & Rilis Berita */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
+              {/* Google Drive Link */}
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-2">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Berkas Google Drive
+                </span>
+                {meeting.driveLink ? (
+                  <a
+                    href={meeting.driveLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs"
+                  >
+                    <span className="truncate">Buka Folder / Dokumen</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                  </a>
+                ) : (
+                  <span className="text-xs text-slate-400 italic">Belum ada tautan Google Drive</span>
+                )}
+              </div>
+
+              {/* Rilis Berita */}
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-2">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Publikasi &amp; Rilis Berita
+                </span>
+                {meeting.releaseUrl ? (
+                  <a
+                    href={meeting.releaseUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs"
+                    title={meeting.releaseTitle || "Buka Siaran Pers"}
+                  >
+                    <span className="truncate">{meeting.releaseTitle || 'Buka Rilis Berita'}</span>
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                  </a>
+                ) : (
+                  <span className="text-xs text-slate-400 italic">Belum ada rilis berita</span>
+                )}
+              </div>
+
+              {/* Nd Konsumsi */}
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-2">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Nota Dinas Konsumsi
+                </span>
+                {meeting.ndConsumptionNumber ? (
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-xs font-bold text-slate-800">
+                      {meeting.ndConsumptionNumber}
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
+                      {meeting.ndConsumptionStatus || 'Diproses'}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-slate-400 italic">Tidak ada pengajuan Nd Konsum</span>
+                )}
+              </div>
+            </div>
+
+            {/* Catatan Hasil Kegiatan */}
+            {meeting.notes && (
+              <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-amber-950 space-y-1 mt-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-xs uppercase tracking-wider text-amber-800">
+                    Catatan Hasil Kegiatan / Ringkasan Capaian:
+                  </span>
+                </div>
+                <p className="text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
+                  {meeting.notes}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Agenda Pembahasan & Ringkasan Sidang */}
@@ -2072,9 +2244,8 @@ export function MeetingDetailView({
                 <Presentation className="w-4 h-4" />
                 <span>Berkas &amp; Paparan</span>
                 {Array.isArray(meeting.attachments) && meeting.attachments.length > 0 && (
-                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                    minutesSubTab === 'materials' ? 'bg-[#F0F9FA] text-[#215865] border border-[#BCE3EB]' : 'bg-slate-200 text-slate-700'
-                  }`}>
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${minutesSubTab === 'materials' ? 'bg-[#F0F9FA] text-[#215865] border border-[#BCE3EB]' : 'bg-slate-200 text-slate-700'
+                    }`}>
                     {meeting.attachments.length}
                   </span>
                 )}
@@ -2108,6 +2279,10 @@ export function MeetingDetailView({
               initialMinutes={meeting.minutes}
               defaultMode="preview"
               onViewHistoryClick={() => handleMinutesSubTabChange('history')}
+              onApproveClick={handleApproveMeeting}
+              isApproved={currentProgress === 'Selesai'}
+              canApprove={canApprove}
+              isApproving={isUpdatingStatus}
             />
           )}
 
@@ -2217,7 +2392,7 @@ export function MeetingDetailView({
                   <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-[11.5px] text-blue-900 flex items-start gap-2">
                     <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                     <span>
-                      Gunakan opsi ini untuk pejabat kementerian/lembaga lain, kepala daerah, narasumber, atau tamu eksternal yang belum memiliki akun login di SIM-RAPAT KEK.
+                      Gunakan opsi ini untuk pejabat kementerian/lembaga lain, kepala daerah, narasumber, atau tamu eksternal yang belum memiliki akun login di sistem Log Book Notula Rapat KEK.
                     </span>
                   </div>
 
