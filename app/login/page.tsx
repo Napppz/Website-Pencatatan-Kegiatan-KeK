@@ -60,15 +60,19 @@ function LoginForm() {
 
   // Demo accounts helper for quick evaluation (Super Admin, Pimpinan, Admin, Staf)
   const demoAccounts = [
-    { label: 'Super Admin', email: 'superadmin@simrapat.local', icon: '👑', desc: 'Akses Penuh IT' },
-    { label: 'Pimpinan', email: 'pimpinan@simrapat.local', icon: '🏛️', desc: 'Monitoring & Pengawas' },
-    { label: 'Admin IKK', email: 'admin@simrapat.local', icon: '⚙️', desc: 'Pengelola Sistem IKK' },
-    { label: 'Staf IKK', email: 'staff@simrapat.local', icon: '💼', desc: 'PIC Tindak Lanjut Tim' },
+    { label: 'Super Admin', email: 'superadmin@kek.go.id', icon: '👑', desc: 'Akses Penuh IT' },
+    { label: 'Pimpinan', email: 'pimpinan.biro3@kek.go.id', icon: '🏛️', desc: 'Monitoring & Pengawas' },
+    { label: 'Staf KS', email: 'staf.kerjasama@kek.go.id', icon: '🤝', desc: 'Tim Kerja Sama' },
+    { label: 'Staf SI', email: 'staf.si@kek.go.id', icon: '💻', desc: 'Tim Sistem Informasi' },
+    { label: 'Staf Investasi', email: 'staf.investasi@kek.go.id', icon: '📈', desc: 'Tim Investasi' },
+    { label: 'Staf Komunikasi', email: 'staf.komunikasi@kek.go.id', icon: '📢', desc: 'Tim Komunikasi' },
+    { label: 'Staf Pokja', email: 'staf.pokja@kek.go.id', icon: '👥', desc: 'Gugus Tugas Pokja' },
+    { label: 'Admin IKK', email: 'admin@kek.go.id', icon: '⚙️', desc: 'Pengelola Biro 3' },
   ];
 
   const handleFillDemo = (demoEmail: string, roleName: string) => {
     setEmail(demoEmail);
-    setPassword('DevOnly!2026');
+    setPassword('AktivitasBiro3!2026');
     setSelectedDemoRole(roleName);
     setErrorMessage(null);
   };
@@ -107,10 +111,10 @@ function LoginForm() {
             </div>
 
             <h1 className="text-[21px] font-black text-slate-900 tracking-tight">
-              LOG &amp; NOTULA RAPAT
+              AKTIVITAS BIRO 3
             </h1>
             <p className="text-[12px] text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
-              Sistem Pengelolaan Agenda Sidang, Notula Resmi &amp; Tindak Lanjut Keputusan Rapat
+              Sistem Monitoring Aktivitas, Kegiatan &amp; Status Pekerjaan Biro 3 (IKK)
             </p>
           </div>
 
@@ -284,9 +288,12 @@ function LoginForm() {
 
             {showDemoSection && (
               <div className="px-7 pb-5 pt-1 space-y-2 animate-in fade-in duration-150">
-                <p className="text-[11px] text-slate-500 leading-tight">
-                  Pilih salah satu peran di bawah untuk mengisi kredensial uji coba secara instan:
-                </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-[11px] text-slate-500">
+                  <span>Pilih peran di bawah untuk mengisi akun &amp; kata sandi secara instan:</span>
+                  <span className="text-[10px] font-mono font-bold text-[#266F80] bg-[#EBF6F8] px-2 py-0.5 rounded border border-[#31889C]/20 whitespace-nowrap">
+                    Sandi: AktivitasBiro3!2026
+                  </span>
+                </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px]">
                   {demoAccounts.map((acc) => {
@@ -297,19 +304,23 @@ function LoginForm() {
                         key={acc.email}
                         type="button"
                         onClick={() => handleFillDemo(acc.email, acc.label)}
-                        className={`p-2 text-left rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                        className={`p-2 text-left rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                           isSelected
                             ? 'bg-[#EBF6F8] border-[#31889C] text-[#266F80] font-bold shadow-xs ring-1 ring-[#31889C]'
                             : 'bg-white border-slate-200/90 hover:border-[#31889C]/60 hover:bg-[#F6FBFC] text-slate-700 font-semibold'
                         }`}
+                        title={`${acc.label} (${acc.email}) - ${acc.desc}`}
                       >
-                        <div className="flex items-center gap-1.5 truncate">
-                          <span className="text-[13px]">{acc.icon}</span>
-                          <span className="truncate">{acc.label}</span>
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <span className="text-[13px]">{acc.icon}</span>
+                            <span className="truncate text-[11.5px]">{acc.label}</span>
+                          </div>
+                          {isSelected && (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#31889C] shrink-0 ml-1" />
+                          )}
                         </div>
-                        {isSelected && (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#31889C] shrink-0 ml-1" />
-                        )}
+                        <span className="text-[9.5px] text-slate-400 font-normal truncate mt-0.5">{acc.desc}</span>
                       </button>
                     );
                   })}
