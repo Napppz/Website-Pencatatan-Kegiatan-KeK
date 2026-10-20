@@ -15,7 +15,7 @@ export interface CreateMeetingInput {
   date: string;
   startTime?: string;
   endTime?: string;
-  location: string;
+  location?: string;
   involvedBiroCodes?: string[];
   attendees?: string;
   participantUserIds?: string[];
@@ -136,18 +136,28 @@ export async function createMeetingAction(input: CreateMeetingInput) {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // Resolve canonical team code (Investasi: INV, Kerja Sama: KS, Komunikasi: KOM)
-      // Khusus staf, nomor registrasi dan tim pelaksana otomatis dikunci ke tim kerja mereka sendiri
-      let effectiveTeamId = input.primaryTeamId || 'TIM-001';
-      if (currentUser.role === 'STAFF' && currentUser.teamId) {
-        effectiveTeamId = currentUser.teamId;
-      }
-      let teamCode: string | null = null;
-      const team = await tx.biroTeam.findUnique({
-        where: { id: effectiveTeamId },
-        select: { code: true },
+      // Resolve canonical team robustly (Investasi: INV, Kerja Sama: KS, Komunikasi: KOM, Sistem Informasi: SI, Pokja: POKJA)
+      const targetTeamKey = (currentUser.role === 'STAFF' && currentUser.teamId)
+        ? currentUser.teamId
+        : (input.primaryTeamId?.trim() || 'INV');
+
+      const resolvedTeam = await tx.biroTeam.findFirst({
+        where: {
+          OR: [
+            { id: targetTeamKey },
+            { code: targetTeamKey.toUpperCase() },
+            ...(targetTeamKey === 'TIM-001' ? [{ code: 'INV' }] : []),
+            ...(targetTeamKey === 'TIM-002' ? [{ code: 'KOM' }] : []),
+            ...(targetTeamKey === 'TIM-003' ? [{ code: 'KS' }] : []),
+            ...(targetTeamKey === 'TIM-004' ? [{ code: 'SI' }] : []),
+            ...(targetTeamKey === 'TIM-005' ? [{ code: 'POKJA' }] : []),
+          ],
+        },
+        select: { id: true, code: true },
       });
-      if (team) teamCode = team.code;
+
+      const effectiveTeamId = resolvedTeam?.id || null;
+      const teamCode = resolvedTeam?.code || null;
 
       // 1. Generate sequence atomically or use custom meetingNumber if provided (and not '-' or empty)
       let finalMeetingNumber = input.meetingNumber?.trim();
@@ -214,7 +224,7 @@ export async function createMeetingAction(input: CreateMeetingInput) {
           date: new Date(input.date),
           startTime: finalStartTime,
           endTime: finalEndTime,
-          location: input.location,
+          location: input.location?.trim() || 'Biro 3 / Luar Kantor',
           status: finalStatus,
           meetingKind: input.meetingKind || null,
           picName: input.picName || null,
@@ -622,6 +632,83 @@ export async function approveMeetingAction(meetingId: string) {
   } catch (error: any) {
     console.error('Error approving meeting:', error);
     return { success: false, error: error?.message || 'Gagal menyetujui hasil rapat' };
+  }
+}
+
+export interface UpdateMeetingOutputInput {
+  meetingId: string;
+  driveLink?: string | null;
+  notes?: string | null;
+  actionPlan?: string | null;
+  ndConsumptionNumber?: string | null;
+  ndConsumptionStatus?: string | null;
+  releaseUrl?: string | null;
+  releaseTitle?: string | null;
+  progressStatus?: string | null;
+  picName?: string | null;
+}
+
+/**
+ * Server action to update meeting output results, Google Drive link, notes, Nd Konsum, & release details
+ * (Diisi setelah kegiatan terlaksana dan PIC ditugaskan)
+ */
+export async function updateMeetingOutputAction(input: UpdateMeetingOutputInput) {
+  try {
+    await requireAuth();
+
+    const existing = await prisma.meeting.findUnique({
+      where: { id: input.meetingId },
+      include: { primaryBiro: true },
+    });
+
+    if (!existing) {
+      return { success: false, error: 'Kegiatan tidak ditemukan.' };
+    }
+
+    const updateData: any = {};
+    if (input.driveLink !== undefined) updateData.driveLink = input.driveLink?.trim() || null;
+    if (input.notes !== undefined) updateData.notes = input.notes?.trim() || null;
+    if (input.actionPlan !== undefined) updateData.actionPlan = input.actionPlan || 'Rutin';
+    if (input.ndConsumptionNumber !== undefined) updateData.ndConsumptionNumber = input.ndConsumptionNumber?.trim() || null;
+    if (input.ndConsumptionStatus !== undefined) updateData.ndConsumptionStatus = input.ndConsumptionStatus || null;
+    if (input.releaseUrl !== undefined) updateData.releaseUrl = input.releaseUrl?.trim() || null;
+    if (input.releaseTitle !== undefined) updateData.releaseTitle = input.releaseTitle?.trim() || null;
+    if (input.picName !== undefined) updateData.picName = input.picName?.trim() || null;
+
+    if (input.progressStatus) {
+      updateData.progressStatus = input.progressStatus;
+      const raw = input.progressStatus.toLowerCase();
+      if (raw === 'selesai' || raw === 'finish' || raw === 'final') {
+        updateData.status = MeetingStatus.FINAL;
+      } else if (raw === 'dalam proses' || raw === 'review' || raw === 'on progres') {
+        updateData.status = MeetingStatus.REVIEW;
+      } else {
+        updateData.status = MeetingStatus.DRAFT;
+      }
+    }
+
+    const updated = await prisma.meeting.update({
+      where: { id: input.meetingId },
+      data: updateData,
+      include: { primaryBiro: true, primaryTeam: true },
+    });
+
+    safeRevalidate([
+      '/',
+      '/semua-rapat',
+      `/semua-rapat/${input.meetingId}`,
+      `/rapat/${input.meetingId}`,
+      '/laporan',
+    ]);
+
+    return {
+      success: true,
+      data: updated,
+      message: 'Hasil kegiatan dan output kerja berhasil diperbarui.',
+    };
+  } catch (error: any) {
+    console.error('Error updating meeting output:', error);
+    return { success: false, error: error?.message || 'Gagal memperbarui hasil kegiatan' };
   }
 }
 

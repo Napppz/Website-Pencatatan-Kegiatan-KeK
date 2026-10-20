@@ -47,9 +47,11 @@ export const TEAM_TABS = [
   { key: 'INV', label: 'Tim Investasi' },
   { key: 'KS', label: 'Tim Kerja Sama' },
   { key: 'KOM', label: 'Tim Komunikasi' },
+  { key: 'SI', label: 'Tim Sistem Informasi' },
+  { key: 'POKJA', label: 'Pokja' },
 ];
 
-export function getUserTeamCode(u: PicOptionUser): 'INV' | 'KS' | 'KOM' | null {
+export function getUserTeamCode(u: PicOptionUser): 'INV' | 'KS' | 'KOM' | 'SI' | 'POKJA' | null {
   const tc = (u.team?.code || '').toUpperCase();
   const tid = u.team?.id || '';
   const tname = (u.team?.name || '').toLowerCase();
@@ -57,10 +59,12 @@ export function getUserTeamCode(u: PicOptionUser): 'INV' | 'KS' | 'KOM' | null {
   if (tc === 'INV' || tid === 'TIM-001' || tname.includes('investasi')) return 'INV';
   if (tc === 'KS' || tid === 'TIM-003' || tname.includes('kerja sama') || tname.includes('kerjasama')) return 'KS';
   if (tc === 'KOM' || tid === 'TIM-002' || tname.includes('komunikasi')) return 'KOM';
+  if (tc === 'SI' || tid === 'TIM-004' || tname.includes('sistem informasi') || tname.includes('si')) return 'SI';
+  if (tc === 'POKJA' || tid === 'TIM-005' || tname.includes('pokja')) return 'POKJA';
   return null;
 }
 
-export const TEAM_STYLE = {
+export const TEAM_STYLE: Record<string, { bg: string; text: string; border: string; avatarBg: string; label: string }> = {
   INV: {
     bg: 'bg-emerald-50',
     text: 'text-emerald-700',
@@ -81,6 +85,20 @@ export const TEAM_STYLE = {
     border: 'border-amber-200',
     avatarBg: 'bg-amber-100 text-amber-800',
     label: 'Tim Komunikasi',
+  },
+  SI: {
+    bg: 'bg-purple-50',
+    text: 'text-purple-700',
+    border: 'border-purple-200',
+    avatarBg: 'bg-purple-100 text-purple-800',
+    label: 'Tim Sistem Informasi',
+  },
+  POKJA: {
+    bg: 'bg-indigo-50',
+    text: 'text-indigo-700',
+    border: 'border-indigo-200',
+    avatarBg: 'bg-indigo-100 text-indigo-800',
+    label: 'Pokja',
   },
 };
 
@@ -463,6 +481,313 @@ export function PicSelector({
           onChange={(e) => onPicNameChange(e.target.value)}
           placeholder="Contoh: Maya Puspita, S.Sos / PIC Tim Investasi..."
           className="w-full px-3.5 h-[38px] rounded-xl border border-slate-300 bg-white text-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#1E6B7B]/20 focus:border-[#1E6B7B] shadow-2xs placeholder-slate-400"
+        />
+      </div>
+    </div>
+  );
+}
+
+export interface MultiPicSelectorProps {
+  availableUsers: PicOptionUser[];
+  selectedUserIds: string[];
+  picName: string;
+  onToggleUser: (user: PicOptionUser) => void;
+  onPicNameChange: (name: string) => void;
+  onClearAll: () => void;
+  disabled?: boolean;
+  required?: boolean;
+  className?: string;
+}
+
+export function MultiPicSelector({
+  availableUsers = [],
+  selectedUserIds = [],
+  picName,
+  onToggleUser,
+  onPicNameChange,
+  onClearAll,
+  disabled = false,
+  required = true,
+  className,
+}: MultiPicSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [teamFilter, setTeamFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Click outside listener
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 50);
+    } else {
+      setSearchQuery('');
+    }
+  }, [isOpen]);
+
+  const selectedUsers = useMemo(() => {
+    return availableUsers.filter((u) => selectedUserIds.includes(u.id));
+  }, [availableUsers, selectedUserIds]);
+
+  const teamCounts = useMemo(() => {
+    const counts: Record<string, number> = { ALL: availableUsers.length, INV: 0, KS: 0, KOM: 0, SI: 0, POKJA: 0 };
+    availableUsers.forEach((u) => {
+      const code = getUserTeamCode(u);
+      if (code && counts[code] !== undefined) {
+        counts[code]++;
+      }
+    });
+    return counts;
+  }, [availableUsers]);
+
+  const filteredUsers = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return availableUsers.filter((u) => {
+      if (teamFilter !== 'ALL') {
+        const code = getUserTeamCode(u);
+        if (code !== teamFilter) return false;
+      }
+      if (q) {
+        const nameMatch = u.name.toLowerCase().includes(q);
+        const teamMatch = u.team?.name?.toLowerCase().includes(q);
+        const emailMatch = u.email?.toLowerCase().includes(q);
+        return nameMatch || teamMatch || emailMatch;
+      }
+      return true;
+    });
+  }, [availableUsers, teamFilter, searchQuery]);
+
+  return (
+    <div className={cn('space-y-3', className)} ref={containerRef}>
+      {/* Selected PICs Chips */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-bold text-slate-700 flex items-center gap-1.5">
+            <UserCheck className="w-4 h-4 text-[#1E6B7B]" />
+            <span>PIC Pelaksana Terpilih ({selectedUsers.length} orang)</span>
+            <span className="text-slate-400 font-normal">(Bisa lebih dari 1 orang)</span>
+          </span>
+          {selectedUsers.length > 0 && (
+            <button
+              type="button"
+              onClick={onClearAll}
+              className="text-[11px] font-semibold text-red-600 hover:underline cursor-pointer"
+            >
+              Hapus Semua
+            </button>
+          )}
+        </div>
+
+        {selectedUsers.length > 0 ? (
+          <div className="flex flex-wrap gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            {selectedUsers.map((u) => {
+              const code = getUserTeamCode(u);
+              const style = code ? TEAM_STYLE[code] : null;
+              return (
+                <span
+                  key={u.id}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-lg text-xs font-semibold border shadow-2xs transition-all animate-in fade-in',
+                    style ? cn(style.bg, style.text, style.border) : 'bg-white text-slate-800 border-slate-200'
+                  )}
+                >
+                  <span className="truncate max-w-[200px]">{u.name}</span>
+                  {u.team?.name && (
+                    <span className="text-[10px] opacity-75 font-normal">({u.team.name})</span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => onToggleUser(u)}
+                    className="p-0.5 rounded-md hover:bg-black/10 text-slate-500 hover:text-slate-900 cursor-pointer transition-colors ml-0.5"
+                    title={`Hapus ${u.name}`}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 text-center text-xs text-slate-500">
+            Belum ada PIC yang dipilih. Silakan klik tombol di bawah untuk memilih satu atau beberapa staf penanggung jawab.
+          </div>
+        )}
+      </div>
+
+      {/* Button to open dropdown */}
+      <div className="relative">
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            'w-full px-4 py-2.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer shadow-2xs select-none',
+            isOpen
+              ? 'border-[#1E6B7B] ring-2 ring-[#1E6B7B]/20 bg-[#F0F8FA]'
+              : 'border-slate-300 bg-white hover:border-[#1E6B7B] hover:bg-slate-50/70',
+            disabled && 'opacity-60 cursor-not-allowed bg-slate-100'
+          )}
+        >
+          <div className="flex items-center gap-2 text-xs font-bold text-[#1E6B7B]">
+            <Users className="w-4 h-4" />
+            <span>+ Pilih / Tambah Staf PIC Kegiatan ({selectedUsers.length} dipilih)</span>
+          </div>
+          <ChevronDown className={cn('w-4 h-4 text-slate-400 transition-transform', isOpen && 'rotate-180')} />
+        </button>
+
+        {isOpen && (
+          <div className="absolute left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-100">
+            {/* Search Input */}
+            <div className="relative mb-2">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari nama staf, email, atau tim kerja..."
+                className="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1E6B7B]/25 focus:border-[#1E6B7B]"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Team Tabs */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-2 mb-2 border-b border-slate-100 scrollbar-none text-[11px]">
+              {TEAM_TABS.map((tab) => {
+                const isSelected = teamFilter === tab.key;
+                const count = teamCounts[tab.key] || 0;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setTeamFilter(tab.key)}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg font-bold shrink-0 transition-all cursor-pointer flex items-center gap-1',
+                      isSelected
+                        ? 'bg-[#1E6B7B] text-white shadow-2xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    )}
+                  >
+                    <span>{tab.label}</span>
+                    <span className={cn('text-[10px] px-1 rounded-full', isSelected ? 'bg-white/20' : 'bg-slate-200')}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Users List with Multi-Checkbox */}
+            <div className="max-h-60 overflow-y-auto space-y-1 pr-1">
+              {filteredUsers.length === 0 ? (
+                <div className="p-4 text-center text-xs text-slate-400">
+                  Tidak ditemukan staf yang cocok.
+                </div>
+              ) : (
+                filteredUsers.map((u) => {
+                  const isChecked = selectedUserIds.includes(u.id);
+                  const code = getUserTeamCode(u);
+                  const style = code ? TEAM_STYLE[code] : null;
+
+                  return (
+                    <button
+                      key={u.id}
+                      type="button"
+                      onClick={() => onToggleUser(u)}
+                      className={cn(
+                        'w-full p-2 rounded-xl text-left transition-all flex items-center justify-between cursor-pointer border',
+                        isChecked
+                          ? 'bg-[#E8F5F7] border-[#1E6B7B] text-[#1E6B7B] font-bold shadow-2xs'
+                          : 'bg-white border-transparent hover:bg-slate-50 text-slate-700'
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div
+                          className={cn(
+                            'w-5 h-5 rounded-md flex items-center justify-center border text-white transition-all shrink-0',
+                            isChecked ? 'bg-[#1E6B7B] border-[#1E6B7B]' : 'bg-white border-slate-300'
+                          )}
+                        >
+                          {isChecked && <Check className="w-3.5 h-3.5" />}
+                        </div>
+
+                        <div className="min-w-0">
+                          <p className="text-xs truncate">{u.name}</p>
+                          {u.email && <p className="text-[10px] text-slate-400 truncate">{u.email}</p>}
+                        </div>
+                      </div>
+
+                      {u.team?.name && (
+                        <span
+                          className={cn(
+                            'text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0 ml-2 border',
+                            style ? cn(style.bg, style.text, style.border) : 'bg-slate-100 text-slate-600 border-slate-200'
+                          )}
+                        >
+                          {u.team.name}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>{selectedUsers.length} staf dipilih sebagai PIC</span>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="px-3 py-1 rounded-lg bg-[#1E6B7B] text-white font-bold hover:bg-[#164E59] cursor-pointer"
+              >
+                Selesai
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Field Keterangan / Gabungan Nama PIC */}
+      <div className="space-y-1">
+        <label className="block text-[11px] font-semibold text-slate-600">
+          Keterangan / Rincian Nama PIC:
+          <span className="text-slate-400 font-normal ml-1">
+            (Otomatis terisi dari pilihan staf di atas atau bisa disesuaikan)
+          </span>
+          {required && <span className="text-red-500 ml-0.5">*</span>}
+        </label>
+        <input
+          type="text"
+          required={required}
+          value={picName}
+          onChange={(e) => onPicNameChange(e.target.value)}
+          placeholder="Contoh: Rizki Agustianto, Maya Puspita, S.Sos..."
+          className="w-full px-3.5 h-[38px] rounded-xl border border-slate-300 bg-white text-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#1E6B7B]/20 focus:border-[#1E6B7B] shadow-2xs font-medium"
         />
       </div>
     </div>

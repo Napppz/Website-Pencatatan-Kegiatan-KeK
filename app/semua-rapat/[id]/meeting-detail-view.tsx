@@ -63,6 +63,7 @@ import { LinkMeetingDialog } from '@/components/meeting/link-meeting-dialog';
 import { AgendaSeriesModal } from '@/components/meeting/agenda-series-modal';
 import { MinutesHistorySection } from '@/components/meeting/meeting-history/minutes-history-section';
 import { GoogleCalendarModal } from '@/components/meeting/google-calendar-modal';
+import { UpdateMeetingOutputDialog } from '@/components/meeting/update-meeting-output-dialog';
 import {
   MeetingCategorySelector,
   CategorySelectionData,
@@ -276,6 +277,14 @@ export function MeetingDetailView({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isStatusPopoverOpen]);
+
+  // Meeting Data & Output Modal state
+  const [meetingData, setMeetingData] = useState<any>(meeting);
+  const [isOutputDialogOpen, setIsOutputDialogOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMeetingData(meeting);
+  }, [meeting]);
 
   // Custom Meeting Number state
   const [currentMeetingNumber, setCurrentMeetingNumber] = useState<string>(meeting.meetingNumber);
@@ -1672,7 +1681,7 @@ export function MeetingDetailView({
 
           {/* Panel Output & Hasil Kegiatan Biro 3 (Catatan Mentor) */}
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4 border-l-4 border-l-emerald-600">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
                   <FileCheck className="w-4 h-4" />
@@ -1685,16 +1694,28 @@ export function MeetingDetailView({
                 </div>
               </div>
 
-              {meeting.actionPlan && (
-                <span className={cn(
-                  "px-3 py-1 rounded-full text-xs font-bold border",
-                  meeting.actionPlan.toLowerCase().includes('non')
-                    ? "bg-purple-50 text-purple-700 border-purple-200"
-                    : "bg-teal-50 text-teal-800 border-teal-200"
-                )}>
-                  Rencana Aksi: {meeting.actionPlan}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {meetingData.actionPlan && (
+                  <span className={cn(
+                    "px-3 py-1 rounded-full text-xs font-bold border",
+                    meetingData.actionPlan.toLowerCase().includes('non')
+                      ? "bg-purple-50 text-purple-700 border-purple-200"
+                      : "bg-teal-50 text-teal-800 border-teal-200"
+                  )}>
+                    Rencana Aksi: {meetingData.actionPlan}
+                  </span>
+                )}
+                {canEditMeeting && (
+                  <button
+                    type="button"
+                    onClick={() => setIsOutputDialogOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#1E6B7B] hover:bg-[#164E59] text-white text-xs font-bold shadow-2xs transition-all cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit / Isi Hasil Kegiatan</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Grid Tautan Google Drive & Rilis Berita */}
@@ -1704,9 +1725,9 @@ export function MeetingDetailView({
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   Berkas Google Drive
                 </span>
-                {meeting.driveLink ? (
+                {meetingData.driveLink ? (
                   <a
-                    href={meeting.driveLink}
+                    href={meetingData.driveLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs"
@@ -1724,15 +1745,15 @@ export function MeetingDetailView({
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   Publikasi &amp; Rilis Berita
                 </span>
-                {meeting.releaseUrl ? (
+                {meetingData.releaseUrl ? (
                   <a
-                    href={meeting.releaseUrl}
+                    href={meetingData.releaseUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs"
-                    title={meeting.releaseTitle || "Buka Siaran Pers"}
+                    title={meetingData.releaseTitle || "Buka Siaran Pers"}
                   >
-                    <span className="truncate">{meeting.releaseTitle || 'Buka Rilis Berita'}</span>
+                    <span className="truncate">{meetingData.releaseTitle || 'Buka Rilis Berita'}</span>
                     <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                   </a>
                 ) : (
@@ -1745,13 +1766,13 @@ export function MeetingDetailView({
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   Nota Dinas Konsumsi
                 </span>
-                {meeting.ndConsumptionNumber ? (
+                {meetingData.ndConsumptionNumber ? (
                   <div className="flex items-center justify-between gap-1">
                     <span className="font-mono text-xs font-bold text-slate-800">
-                      {meeting.ndConsumptionNumber}
+                      {meetingData.ndConsumptionNumber}
                     </span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
-                      {meeting.ndConsumptionStatus || 'Diproses'}
+                      {meetingData.ndConsumptionStatus || 'Diproses'}
                     </span>
                   </div>
                 ) : (
@@ -1761,7 +1782,7 @@ export function MeetingDetailView({
             </div>
 
             {/* Catatan Hasil Kegiatan */}
-            {meeting.notes && (
+            {meetingData.notes && (
               <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-amber-950 space-y-1 mt-2">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-xs uppercase tracking-wider text-amber-800">
@@ -1769,7 +1790,7 @@ export function MeetingDetailView({
                   </span>
                 </div>
                 <p className="text-[13px] leading-relaxed whitespace-pre-wrap font-medium">
-                  {meeting.notes}
+                  {meetingData.notes}
                 </p>
               </div>
             )}
@@ -2631,6 +2652,19 @@ export function MeetingDetailView({
           </div>
         </div>
       )}
+
+      {/* Modal: Update / Isi Hasil Kegiatan Pasca Pelaksanaan */}
+      <UpdateMeetingOutputDialog
+        isOpen={isOutputDialogOpen}
+        onClose={() => setIsOutputDialogOpen(false)}
+        meeting={meetingData}
+        onSuccess={(updated) => {
+          setMeetingData(updated);
+          if (updated.progressStatus) {
+            setProgressStatus(updated.progressStatus);
+          }
+        }}
+      />
     </div>
   );
 }
